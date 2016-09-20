@@ -1,0 +1,23 @@
+Package: CSFA
+Type: Package
+Title: Connectivity Scores with Factor Analysis
+Version: 0.91
+Date: 2016-09-19
+Author: Ewoud De Troyer
+Maintainer: Ewoud De Troyer <ewoud.detroyer@uhasselt.be>
+Description: Applies Factor Analysis methodology to microarray data in order
+    to derive connectivity scores between compounds. The package also contains an
+    implementation of the Connectivity Score algorithm by Zhang and Gant.
+License: GPL-3
+Imports:
+    methods, stats, graphics, grDevices,
+    fabia,
+    pls,
+    FactoMineR,
+    elasticnet,
+    randomcoloR
+VignetteBuilder: knitr
+Suggests:
+    knitr,
+    gplots
+RoxygenNote: 5.0.1

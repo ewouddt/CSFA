@@ -1,0 +1,363 @@
+%\VignetteIndexEntry{CSFA: Vignette Example Analysis} \\
+%\VignetteDepends{CSFA}
+%\VignettePackage{CSFA}
+%\VignetteEngine{knitr::knitr}
+\documentclass[a4paper]{article}
+\usepackage{etex}
+%\usepackage{Sweave}
+\usepackage[margin=2cm]{geometry}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{color}
+\usepackage{easybmat}
+\usepackage{setspace}
+\usepackage{subcaption}
+\usepackage{multirow}
+\usepackage{float}
+\usepackage[english]{babel}
+\usepackage{natbib}
+
+\usepackage{hyperref}
+\hypersetup{
+	colorlinks, 
+	citecolor=black,
+	filecolor=black,
+	linkcolor=black,
+	urlcolor=black
+}
+
+\usepackage{subcaption}
+
+\title{CSFA 0.9 - Vignette}
+\date{}
+\author{Ewoud De Troyer}
+
+\begin{document}
+\maketitle
+%Coming Soon... when it's done. \\
+%But still probably faster than the next Song of Ice and Fire book.
+\section{Introduction}
+
+One of the many challenges in today's omics data is the goal of connecting those
+compounds/molecules/samples together which have similar properties by gene
+expression.
+Techniques like this allow the discovery of new molecule properties by
+connecting their signatures with those derived from already well-known ones.\\
+Papers such as \citet{Lamb2006} and \citet{Zhang2008} both already took up the
+challenge of dealing with this problem. In \citet{Lamb2006}, a reference
+collection of gene expression profiles from human cells treated with bioactive
+small molecules was created in order to design a systematic approach to discover
+these functional connections. While their approach achieved a good degree of
+succes, it was unable to measure statistical significance. This is where the
+paper from \citet{Zhang2008} continued for example. Their paper offers a more
+principled statistical procedure to test connections between the compounds which allows the valuation of statistical significance.
+\\ \\
+The CSFA package accompanies the paper/report by Shkedy, Z. and De Troyer. E. (ADD REAL REF),
+which proposes the usage of {\it factor analysis} methods (Principal Component
+Analysis (=PCA), (Sparse) Multiple Factor Analysis (MFA) \citep{Abdi2013} and
+FABIA (Factor Analysis for Bicluster Acquisition) \citep{Hochreiter2010}) to
+derive the connectivity between compounds.
+Using these methods, not only do you obtain information about the connectivity between the compounds, you also get
+information about which genes are responsible for guiding this connectivity.\\
+Further instead of computing a pairwise correlation/connection score between the
+compounds, now the entire available data is being used to look for dominant structures on both dimenstions. This is very similar to try to discover biclusters in the data. Consequently, it is not necessary anymore to decide upon a cut-off for up- and downregulated genes since you will be using all the genes to do the factor analysis.
+\\
+It should also be noted that the setting in which the {\it factor analysis} is
+applied, is slightly different from the one in the Connectivity Map
+\citep{Lamb2006}.
+In the Connectivity Map there is a large data set of references profiles to
+which the query signatures are compared. In this setting, the meaning of
+`reference` and `query` will be switched around. You start with a small set of
+references, namely a small set of samples of which they are similar. These are compared with a larger set of queries in order to try to discover samples or compounds similar to the reference set. \\
+Further, since the methods will be applied on a matrix which consists out of
+both the reference and the query profiles, the number of genes for these signatures will have to be the same.
+\begin{equation}\label{eq:structure}
+\begin{BMAT}{c}{cc}
+	\begin{BMAT}{ccc}{c}
+		\overbrace{\left[\begin{BMAT}(@,50pt,80pt){c:}{c}
+		\mathbf{X}_1\\
+		\end{BMAT}\right.}^{Reference\ Samples}
+		&
+		\overbrace{\left.\begin{BMAT}(@,80pt,80pt){c}{c}
+		\mathbf{X}_2\\
+		\end{BMAT}\right]}^{Query\ Samples}
+		&
+		\begin{BMAT}{c}{c}
+		g \text{ genes}
+		\end{BMAT}
+	\end{BMAT}
+	\\
+	\begin{BMAT}{l}{c}
+		n \text{ samples}\\
+	\end{BMAT}
+\end{BMAT}
+\end{equation}
+Finally in order to easily compare these methods with the Zhang and Gant Score,
+CSFA also includes an implementation of this algorithm together with the ability
+to compare the scores with the FA scores.
+\section{Data}
+In order to showcase the functionality of CSFA, some simulated microarray data
+will be used. The data contains 1000 genes and 341 compounds of which 6 will be used as
+reference signatures. The remaining query signatures consist out of 5 strongly
+positive connected compounds, 20 weakly positive connected compounds, 10
+strongly negative connected compounds and 300 compounds which are not connected
+at all.
+
+<<load,echo=FALSE,warning=FALSE,message=FALSE,results='hide'>>=
+require(viridis)
+library(CSFA)
+data("dataSIM",package="CSFA")
+@
+
+<<data_heatmap,fig.keep="high", echo=FALSE, warning="FALSE",message=FALSE,fig.pos='H',dev='png',fig.cap="Heatmap of Reference and Query Matrix">>=
+
+par(fig=c(0,0.25,0,1),xpd=TRUE)
+d <- dataSIM[,c(1:6)]
+image(c(1:dim(d)[2]),c(1:dim(d)[1]),t(d),xlab="condition",ylab="genes",col=viridis(75))
+par(fig=c(0.25,1,0,1), new=TRUE,xpd=TRUE)
+d <- dataSIM[,-c(1:6)]
+#d <- dataMFA
+image(c(1:dim(d)[2]),c(1:dim(d)[1]),t(d),xlab="condition",ylab="genes",col=viridis(75),axes=FALSE)
+@
+%also add image plot of data
+
+
+\section{Example CS Analysis}
+Start by first loading both the CSFA library and the example data available
+in the package. The simulated data is split up in the reference and query
+matrix.
+
+<<packageload,echo=TRUE,eval=TRUE,warning=FALSE,message=FALSE>>=
+	library(CSFA)
+	data("dataSIM",package="CSFA")
+	
+	refMat <- dataSIM[,c(1:6)]
+	querMat <- dataSIM[,-c(1:6)]
+@
+
+\noindent Next, the Connectivity Scores from Zhang and Gant, MFA and FABIA will
+be computed with the package. The last two methods will also provide scores for the
+genes involved in the structure.\\
+More details about the connectivity and gene scores as well as the decision
+making of which component to look at can be be found in an upcoming paper.
+%Shkedy, Z. and De Troyer, E. (ADD REF).
+
+\subsection{Zhang and Gant}
+The Zhang and Gant scores are computed with the default parameters. This means
+all the genes will be used (no cut-off) and the query signature will be
+considered as an ordered signature. Also no permutation will be applied by
+default.
+\\Note that for the vignette, which is a
+sweave document, we use the "sweave" \texttt{plot.type}. Normally you would be
+using either "device" or "pdf".
+
+<<ZG,echo=TRUE,eval=TRUE,cache=TRUE,fig.keep="high",fig.pos='H',out.width="11cm",fig.align='center',fig.cap="CSanalysis Graphs for CSzhang">>= 
+	out_ZG <- CSanalysis(refMat,querMat,"CSzhang",plot.type="sweave")
+@
+
+\noindent While all the connectivity scores can be found in the \texttt{out\_ZG}
+object, the function already prints by default the top 20 positive and negative
+connectivity scores. Figure \ref{fig:ZG} clearly shows the positive (weak and
+strong) and negative connected compounds.
+
+\subsection{MFA}
+The next CS analysis which is applied is the one using Multiple Factor Analysis
+(MFA) by setting the \texttt{type} to \texttt{"CSmfa"}. Three of the
+available plots were chosen, namely the Reference Loadings,
+Compound Loadings (Connectivity Scores), Gene Scores and Compound Profiles
+(\texttt{which=c(2,3,4,7)}).\\
+Note that in the R-code we already preselected which component to investigate
+with \texttt{component.plot}.
+Further we also already decided which columns of the query matrix we would like
+to draw in the compound profiles graph with \texttt{column.interest}. Indices 1, 2 and 3 coincide
+with 3 weakly positive connected compounds.\\ \\
+However, if you are not sure beforehand what you want to investigate, you can
+also decide upon these parameters on the fly interactively. To do this simply
+set these parameters to \texttt{NULL} or leave them out.\\
+To determine \texttt{component.plot}, you will be able to to click on the
+factors you want to observe in the {\it "Loadings for Ref..."} plot. This graph will be
+your main guideline on which factor is capturing the structure of your reference
+set of signatures. As shown in Figure \ref{fig:MFA} below, this is clearly the
+first factor. \\
+Next, in order to drawn compound profiles, set \texttt{profile.type} to
+\texttt{"cmpd"}. The \texttt{column.interest} parameter for this plot can also
+be chosen in the {\it "Compound Loadings"} plot (instead of simply providing it
+to \texttt{CSanalysis} beforehand). You can left-click on multiple compounds you wish to draw in the compound profiles graph (and right-click to stop the selection procedure). 
+
+<<MFA,echo=TRUE,eval=TRUE,cache=TRUE,fig.keep="high",fig.show='hold',fig.pos='H',out.width='9cm',out.height='10cm',fig.align='left',fig.cap="CSanalysis Graphs for CSfma">>= 
+out_MFA <- CSanalysis(refMat,querMat,"CSmfa",plot.type="sweave",which=c(2,3,4,7),
+		profile.type="cmpd",gene.thresP=2.3,gene.thresN=-2.3,component.plot=1,
+		column.interest=c(21,22,23))
+@
+
+\noindent Just like in the Zhang and Gant plot, we again see that the simulated
+positive and negative connected compounds are appearing in the Compound Loadings
+plot. However now we also get a plot showing the scores of the genes involved in
+the structure of the first factor in the MFA analysis.\\
+\\ \\
+We can also reuse the \texttt{CSanalysis} function to draw the same or
+additional plots without re-computing the factor analysis. This is done through the
+\texttt{result.available} parameter. Here in Figure \ref{fig:MFA2}, the
+Connectivity Score Ranks are shown.
+
+<<MFA2,echo=TRUE,eval=TRUE,cache=TRUE,fig.keep="high",fig.show='hold',fig.pos='H',out.width='9cm',out.height='10cm',fig.align='left',fig.cap="CSanalysis Graphs for CSfma">>= 
+	out_MFA <- CSanalysis(refMat,querMat,"CSmfa",plot.type="sweave",which=c(5),
+			component.plot=1,column.interest=c(1,2,3),result.available=out_MFA)
+@
+\noindent Another example would be to draw gene profiles. Now alongside the
+manual or interactive selected \texttt{column.interest}, you can also manual
+select which genes should be used with \texttt{row.interest}. If not provided
+this is also done interactively in the gene score plot. In this graph, the
+x-axis contains all compounds, starting with the reference and selected ones.
+The others are the ordered in decreasing CScore.
+<<MFA3,echo=TRUE,eval=TRUE,cache=TRUE,fig.keep="high",fig.show='hold',fig.pos='H',out.width='9cm',out.height='10cm',fig.align='left',fig.cap="CSanalysis Graphs for CSfma">>= 
+	out_MFA <- CSanalysis(refMat,querMat,"CSmfa",plot.type="sweave",which=c(7),
+			profile.type="gene",component.plot=1,column.interest=c(1,2,3),
+			row.interest=c(846,871,4,6),result.available=out_MFA)
+@
+
+
+
+\subsection{FABIA}
+The last analysis is done with FABIA, Factor Analysis for Bicluster Acquisition
+(\texttt{type="CSfabia"}). We will only select 2 plots this time, namely the
+reference loadings and compound loadings (\texttt{which=c(2,5)}). However in
+contrary with the MFA anaylsis, we select 2 components for this analysis.
+Based on the reference loadings we decide to select bicluster 1 and 2
+(\texttt{component.plot=c(1,2)}). \\
+This time we also do some manual coloring of the columns to highlight some
+strongly connected compounds with \texttt{color.columns}. We start by making a vector of length
+341 (column dimension of example data) and fill it with the color black. Next we fill in the
+color blue for the 6 reference compounds and red for 3 of the strongly positive
+connected compounds. We also change the legend according to this coloring.\\ \\
+Note that we have also set a seed just before the FABIA analysis in order to
+have a reproducible result.
+
+%can use multiple BC for fabia
+<<FABIA,echo=TRUE,eval=TRUE,cache=TRUE,message=FALSE,results='hide',fig.keep="high",fig.show='hold',fig.pos='H',out.width='9cm',out.height='10cm',fig.align='left',fig.cap="CSanalysis Graphs for CSfabia">>= 
+	color.columns <- rep("black",dim(dataSIM)[2])
+	color.columns[1:6] <- "blue"
+	color.columns[c(29,30,31)] <- "red"
+	
+	set.seed(8956)
+	out_FABIA <- CSanalysis(refMat,querMat,"CSfabia",plot.type="sweave",which=c(2,5),
+			color.columns=color.columns,
+			legend.names=c("References","SP Connected"),
+			legend.cols=c("blue","red"), component.plot=c(1,2),
+			gene.thresP=2,gene.thresN=-2)
+@
+\noindent The results in Figure \ref{fig:FABIA} are very comparable with the
+Zhang and MFA graphs.
+% 23,24,25 -> 29,30,31
+%highlight the connected ones in MFA, look if the same ones (hurrdurr)
+
+\section{Example CS permutation}
+The \texttt{CSFA} package also contains a function called \texttt{CSpermute}.
+With this function it is possible to compute p-values through permutation for
+the MFA and Zhang \& Gant results. \\
+These results will be added to the \verb|CS| slot of both the MFA and ZG
+results. More information is also entered in the \verb|permutation.object| slot. 
+\\ \\
+First, let us apply the permutation on the MFA and ZG result without plotting
+any plots just yet by putting \texttt{which} to \texttt{c()}. The number of
+permutation was chosen to only be 100 in this case. Further, the p-values are
+also adjusted for multiplicity by setting a value for \texttt{method.adjust}
+different than \texttt{"none"}.\\
+(Note: or MFA, \texttt{CSpermute} should {\it only} be used to compute the
+p-values of the Component in which the structure (loadings) of the references is the strongest.
+This because in each permutation the factor with the highest average reference loadings will be chosen. 
+The ability to compute p-values of other factors (in which the reference set also increased loadings) will be added in a later release. 
+)
+
+
+<<CSpermute_compute,eval=FALSE,echo=TRUE,cache=TRUE>>=
+	out_MFA <- CSpermute(refMat,querMat,CSresult=out_MFA,B=250,method.adjust="BH",
+			which=c(),verbose=FALSE)
+	out_ZG <- CSpermute(refMat,querMat,CSresult=out_ZG,B=250,method.adjust="BH",
+			which=c(),verbose=FALSE)
+
+@
+<<cheat1,echo=FALSE>>=
+#save(list="out_MFA",file="perm_data/out_MFA.RData")
+#save(list="out_ZG",file="perm_data/out_ZG.RData")
+
+#load("figure/out_MFA.RData")
+#load("figure/out_ZG.RData")
+load("perm_data/out_MFA.RData")
+load("perm_data/out_ZG.RData")
+
+
+@
+
+<<CSpermute_compute2,echo=TRUE,cache=TRUE>>=
+head(out_MFA@CS[[1]]$CS.query)
+head(out_ZG@CS$CS.query)
+@
+
+\noindent Next, we can actually re-use the updated \texttt{out\_MFA} and
+\texttt{out\_ZG} in \texttt{CSpermute}.
+As long as the number of permutations (\texttt{B}) is not changed, the permutation will not need to computed all over again. 
+This means you can plot the available graphs (\text{which}: 1, volcano plot for
+CLoadings ; 2, CLoadings compound distribution histogram under null
+hypothesis with p-value), as many times as needed (plot 3 and 4 are the same as 1 and 2, but for CRankingScores).
+The parameter \texttt{cmpd.hist} decides which compounds should be used for the second type of plot. 
+If this parameter is not given (\texttt{NULL}), you can interactively choose them on the volcano plot by left-clicking on them (and right-click to stop).
+In the code below, we plot both type of graphs for the MFA result with a pre-determined \texttt{cmpd.hist}.
+
+<<CSpermuteplots,echo=TRUE,eval=TRUE,cache=TRUE,message=FALSE,results='hide',fig.keep="high",fig.show='hold',fig.pos='H',out.width='9cm',out.height='10cm',fig.align='left',fig.cap="CSpermute graphs for MFA result">>=
+out_MFA <- CSpermute(refMat,querMat,out_MFA,B=250,method.adjust="BH",
+		which=c(1,2),cmpd.hist=c(23,99),plot.type="sweave")
+@
+<<CSpermuteplots2,echo=TRUE,eval=TRUE,cache=TRUE,message=FALSE,results='hide',fig.keep="high",fig.show='hold',fig.pos='H',out.width='9cm',out.height='10cm',fig.align='left',fig.cap="CSpermute graphs for MFA result">>=
+out_MFA <- CSpermute(refMat,querMat,out_MFA,B=250,method.adjust="BH",
+		which=c(3,4),cmpd.hist=c(23,99),plot.type="sweave")
+@
+
+\section{Example Compare CS Results}
+Finally, CSFA also provides a way to quickly compare the 2 results on the same
+data.\\
+In the R-code below, we first compare the Zhang and Gant results with the MFA
+result. With \texttt{component2.plot=1} we choose the first component for the
+second result which is the first factor for the MFA result in this example.
+Since the Zhang and Gant analysis only provides connectivity scores, only 1
+comparison graph will be created.\\
+The second example in the code compares the MFA with the FABIA results. For both
+results we choose the first component which corresponds with the first factor
+and first bicluster. Further, we also set some positive and negative gene
+thresholds for both of the results. In this example we keep them the same for
+both the MFA and FABIA results namely 2 for the upper threshold and -2 for the
+lower one. This time since both results also contain gene scores, 2 graphs will
+be created. Further because we set thresholds for the genes, the gene score
+comparison plot will be coloring according to these thresholds.
+
+<<CScompare,echo=TRUE,eval=TRUE,cache=TRUE,message=FALSE,fig.keep="high",fig.show='hold',fig.pos='H',out.width='9cm',out.height='10cm',fig.align='left',fig.cap="Compare CSresults">>=
+	comp_ZG_MFA <- CScompare(out_ZG,out_MFA,component2.plot=1,plot.type="sweave")
+	
+	comp_MFA_FABIA <- CScompare(out_MFA,out_FABIA,component1.plot=1,component2.plot=1,
+			gene.thresP=c(2,2),gene.thresN=c(-2,-2),plot.type="sweave")
+	
+	comp_ZG_MFA[[1]]	
+	comp_MFA_FABIA[[1]]
+	
+@
+\noindent Note that apart from the scatter plots in Figure \ref{fig:CScompare},
+the function also returns the pearson correlation between the (rank of
+the) scores.
+\\ \\
+Further because both the MFA and ZG contain p-values and adjusted p-values, the
+returned object also contains a small comparison between the number of
+significant p-values. The significancy threshold can be changed with the
+\texttt{threshold.pvalues} parameter and is defaulted to 0.05.
+<<CScompare2,echo=TRUE>>=
+comp_ZG_MFA[[2]]	
+comp_MFA_FABIA[[2]]
+@
+
+\newpage
+\nocite{*}
+\bibliographystyle{asa}
+\bibliography{connectivityRef}
+
+
+\end{document}
