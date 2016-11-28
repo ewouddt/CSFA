@@ -422,16 +422,16 @@ analyse_FA2 <- function(data,result,loadings,scores,ref.index,modeltype,
 			legend.names.loadings2 <- legend.names.loadings
 			legend.cols.loadings2 <- legend.cols.loadings
 			
-			legend.bg <- "white"
+			legend.bg2 <- "white"
 			if(add.pvalue.color){
 				if(result.available@permutation.object$extra.parameters$mfa.factor==i.component){
 					legend.names.loadings2 <- c(legend.names.loadings2,paste0(result.available@permutation.object$extra.parameters$method.adjust," adj. p-value <= 0.05"))
-					legend.bg <- c(rep("white",length(legend.names.loadings2)-1),"purple")
+					legend.bg2 <- c(rep("white",length(legend.names.loadings2)-1),"purple")
 					legend.cols.loadings2 <- c(legend.cols.loadings2,"white")	
 				}
 			}
 			
-			if(length(legend.names.loadings)>0){legend(legend.pos,legend.names.loadings,pch=21,col=legend.cols.loadings,pt.bg=legend.bg,bty="n")}
+			if(length(legend.names.loadings)>0){legend(legend.pos,legend.names.loadings2,pch=21,col=legend.cols.loadings2,pt.bg=legend.bg2,bty="n")}
 			plot.out(plot.type)
 		}
 		
