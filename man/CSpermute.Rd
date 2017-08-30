@@ -7,7 +7,8 @@
 CSpermute(refMat, querMat, CSresult, B = 500, mfa.factor = NULL,
   method.adjust = "none", verbose = TRUE, which = c(1, 3),
   cmpd.hist = NULL, color.columns = NULL, plot.type = "device",
-  basefilename = "CSpermute")
+  basefilename = "CSpermute", MultiCores = FALSE,
+  MultiCores.number = detectCores(logical = FALSE), MultiCores.seed = NULL)
 }
 \arguments{
 \item{refMat}{Reference matrix (Rows = genes and columns = compounds).}
@@ -39,6 +40,12 @@ CSpermute(refMat, querMat, CSresult, B = 500, mfa.factor = NULL,
 \item{plot.type}{How should the plots be outputted? \code{"pdf"} to save them in pdf files, \code{device} to draw them in a graphics device (default), \code{sweave} to use them in a sweave or knitr file.}
 
 \item{basefilename}{Basename of the graphs if saved in pdf files}
+
+\item{MultiCores}{Logical value parallelisation should be used for permutation. \code{FALSE} by default. (This option uses \code{\link[snowFT]{clusterApplyFT}} in order to provide load balancing and reproducible results with \code{\link{MultiCores.seed}})}
+
+\item{MultiCores.number}{Number of cores to be used for \code{MultiCores=TRUE}. By default total number of physical cores.}
+
+\item{MultiCores.seed}{Seed to be used for \code{MultiCores=TRUE} using (\code{\link[snowFT]{see clusterSetupRNG.FT}})}
 }
 \value{
 Returns the same CSresult object with added p-values to the CS slot and added information to the permutation.object slot. This CSresult can be reused in CSpermute to redraw the plots without calculation.

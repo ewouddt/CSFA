@@ -3,6 +3,10 @@
 # Author: lucp8394
 ###############################################################################
 
+# @importFrom parallel detectCores splitIndices clusterCall clusterExport
+# @importFrom snowFT clusterApplyFT makeClusterFT stopClusterFT
+# @importfrom snow
+
 
 #' Permute CS results
 #' 
@@ -36,6 +40,9 @@
 #' @param plot.type How should the plots be outputted? \code{"pdf"} to save them in pdf files, \code{device} to draw them in a graphics device (default), \code{sweave} to use them in a sweave or knitr file.
 #' @param color.columns Option to color the compounds on the volcano plot (\code{which=1}). Should be a vector of colors with the length of number of queries.
 #' @param basefilename Basename of the graphs if saved in pdf files
+#' @param MultiCores Logical value parallelisation should be used for permutation. \code{FALSE} by default. (This option uses \code{\link[snowFT]{clusterApplyFT}} in order to provide load balancing and reproducible results with \code{\link{MultiCores.seed}})
+#' @param MultiCores.number Number of cores to be used for \code{MultiCores=TRUE}. By default total number of physical cores.
+#' @param MultiCores.seed Seed to be used for \code{MultiCores=TRUE} using (\code{\link[snowFT]{see clusterSetupRNG.FT}})
 #' @return Returns the same CSresult object with added p-values to the CS slot and added information to the permutation.object slot. This CSresult can be reused in CSpermute to redraw the plots without calculation.
 #' @examples
 #' \dontrun{
@@ -48,7 +55,9 @@
 #' }
 CSpermute <- function(refMat,querMat,CSresult,B=500,mfa.factor=NULL,method.adjust="none",verbose=TRUE,
 #		querMat.Perm=NULL,save.querMat.Perm=FALSE,
-		which=c(1,3),cmpd.hist=NULL,color.columns=NULL,plot.type="device",basefilename="CSpermute"){
+		which=c(1,3),cmpd.hist=NULL,color.columns=NULL,plot.type="device",basefilename="CSpermute",
+    MultiCores=FALSE,MultiCores.number=detectCores(logical=FALSE),MultiCores.seed=NULL
+  ){
 	
 	if(class(CSresult)!="CSresult"){stop("CSresult is not a class object of CSresult")}
 	if(!(method.adjust %in% c("holm", "hochberg", "hommel", "bonferroni", "BH", "BY","fdr", "none"))){stop("Incorrect method.adjust. Should we one of the following 'none', 'holm', 'hochberg', 'hommel', 'bonferroni', 'BH', 'BY', 'fdr'")}
@@ -57,6 +66,16 @@ CSpermute <- function(refMat,querMat,CSresult,B=500,mfa.factor=NULL,method.adjus
 	ref.index <- c(1:dim(refMat)[2])
 	
 	if(!(type %in% c("CSmfa","CSzhang"))){stop("Permutation is only available for MFA and Zhang results")}
+	
+
+	if(MultiCores){
+	  if(MultiCores.number==1){
+	    warning("Only 1 core was chosen, no parallelisation will be used.")
+	    MultiCores <- FALSE
+	  }
+	}
+	if(MultiCores & is.null(MultiCores.seed)){MultiCores.seed <- sample(1:9999999,1)}
+	
 	
 	
 	# redo permutation and analysis if object not available of different number of permutations is asked
@@ -77,7 +96,7 @@ CSpermute <- function(refMat,querMat,CSresult,B=500,mfa.factor=NULL,method.adjus
 			if(is.null(mfa.factor)){
 				ref.loadings <- apply(CSresult@extra$object$quanti.var$cor,MARGIN=2,FUN=function(x){mean(x[ref.index])})
 				mfa.factor <- which(abs(ref.loadings)==max(abs(ref.loadings)))
-				cat(paste0("Since mfa.factor was not given, Factor ",mfa.factor," has been chosen based on the CSresult object.\n\n"))
+				# cat(paste0("Since mfa.factor was not given, Factor ",mfa.factor," has been chosen based on the CSresult object.\n\n"))
 				warning(paste0("Since mfa.factor was not given, Factor ",mfa.factor," has been chosen based on the CSresult object."))
 			}
 			
@@ -95,36 +114,149 @@ CSpermute <- function(refMat,querMat,CSresult,B=500,mfa.factor=NULL,method.adjus
 			CS.Perm <- vector("list",B)
 			MFA.factor.Perm <- c(1:B)
 			
-			for(i in 1:B){
-				
-				## Permuting Query Matrix
-				querMat.Perm <- matrix(sample(as.vector(querMat),(dim(querMat)[1]*dim(querMat)[2]),replace=FALSE),nrow=dim(querMat)[1],ncol=dim(querMat)[2])
-				
-				rownames(querMat.Perm) <- rownames(refMat)
-				colnames(querMat.Perm) <- colnames(querMat)
-				
-				#########################
-									
-				data_comb <- cbind(refMat,querMat.Perm)
-				rownames(data_comb) <- rownames(refMat)
-				colnames(data_comb) <- c(colnames(refMat),colnames(querMat))
-				
-				out_MFA <- MFA(base=data_comb,group=c(ncol(refMat),ncol(querMat)),type=c("s","s"),ind.sup=NULL,row.w=CSresult@call$analysis.pm$row.w,weight.col.mfa=CSresult@call$analysis.pm$weight.col.mfa,ncp=CSresult@call$analysis.pm$ncp,name.group=c("Reference","Query"),graph=FALSE)
-				
-				## FACTOR IS CHOSEN BASED ON HIGHEST AVERAGE REFERENCE LOADINGS  (put other options here later)
-				ref.loadings <- apply(out_MFA$quanti.var$cor,MARGIN=2,FUN=function(x){mean(x[ref.index])})
-				factor.choose <- which(abs(ref.loadings)==max(abs(ref.loadings)))
-				
-				
-				MFA.factor.Perm[i] <- factor.choose
-				CS.Perm[[i]] <- out_MFA$quanti.var$cor[,factor.choose]
-				
-				if(verbose){
-					cat(".")
-					if(i%%100==0){cat(" ",i,"\n")}
-				}
+			
+			# TO DO: Add parallellisation option (B/nCPU models per core)
+			
+			
+			if(MultiCores){
+			  message("Parallelisation: ",MultiCores.number," cores used")
+			  current_environment <- environment()
+			  
+			  worker_divide <- splitIndices(B,MultiCores.number)
+			  gentype <- "RNGstream"
+			  
+			  
+			  
+			  cl <- do.call("makeClusterFT", c(list(min(MultiCores.number, length(worker_divide)), 
+			                                          "SOCK", ft_verbose = FALSE), NULL))
+
+
+			  
+			  clusterCall(cl, eval, substitute(library(FactoMineR)), env = .GlobalEnv)
+			  clusterExport(cl, c("worker_divide","querMat","refMat","CSresult","ref.index"), envir=current_environment)
+			  
+			  clusterSetupRNG.FT(cl, type = gentype, streamper = "replicate", 
+			                       seed = MultiCores.seed, n = length(worker_divide), prngkind = "default")
+			  
+
+			  
+			  
+			  res <- clusterApplyFT(cl, x=1:length(worker_divide),
+			                        fun=function(x){
+			                          
+			                          CS.Perm <- vector("list",length(worker_divide[[x]]))
+			                          MFA.factor.Perm <- c(1:length(worker_divide[[x]])) 
+			                          
+			                          for(i in 1:length(worker_divide[[x]])){
+			                            ## Permuting Query Matrix
+			                            querMat.Perm <- matrix(sample(as.vector(querMat),(dim(querMat)[1]*dim(querMat)[2]),replace=FALSE),nrow=dim(querMat)[1],ncol=dim(querMat)[2])
+			                            
+			                            rownames(querMat.Perm) <- rownames(refMat)
+			                            colnames(querMat.Perm) <- colnames(querMat)
+			                            
+			                            #########################
+			                            
+			                            data_comb <- cbind(refMat,querMat.Perm)
+			                            rownames(data_comb) <- rownames(refMat)
+			                            colnames(data_comb) <- c(colnames(refMat),colnames(querMat))
+			                            
+			                            out_MFA <- MFA(base=data_comb,group=c(ncol(refMat),ncol(querMat)),type=c("s","s"),ind.sup=NULL,row.w=CSresult@call$analysis.pm$row.w,weight.col.mfa=CSresult@call$analysis.pm$weight.col.mfa,ncp=CSresult@call$analysis.pm$ncp,name.group=c("Reference","Query"),graph=FALSE)
+			                            
+			                            ## FACTOR IS CHOSEN BASED ON HIGHEST AVERAGE REFERENCE LOADINGS  (put other options here later)
+			                            ref.loadings <- apply(out_MFA$quanti.var$cor,MARGIN=2,FUN=function(x){mean(x[ref.index])})
+			                            factor.choose <- which(abs(ref.loadings)==max(abs(ref.loadings)))
+			                            
+			                            
+			                            MFA.factor.Perm[i] <- factor.choose
+			                            CS.Perm[[i]] <- out_MFA$quanti.var$cor[,factor.choose]
+			                            
+			                          }
+			                          return(list(CS.Perm=CS.Perm,MFA.factor.Perm=MFA.factor.Perm))
+			                          
+			                          
+			                        }
+			                        ,gentype = gentype, seed = MultiCores.seed, prngkind = "default",mngtfiles=c("","",""))[[1]]
+			  
+			  stopClusterFT(cl)
+			  
+			  # res <- performParallel(MultiCores.number,1:length(worker_divide),
+			  #                        seed=MultiCores.seed,cltype="SOCK",
+			  #                        initexpr=library(FactoMineR),
+			  #                        export=c("worker_divide","querMat","refMat","CSresult","ref.index"),
+			  #                        
+			  #                        
+			  #                        fun=function(x){
+			  #   
+			  #  CS.Perm <- vector("list",length(worker_divide[[x]]))
+			  #  MFA.factor.Perm <- c(1:length(worker_divide[[x]])) 
+			  #  
+			  #  for(i in 1:length(worker_divide[[x]])){
+			  #    ## Permuting Query Matrix
+			  #    querMat.Perm <- matrix(sample(as.vector(querMat),(dim(querMat)[1]*dim(querMat)[2]),replace=FALSE),nrow=dim(querMat)[1],ncol=dim(querMat)[2])
+			  #    
+			  #    rownames(querMat.Perm) <- rownames(refMat)
+			  #    colnames(querMat.Perm) <- colnames(querMat)
+			  #    
+			  #    #########################
+			  #    
+			  #    data_comb <- cbind(refMat,querMat.Perm)
+			  #    rownames(data_comb) <- rownames(refMat)
+			  #    colnames(data_comb) <- c(colnames(refMat),colnames(querMat))
+			  #    
+			  #    out_MFA <- MFA(base=data_comb,group=c(ncol(refMat),ncol(querMat)),type=c("s","s"),ind.sup=NULL,row.w=CSresult@call$analysis.pm$row.w,weight.col.mfa=CSresult@call$analysis.pm$weight.col.mfa,ncp=CSresult@call$analysis.pm$ncp,name.group=c("Reference","Query"),graph=FALSE)
+			  #    
+			  #    ## FACTOR IS CHOSEN BASED ON HIGHEST AVERAGE REFERENCE LOADINGS  (put other options here later)
+			  #    ref.loadings <- apply(out_MFA$quanti.var$cor,MARGIN=2,FUN=function(x){mean(x[ref.index])})
+			  #    factor.choose <- which(abs(ref.loadings)==max(abs(ref.loadings)))
+			  #    
+			  #    
+			  #    MFA.factor.Perm[i] <- factor.choose
+			  #    CS.Perm[[i]] <- out_MFA$quanti.var$cor[,factor.choose]
+			  #    
+			  #  }
+			  #  return(list(CS.Perm=CS.Perm,MFA.factor.Perm=MFA.factor.Perm))
+			  #  
+			  #   
+			  # })
+			  
+			  MFA.factor.Perm <- unlist(lapply(res,FUN=function(x){x$MFA.factor.Perm}))
+			  CS.Perm <- do.call(c,lapply(res,FUN=function(x){x$CS.Perm}))
+			  
+			}else{
+			  for(i in 1:B){
+			    
+			    ## Permuting Query Matrix
+			    querMat.Perm <- matrix(sample(as.vector(querMat),(dim(querMat)[1]*dim(querMat)[2]),replace=FALSE),nrow=dim(querMat)[1],ncol=dim(querMat)[2])
+			    
+			    rownames(querMat.Perm) <- rownames(refMat)
+			    colnames(querMat.Perm) <- colnames(querMat)
+			    
+			    #########################
+			    
+			    data_comb <- cbind(refMat,querMat.Perm)
+			    rownames(data_comb) <- rownames(refMat)
+			    colnames(data_comb) <- c(colnames(refMat),colnames(querMat))
+			    
+			    out_MFA <- MFA(base=data_comb,group=c(ncol(refMat),ncol(querMat)),type=c("s","s"),ind.sup=NULL,row.w=CSresult@call$analysis.pm$row.w,weight.col.mfa=CSresult@call$analysis.pm$weight.col.mfa,ncp=CSresult@call$analysis.pm$ncp,name.group=c("Reference","Query"),graph=FALSE)
+			    
+			    ## FACTOR IS CHOSEN BASED ON HIGHEST AVERAGE REFERENCE LOADINGS  (put other options here later)
+			    ref.loadings <- apply(out_MFA$quanti.var$cor,MARGIN=2,FUN=function(x){mean(x[ref.index])})
+			    factor.choose <- which(abs(ref.loadings)==max(abs(ref.loadings)))
+			    
+			    
+			    MFA.factor.Perm[i] <- factor.choose
+			    CS.Perm[[i]] <- out_MFA$quanti.var$cor[,factor.choose]
+			    
+			    if(verbose){
+			      cat(".")
+			      if(i%%100==0){cat(" ",i,"\n")}
+			    }
+			  }
+			  if(verbose){cat("\nDONE\n")}
 			}
-			if(verbose){cat("\nDONE\n")}
+			
+			
+
 			
 			permutation.object$CLoadings.Perm <- CS.Perm
 			permutation.object$ChosenFactor.Perm <- MFA.factor.Perm
@@ -141,29 +273,88 @@ CSpermute <- function(refMat,querMat,CSresult,B=500,mfa.factor=NULL,method.adjus
 			
 			CS.Perm <- vector("list",B)
 			
-			for(i in 1:B){
-				
-				## Permuting Query Matrix
-				querMat.Perm <- matrix(sample(as.vector(querMat),(dim(querMat)[1]*dim(querMat)[2]),replace=FALSE),nrow=dim(querMat)[1],ncol=dim(querMat)[2])
-				##########################
-				
-				rownames(querMat.Perm) <- rownames(refMat)
-				colnames(querMat.Perm) <- colnames(querMat)
-				
-				out_zhang <- analyse_zhang(refMat,querMat.Perm,
-						nref=CSresult@call$analysis.pm$nref,nquery=CSresult@call$analysis.pm$nquery,ord.query=CSresult@call$analysis.pm$ord.query,ntop.scores=CSresult@call$analysis.pm$ntop.scores,
-						basefilename="analyseZhang",which=c(),plot.type="device",print.top=FALSE)
-				
-				CS.Perm[[i]] <- out_zhang$All[,1]
-				names(CS.Perm[[i]]) <- rownames(out_zhang$All)
-				
-				if(verbose){
-					cat(".")
-					if(i%%100==0){cat(" ",i,"\n")}
-				}
-			}
+			if(MultiCores){
+			  message("Parallelisation: ",MultiCores.number," cores used")
+			  
+			  worker_divide <- splitIndices(B,MultiCores.number)
+			  
+			  
+			  
+			  current_environment <- environment()
+			  
+
+			  gentype <- "RNGstream"
+			  
+			  cl <- do.call("makeClusterFT", c(list(min(MultiCores.number, length(worker_divide)), 
+			                                        "SOCK", ft_verbose = FALSE), NULL))
+			  
+			  clusterCall(cl, eval, substitute(library(CSFA)), env = .GlobalEnv)
+
+			  clusterExport(cl, c("worker_divide","querMat","refMat","CSresult","ref.index"), envir=current_environment)
+			  clusterSetupRNG.FT(cl, type = gentype, streamper = "replicate", 
+			                     seed = MultiCores.seed, n = length(worker_divide), prngkind = "default")
+			  
+			  
+			  res <- clusterApplyFT(cl, x=1:length(worker_divide),
+			                        fun=function(x){
+			                          
+			                          CS.Perm <- vector("list",length(worker_divide[[x]]))
+
+			                          for(i in 1:length(worker_divide[[x]])){
+			                            ## Permuting Query Matrix
+			                            querMat.Perm <- matrix(sample(as.vector(querMat),(dim(querMat)[1]*dim(querMat)[2]),replace=FALSE),nrow=dim(querMat)[1],ncol=dim(querMat)[2])
+			                            ##########################
+			                            
+			                            rownames(querMat.Perm) <- rownames(refMat)
+			                            colnames(querMat.Perm) <- colnames(querMat)
+			                            
+			                            out_zhang <- CSFA:::analyse_zhang(refMat,querMat.Perm,
+			                                                              nref=CSresult@call$analysis.pm$nref,nquery=CSresult@call$analysis.pm$nquery,ord.query=CSresult@call$analysis.pm$ord.query,ntop.scores=CSresult@call$analysis.pm$ntop.scores,
+			                                                              basefilename="analyseZhang",which=c(),plot.type="device",print.top=FALSE)
+			                            
+			                            CS.Perm[[i]] <- out_zhang$All[,1]
+			                            names(CS.Perm[[i]]) <- rownames(out_zhang$All)
+			                            
+			                          }
+			                          return(CS.Perm)
+			                          
+			                          
+			                        }
+			                        ,gentype = gentype, seed = MultiCores.seed, prngkind = "default",mngtfiles=c("","",""))[[1]]
+			  
+			  stopClusterFT(cl)
+			  
+			  CS.Perm <- do.call(c,res)
+			  
+			}else{
+			  
+			  for(i in 1:B){
+			    
+			    ## Permuting Query Matrix
+			    querMat.Perm <- matrix(sample(as.vector(querMat),(dim(querMat)[1]*dim(querMat)[2]),replace=FALSE),nrow=dim(querMat)[1],ncol=dim(querMat)[2])
+			    ##########################
+			    
+			    rownames(querMat.Perm) <- rownames(refMat)
+			    colnames(querMat.Perm) <- colnames(querMat)
+			    
+			    out_zhang <- analyse_zhang(refMat,querMat.Perm,
+			                               nref=CSresult@call$analysis.pm$nref,nquery=CSresult@call$analysis.pm$nquery,ord.query=CSresult@call$analysis.pm$ord.query,ntop.scores=CSresult@call$analysis.pm$ntop.scores,
+			                               basefilename="analyseZhang",which=c(),plot.type="device",print.top=FALSE)
+			    
+			    CS.Perm[[i]] <- out_zhang$All[,1]
+			    names(CS.Perm[[i]]) <- rownames(out_zhang$All)
+			    
+			    if(verbose){
+			      cat(".")
+			      if(i%%100==0){cat(" ",i,"\n")}
+			    }
+			  }
+			  
+			  if(verbose){cat("\nDONE\n")}
+			  
+			}	
 			
-			if(verbose){cat("\nDONE\n")}
+
 			
 			permutation.object$ZGscore <- CS.Perm
 			CS.Perm.rank <- NULL

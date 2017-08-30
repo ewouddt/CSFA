@@ -15,7 +15,9 @@ Imports:
     pls,
     FactoMineR,
     elasticnet,
-    randomcoloR
+    randomcoloR,
+    parallel,
+    snowFT
 VignetteBuilder: knitr
 Suggests:
     knitr,

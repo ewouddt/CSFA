@@ -22,7 +22,8 @@ NULL
 #' @importFrom pls stdize
 #' @importFrom elasticnet spca arrayspc
 #' @importFrom randomcoloR distinctColorPalette
-
+#' @importFrom parallel detectCores splitIndices clusterCall clusterExport
+#' @importFrom snowFT clusterApplyFT makeClusterFT stopClusterFT clusterSetupRNG.FT
 
 ## CLASSES ##
 setClass("CSfabia",slots=c(call="call"))
