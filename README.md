@@ -1,8 +1,8 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-Installing the CSFA Package
----------------------------
+Installing the CSFA Package - Development Version
+-------------------------------------------------
 
 
 ``` r

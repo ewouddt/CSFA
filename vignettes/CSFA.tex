@@ -25,6 +25,7 @@
 \newcommand{\hlkwb}[1]{\textcolor[rgb]{0.69,0.353,0.396}{#1}}%
 \newcommand{\hlkwc}[1]{\textcolor[rgb]{0.333,0.667,0.333}{#1}}%
 \newcommand{\hlkwd}[1]{\textcolor[rgb]{0.737,0.353,0.396}{\textbf{#1}}}%
+\let\hlipl\hlkwb
 
 \usepackage{framed}
 \makeatletter
@@ -78,7 +79,7 @@
 
 \usepackage{subcaption}
 
-\title{CSFA 0.9 - Vignette}
+\title{CSFA 0.91 - Vignette}
 \date{}
 \author{Ewoud De Troyer}
 \IfFileExists{upquote.sty}{\usepackage{upquote}}{}
@@ -102,11 +103,9 @@ succes, it was unable to measure statistical significance. This is where the
 paper from \citet{Zhang2008} continued for example. Their paper offers a more
 principled statistical procedure to test connections between the compounds which allows the valuation of statistical significance.
 \\ \\
-The CSFA package accompanies the paper/report by Shkedy, Z. and De Troyer. E. (ADD REAL REF),
-which proposes the usage of {\it factor analysis} methods (Principal Component
-Analysis (=PCA), (Sparse) Multiple Factor Analysis (MFA) \citep{Abdi2013} and
-FABIA (Factor Analysis for Bicluster Acquisition) \citep{Hochreiter2010}) to
-derive the connectivity between compounds.
+The CSFA package accompanies the submitted paper "Application of Factor Analysis to Connectivity Scores" by Shkedy, Z. and De Troyer. E., which proposes the usage of {\it factor analysis} methods (Principal Component
+Analysis (=PCA), (Sparse) Multiple Factor Analysis (MFA) \citep{Abdi2013} 
+(or FABIA (Factor Analysis for Bicluster Acquisition) \citep{Hochreiter2010})) to derive the connectivity between compounds.
 Using these methods, not only do you obtain information about the connectivity between the compounds, you also get
 information about which genes are responsible for guiding this connectivity.\\
 Further instead of computing a pairwise correlation/connection score between the
@@ -157,8 +156,7 @@ at all.
 
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{figure}[H]
-
-\includegraphics[width=\maxwidth]{figure/data_heatmap-1} \caption[Heatmap of Reference and Query Matrix]{Heatmap of Reference and Query Matrix\label{fig:data_heatmap}}
+\includegraphics[width=\maxwidth]{figure/data_heatmap-1} \caption[Heatmap of Reference and Query Matrix]{Heatmap of Reference and Query Matrix}\label{fig:data_heatmap}
 \end{figure}
 
 
@@ -187,7 +185,7 @@ matrix.
 be computed with the package. The last two methods will also provide scores for the
 genes involved in the structure.\\
 More details about the connectivity and gene scores as well as the decision
-making of which component to look at can be be found in an upcoming paper.
+making of which component to look at can be be found in the submitted paper.
 %Shkedy, Z. and De Troyer, E. (ADD REF).
 
 \subsection{Zhang and Gant}
@@ -234,7 +232,7 @@ Further we also already decided which columns of the query matrix we would like
 to draw in the compound profiles graph with \texttt{column.interest}. Indices 1, 2 and 3 coincide
 with 3 weakly positive connected compounds.\\ \\
 However, if you are not sure beforehand what you want to investigate, you can
-also decide upon these parameters on the fly interactively. To do this simply
+also decide upon these parameters interactively on the fly.  To do this simply
 set these parameters to \texttt{NULL} or leave them out.\\
 To determine \texttt{component.plot}, you will be able to to click on the
 factors you want to observe in the {\it "Loadings for Ref..."} plot. This graph will be
@@ -375,23 +373,23 @@ results. More information is also entered in the \verb|permutation.object| slot.
 \\ \\
 First, let us apply the permutation on the MFA and ZG result without plotting
 any plots just yet by putting \texttt{which} to \texttt{c()}. The number of
-permutation was chosen to only be 100 in this case. Further, the p-values are
+permutation was chosen to only be 250 in this case. Further, the p-values are
 also adjusted for multiplicity by setting a value for \texttt{method.adjust}
 different than \texttt{"none"}.\\
-(Note: or MFA, \texttt{CSpermute} should {\it only} be used to compute the
+It is also possible to parallelise (\texttt{snowFT}) the permutation process  by setting \texttt{MultiCores} to \texttt{TRUE}. The parameters \texttt{MultiCores.number} and \texttt{MultiCores.seed} respectively control the number of cores and seed you would like to use. The former defaults to the maximum total of available physical cores.
+\\ \\
+{\bf Note:} or MFA, \texttt{CSpermute} should {\it only} be used to compute the
 p-values of the Component in which the structure (loadings) of the references is the strongest.
-This because in each permutation the factor with the highest average reference loadings will be chosen. 
-The ability to compute p-values of other factors (in which the reference set also increased loadings) will be added in a later release. 
-)
+
 
 
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
 \begin{alltt}
         \hlstd{out_MFA} \hlkwb{<-} \hlkwd{CSpermute}\hlstd{(refMat,querMat,}\hlkwc{CSresult}\hlstd{=out_MFA,}\hlkwc{B}\hlstd{=}\hlnum{250}\hlstd{,}\hlkwc{method.adjust}\hlstd{=}\hlstr{"BH"}\hlstd{,}
-                        \hlkwc{which}\hlstd{=}\hlkwd{c}\hlstd{(),}\hlkwc{verbose}\hlstd{=}\hlnum{FALSE}\hlstd{)}
+                        \hlkwc{which}\hlstd{=}\hlkwd{c}\hlstd{(),}\hlkwc{verbose}\hlstd{=}\hlnum{FALSE}\hlstd{,}\hlkwc{MultiCores}\hlstd{=}\hlnum{TRUE}\hlstd{)}
         \hlstd{out_ZG} \hlkwb{<-} \hlkwd{CSpermute}\hlstd{(refMat,querMat,}\hlkwc{CSresult}\hlstd{=out_ZG,}\hlkwc{B}\hlstd{=}\hlnum{250}\hlstd{,}\hlkwc{method.adjust}\hlstd{=}\hlstr{"BH"}\hlstd{,}
-                        \hlkwc{which}\hlstd{=}\hlkwd{c}\hlstd{(),}\hlkwc{verbose}\hlstd{=}\hlnum{FALSE}\hlstd{)}
+                        \hlkwc{which}\hlstd{=}\hlkwd{c}\hlstd{(),}\hlkwc{verbose}\hlstd{=}\hlnum{FALSE}\hlstd{,}\hlkwc{MultiCores}\hlstd{=}\hlnum{TRUE}\hlstd{)}
 \end{alltt}
 \end{kframe}
 \end{knitrout}
@@ -495,7 +493,7 @@ thresholds for both of the results. In this example we keep them the same for
 both the MFA and FABIA results namely 2 for the upper threshold and -2 for the
 lower one. This time since both results also contain gene scores, 2 graphs will
 be created. Further because we set thresholds for the genes, the gene score
-comparison plot will be coloring according to these thresholds.
+comparison plot will be colored according to these thresholds.
 
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
