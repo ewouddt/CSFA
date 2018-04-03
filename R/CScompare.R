@@ -230,14 +230,14 @@ get.CS.GS <- function(CSresult,component.plot,refdim){
 		loadings <- CSresult@extra$object$quanti.var$cor[,component.plot]		
 		scores <- CSresult@extra$object$ind$coord[,component.plot]	
 		
-		rankscores <- CSrank2(CSresult@extra$object$quanti.var$coord,1:refdim,plot=FALSE,component.plot=component.plot)[,1]
+		rankscores <- CSrank2(CSresult@extra$object$quanti.var$cor,1:refdim,plot=FALSE,component.plot=component.plot)[,1]
 		
 		return(list(CS=loadings,GS=scores,name="MFA",axename=paste0("MFA Factor ",component.plot),CSRank=rankscores))
 	}
 	else if(type =="CSpca"){
 		loadings <- CSresult@extra$object$var$cor[,component.plot]
 		scores <- CSresult@extra$object$ind$coord[,component.plot]
-		rankscores <- CSrank2(CSresult@extra$object$var$coord,1:refdim,plot=FALSE,component.plot=component.plot)[,1]
+		rankscores <- CSrank2(CSresult@extra$object$var$cor,1:refdim,plot=FALSE,component.plot=component.plot)[,1]
 		
 		
 		return(list(CS=loadings,GS=scores,name="PCA",axename=paste0("PCA PC ",component.plot),CSRank=rankscores))

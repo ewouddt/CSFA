@@ -441,7 +441,7 @@ CSpermute <- function(refMat,querMat,CSresult,B=500,mfa.factor=NULL,method.adjus
 		if(CS.extrafactor){
 			warning("Due to choice of mfa.factor, another factor is added to the CS and GS slot.")
 			
-			loadings <- CSresult@extra$object$quanti.var$coord[,mfa.factor]
+			loadings <- CSresult@extra$object$quanti.var$cor[,mfa.factor]
 			scores <- CSresult@extra$object$ind$coord[,mfa.factor]	
 			CSRank <- pval.dataframe.rank$observed
 			
@@ -651,13 +651,13 @@ pvalue_compute <- function(obs.result,list.h0.result,list.h0.result.rank,ref.ind
 		
 		
 		# Prep for CS pvalues
-		obs.scores <- obs.result@extra$object$quanti.var$coord[-ref.index,mfa.factor]
+		obs.scores <- obs.result@extra$object$quanti.var$cor[-ref.index,mfa.factor]
 		pval.dataframe <- data.frame(Cmpd=names(obs.scores))
 		pval.dataframe$Cmpd <- as.character(pval.dataframe$Cmpd)
 		temp.pval <- c(1:length(obs.scores))
 		
 		# Prep for CSrank pvalues
-		obs.scores.rank <- CSrank2(obs.result@extra$object$quanti.var$coord,ref.index=ref.index,plot=FALSE,component.plot=mfa.factor)$CSRankScores
+		obs.scores.rank <- CSrank2(obs.result@extra$object$quanti.var$cor,ref.index=ref.index,plot=FALSE,component.plot=mfa.factor)$CSRankScores
 		pval.dataframe.rank<- data.frame(Cmpd=names(obs.scores))
 		temp.pval.rank <- c(1:length(obs.scores))
 		
