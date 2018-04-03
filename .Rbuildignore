@@ -3,3 +3,6 @@
 cran-comments.md
 vignettes/figure/
 vignettes/cache/
+vignettes/CSFA-concordance.tex
+vignettes/CSFA.log
+vignettes/CSFA.syntex.gz

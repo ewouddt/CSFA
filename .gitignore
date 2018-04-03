@@ -5,6 +5,9 @@
 pkg.Rproj
 vignettes/cache/
 vignettes/figure/
+vignettes/CSFA-concordance.tex
+vignettes/CSFA.log
+vignettes/CSFA.syntex.gz
 *.bbl
 *.blg
 cran-comments.md

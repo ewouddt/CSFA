@@ -204,12 +204,11 @@ using either "device" or "pdf".
 \end{alltt}
 \end{kframe}\begin{figure}[H]
 
-
 {\centering \includegraphics[width=11cm]{figure/ZG-1} 
 
 }
 
-\caption[CSanalysis Graphs for CSzhang]{CSanalysis Graphs for CSzhang\label{fig:ZG}}
+\caption[CSanalysis Graphs for CSzhang]{CSanalysis Graphs for CSzhang}\label{fig:ZG}
 \end{figure}
 
 
@@ -253,13 +252,12 @@ to \texttt{CSanalysis} beforehand). You can left-click on multiple compounds you
 \end{alltt}
 \end{kframe}\begin{figure}[H]
 
-
 \includegraphics[width=9cm,height=10cm]{figure/MFA-1} 
 \includegraphics[width=9cm,height=10cm]{figure/MFA-2} 
 \includegraphics[width=9cm,height=10cm]{figure/MFA-3} 
 \includegraphics[width=9cm,height=10cm]{figure/MFA-4} \hfill{}
 
-\caption[CSanalysis Graphs for CSfma]{CSanalysis Graphs for CSfma\label{fig:MFA}}
+\caption[CSanalysis Graphs for CSfma]{CSanalysis Graphs for CSfma}\label{fig:MFA}
 \end{figure}
 
 
@@ -283,10 +281,9 @@ Connectivity Score Ranks are shown.
 \end{alltt}
 \end{kframe}\begin{figure}[H]
 
-
 \includegraphics[width=9cm,height=10cm]{figure/MFA2-1} \hfill{}
 
-\caption[CSanalysis Graphs for CSfma]{CSanalysis Graphs for CSfma\label{fig:MFA2}}
+\caption[CSanalysis Graphs for CSfma]{CSanalysis Graphs for CSfma}\label{fig:MFA2}
 \end{figure}
 
 
@@ -306,10 +303,9 @@ The others are the ordered in decreasing CScore.
 \end{alltt}
 \end{kframe}\begin{figure}[H]
 
-
 \includegraphics[width=9cm,height=10cm]{figure/MFA3-1} \hfill{}
 
-\caption[CSanalysis Graphs for CSfma]{CSanalysis Graphs for CSfma\label{fig:MFA3}}
+\caption[CSanalysis Graphs for CSfma]{CSanalysis Graphs for CSfma}\label{fig:MFA3}
 \end{figure}
 
 
@@ -349,12 +345,11 @@ have a reproducible result.
 \end{alltt}
 \end{kframe}\begin{figure}[H]
 
-
 \includegraphics[width=9cm,height=10cm]{figure/FABIA-1} 
 \includegraphics[width=9cm,height=10cm]{figure/FABIA-2} 
 \includegraphics[width=9cm,height=10cm]{figure/FABIA-3} \hfill{}
 
-\caption[CSanalysis Graphs for CSfabia]{CSanalysis Graphs for CSfabia\label{fig:FABIA}}
+\caption[CSanalysis Graphs for CSfabia]{CSanalysis Graphs for CSfabia}\label{fig:FABIA}
 \end{figure}
 
 
@@ -447,17 +442,9 @@ In the code below, we plot both type of graphs for the MFA result with a pre-det
 \hlstd{out_MFA} \hlkwb{<-} \hlkwd{CSpermute}\hlstd{(refMat,querMat,out_MFA,}\hlkwc{B}\hlstd{=}\hlnum{250}\hlstd{,}\hlkwc{method.adjust}\hlstd{=}\hlstr{"BH"}\hlstd{,}
                 \hlkwc{which}\hlstd{=}\hlkwd{c}\hlstd{(}\hlnum{1}\hlstd{,}\hlnum{2}\hlstd{),}\hlkwc{cmpd.hist}\hlstd{=}\hlkwd{c}\hlstd{(}\hlnum{23}\hlstd{,}\hlnum{99}\hlstd{),}\hlkwc{plot.type}\hlstd{=}\hlstr{"sweave"}\hlstd{)}
 \end{alltt}
-\end{kframe}\begin{figure}[H]
 
 
-\includegraphics[width=9cm,height=10cm]{figure/CSpermuteplots-1} 
-\includegraphics[width=9cm,height=10cm]{figure/CSpermuteplots-2} 
-\includegraphics[width=9cm,height=10cm]{figure/CSpermuteplots-3} \hfill{}
-
-\caption[CSpermute graphs for MFA result]{CSpermute graphs for MFA result\label{fig:CSpermuteplots}}
-\end{figure}
-
-
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in if ((ncol(CSresult@permutation.object[[1]]) == B)) \{: argument is of length zero}}\end{kframe}
 \end{knitrout}
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
@@ -465,17 +452,9 @@ In the code below, we plot both type of graphs for the MFA result with a pre-det
 \hlstd{out_MFA} \hlkwb{<-} \hlkwd{CSpermute}\hlstd{(refMat,querMat,out_MFA,}\hlkwc{B}\hlstd{=}\hlnum{250}\hlstd{,}\hlkwc{method.adjust}\hlstd{=}\hlstr{"BH"}\hlstd{,}
                 \hlkwc{which}\hlstd{=}\hlkwd{c}\hlstd{(}\hlnum{3}\hlstd{,}\hlnum{4}\hlstd{),}\hlkwc{cmpd.hist}\hlstd{=}\hlkwd{c}\hlstd{(}\hlnum{23}\hlstd{,}\hlnum{99}\hlstd{),}\hlkwc{plot.type}\hlstd{=}\hlstr{"sweave"}\hlstd{)}
 \end{alltt}
-\end{kframe}\begin{figure}[H]
 
 
-\includegraphics[width=9cm,height=10cm]{figure/CSpermuteplots2-1} 
-\includegraphics[width=9cm,height=10cm]{figure/CSpermuteplots2-2} 
-\includegraphics[width=9cm,height=10cm]{figure/CSpermuteplots2-3} \hfill{}
-
-\caption[CSpermute graphs for MFA result]{CSpermute graphs for MFA result\label{fig:CSpermuteplots2}}
-\end{figure}
-
-
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in if ((ncol(CSresult@permutation.object[[1]]) == B)) \{: argument is of length zero}}\end{kframe}
 \end{knitrout}
 
 \section{Example Compare CS Results}
@@ -513,13 +492,13 @@ comparison plot will be colored according to these thresholds.
 ## 
 ## $pvalues
 ##                      CLoadings CRankScores
-## Correlation_Pearson  0.9535213   0.9089663
-## Correlation_Spearman 0.8779146   0.7118921
+## Correlation_Pearson  0.9547908   0.9102831
+## Correlation_Spearman 0.8754101   0.7146388
 ## 
 ## $adj.pvalues
 ##                      CLoadings CRankScores
-## Correlation_Pearson  0.9482794   0.9394654
-## Correlation_Spearman 0.5749857   0.5329719
+## Correlation_Pearson  0.9497074   0.9423659
+## Correlation_Spearman 0.5733172   0.5346304
 \end{verbatim}
 \begin{alltt}
         \hlstd{comp_MFA_FABIA[[}\hlnum{1}\hlstd{]]}
@@ -538,14 +517,13 @@ comparison plot will be colored according to these thresholds.
 \end{verbatim}
 \end{kframe}\begin{figure}[H]
 
-
 \includegraphics[width=9cm,height=10cm]{figure/CScompare-1} 
 \includegraphics[width=9cm,height=10cm]{figure/CScompare-2} 
 \includegraphics[width=9cm,height=10cm]{figure/CScompare-3} 
 \includegraphics[width=9cm,height=10cm]{figure/CScompare-4} 
 \includegraphics[width=9cm,height=10cm]{figure/CScompare-5} \hfill{}
 
-\caption[Compare CSresults]{Compare CSresults\label{fig:CScompare}}
+\caption[Compare CSresults]{Compare CSresults}\label{fig:CScompare}
 \end{figure}
 
 
@@ -566,8 +544,8 @@ significant p-values. The significancy threshold can be changed with the
 \begin{verbatim}
 ## $pvalues
 ##                 Result1.Sign Result1.NotSign
-## Result2.Sign              36               0
-## Result2.NotSign            7             292
+## Result2.Sign              35               0
+## Result2.NotSign           10             290
 ## 
 ## $adj.pvalues
 ##                 Result1.Sign Result1.NotSign

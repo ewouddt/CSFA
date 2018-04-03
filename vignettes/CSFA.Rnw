@@ -150,7 +150,7 @@ default.
 sweave document, we use the "sweave" \texttt{plot.type}. Normally you would be
 using either "device" or "pdf".
 
-<<ZG,echo=TRUE,eval=TRUE,cache=TRUE,fig.keep="high",fig.pos='H',out.width="11cm",fig.align='center',fig.cap="CSanalysis Graphs for CSzhang">>= 
+<<ZG,echo=TRUE,eval=TRUE,cache=FALSE,fig.keep="high",fig.pos='H',out.width="11cm",fig.align='center',fig.cap="CSanalysis Graphs for CSzhang">>= 
 	out_ZG <- CSanalysis(refMat,querMat,"CSzhang",plot.type="sweave")
 @
 
@@ -183,7 +183,7 @@ Next, in order to drawn compound profiles, set \texttt{profile.type} to
 be chosen in the {\it "Compound Loadings"} plot (instead of simply providing it
 to \texttt{CSanalysis} beforehand). You can left-click on multiple compounds you wish to draw in the compound profiles graph (and right-click to stop the selection procedure). 
 
-<<MFA,echo=TRUE,eval=TRUE,cache=TRUE,fig.keep="high",fig.show='hold',fig.pos='H',out.width='9cm',out.height='10cm',fig.align='left',fig.cap="CSanalysis Graphs for CSfma">>= 
+<<MFA,echo=TRUE,eval=TRUE,cache=FALSE,fig.keep="high",fig.show='hold',fig.pos='H',out.width='9cm',out.height='10cm',fig.align='left',fig.cap="CSanalysis Graphs for CSfma">>= 
 out_MFA <- CSanalysis(refMat,querMat,"CSmfa",plot.type="sweave",which=c(2,3,4,7),
 		profile.type="cmpd",gene.thresP=2.3,gene.thresN=-2.3,component.plot=1,
 		column.interest=c(21,22,23))
@@ -199,7 +199,7 @@ additional plots without re-computing the factor analysis. This is done through 
 \texttt{result.available} parameter. Here in Figure \ref{fig:MFA2}, the
 Connectivity Score Ranks are shown.
 
-<<MFA2,echo=TRUE,eval=TRUE,cache=TRUE,fig.keep="high",fig.show='hold',fig.pos='H',out.width='9cm',out.height='10cm',fig.align='left',fig.cap="CSanalysis Graphs for CSfma">>= 
+<<MFA2,echo=TRUE,eval=TRUE,cache=FALSE,fig.keep="high",fig.show='hold',fig.pos='H',out.width='9cm',out.height='10cm',fig.align='left',fig.cap="CSanalysis Graphs for CSfma">>= 
 	out_MFA <- CSanalysis(refMat,querMat,"CSmfa",plot.type="sweave",which=c(5),
 			component.plot=1,column.interest=c(1,2,3),result.available=out_MFA)
 @
@@ -209,7 +209,7 @@ select which genes should be used with \texttt{row.interest}. If not provided
 this is also done interactively in the gene score plot. In this graph, the
 x-axis contains all compounds, starting with the reference and selected ones.
 The others are the ordered in decreasing CScore.
-<<MFA3,echo=TRUE,eval=TRUE,cache=TRUE,fig.keep="high",fig.show='hold',fig.pos='H',out.width='9cm',out.height='10cm',fig.align='left',fig.cap="CSanalysis Graphs for CSfma">>= 
+<<MFA3,echo=TRUE,eval=TRUE,cache=FALSE,fig.keep="high",fig.show='hold',fig.pos='H',out.width='9cm',out.height='10cm',fig.align='left',fig.cap="CSanalysis Graphs for CSfma">>= 
 	out_MFA <- CSanalysis(refMat,querMat,"CSmfa",plot.type="sweave",which=c(7),
 			profile.type="gene",component.plot=1,column.interest=c(1,2,3),
 			row.interest=c(846,871,4,6),result.available=out_MFA)
@@ -233,7 +233,7 @@ Note that we have also set a seed just before the FABIA analysis in order to
 have a reproducible result.
 
 %can use multiple BC for fabia
-<<FABIA,echo=TRUE,eval=TRUE,cache=TRUE,message=FALSE,results='hide',fig.keep="high",fig.show='hold',fig.pos='H',out.width='9cm',out.height='10cm',fig.align='left',fig.cap="CSanalysis Graphs for CSfabia">>= 
+<<FABIA,echo=TRUE,eval=TRUE,cache=FALSE,message=FALSE,results='hide',fig.keep="high",fig.show='hold',fig.pos='H',out.width='9cm',out.height='10cm',fig.align='left',fig.cap="CSanalysis Graphs for CSfabia">>= 
 	color.columns <- rep("black",dim(dataSIM)[2])
 	color.columns[1:6] <- "blue"
 	color.columns[c(29,30,31)] <- "red"
@@ -277,20 +277,22 @@ p-values of the Component in which the structure (loadings) of the references is
 
 @
 <<cheat1,echo=FALSE>>=
-#save(list="out_MFA",file="perm_data/out_MFA.RData")
-#save(list="out_ZG",file="perm_data/out_ZG.RData")
-# save(list="out_MFA",file="out_MFA.RData")
-# save(list="out_ZG",file="out_ZG.RData")
+	
+# out_MFA@extra <- list()
+# save(list="out_MFA",file="vignettes/perm_data/out_MFA.RData")
+#save(list="out_ZG",file="vignettes/perm_data/out_ZG.RData")
 
-#load("figure/out_MFA.RData")
-#load("figure/out_ZG.RData")
+	
+extra_temp <- out_MFA@extra	
+	
 load("perm_data/out_MFA.RData")
 load("perm_data/out_ZG.RData")
 
+out_MFA@extra <- extra_temp
 
 @
 
-<<CSpermute_compute2,echo=TRUE,cache=TRUE>>=
+<<CSpermute_compute2,echo=TRUE,cache=FALSE>>=
 head(out_MFA@CS[[1]]$CS.query)
 head(out_ZG@CS$CS.query)
 @
@@ -305,11 +307,11 @@ The parameter \texttt{cmpd.hist} decides which compounds should be used for the 
 If this parameter is not given (\texttt{NULL}), you can interactively choose them on the volcano plot by left-clicking on them (and right-click to stop).
 In the code below, we plot both type of graphs for the MFA result with a pre-determined \texttt{cmpd.hist}.
 
-<<CSpermuteplots,echo=TRUE,eval=TRUE,cache=TRUE,message=FALSE,results='hide',fig.keep="high",fig.show='hold',fig.pos='H',out.width='9cm',out.height='10cm',fig.align='left',fig.cap="CSpermute graphs for MFA result">>=
+<<CSpermuteplots,echo=TRUE,eval=TRUE,cache=FALSE,message=FALSE,results='hide',fig.keep="high",fig.show='hold',fig.pos='H',out.width='9cm',out.height='10cm',fig.align='left',fig.cap="CSpermute graphs for MFA result">>=
 out_MFA <- CSpermute(refMat,querMat,out_MFA,B=250,method.adjust="BH",
 		which=c(1,2),cmpd.hist=c(23,99),plot.type="sweave")
 @
-<<CSpermuteplots2,echo=TRUE,eval=TRUE,cache=TRUE,message=FALSE,results='hide',fig.keep="high",fig.show='hold',fig.pos='H',out.width='9cm',out.height='10cm',fig.align='left',fig.cap="CSpermute graphs for MFA result">>=
+<<CSpermuteplots2,echo=TRUE,eval=TRUE,cache=FALSE,message=FALSE,results='hide',fig.keep="high",fig.show='hold',fig.pos='H',out.width='9cm',out.height='10cm',fig.align='left',fig.cap="CSpermute graphs for MFA result">>=
 out_MFA <- CSpermute(refMat,querMat,out_MFA,B=250,method.adjust="BH",
 		which=c(3,4),cmpd.hist=c(23,99),plot.type="sweave")
 @
@@ -331,7 +333,7 @@ lower one. This time since both results also contain gene scores, 2 graphs will
 be created. Further because we set thresholds for the genes, the gene score
 comparison plot will be colored according to these thresholds.
 
-<<CScompare,echo=TRUE,eval=TRUE,cache=TRUE,message=FALSE,fig.keep="high",fig.show='hold',fig.pos='H',out.width='9cm',out.height='10cm',fig.align='left',fig.cap="Compare CSresults">>=
+<<CScompare,echo=TRUE,eval=TRUE,cache=FALSE,message=FALSE,fig.keep="high",fig.show='hold',fig.pos='H',out.width='9cm',out.height='10cm',fig.align='left',fig.cap="Compare CSresults">>=
 	comp_ZG_MFA <- CScompare(out_ZG,out_MFA,component2.plot=1,plot.type="sweave")
 	
 	comp_MFA_FABIA <- CScompare(out_MFA,out_FABIA,component1.plot=1,component2.plot=1,
