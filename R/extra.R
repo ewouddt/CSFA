@@ -545,3 +545,23 @@ CSlabelscompare <- function(CSresult,labels,type="factors",basefilename="CSanaly
 }
 
 
+
+
+trim_object <- function(CSresult){
+  type <- CSresult@type
+  
+  if(type=="CSmfa"){
+    trimmed <- CSresult@extra$object[c("ind","quanti.var")]
+    trimmed$ind <- trimmed$ind["coord"]
+    trimmed$quanti.var <- trimmed$quanti.var["cor"]
+    CSresult@extra$object <- trimmed
+  }else if(type=="CSpca"){
+    trimmed <- CSresult@extra$object[c("var","ind")]
+    trimmed$var <- trimmed$var["cor"]
+    trimmed$ind <- trimmed$ind["coord"]
+    CSresult@extra$object <- trimmed
+  }
+  
+  return(CSresult)
+}
+

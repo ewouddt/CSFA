@@ -253,7 +253,8 @@ setMethod('CSanalysis',c('matrix','matrix','CSfabia'),
 # MFA
 #' "CSmfa"
 #' 
-#' Doing interactive CS analysis with MFA (Multiple Factor Analysis). Should use multiple references for this analysis.
+#' @description Doing interactive CS analysis with MFA (Multiple Factor Analysis). Should use multiple references for this analysis.
+#' Uses the \code{\link[FactoMineR]{MFA}} function.
 #' 
 #' @export 
 #' @param refMat Reference matrix (Rows = genes and columns = compounds)
@@ -364,6 +365,8 @@ setMethod("CSanalysis",c("matrix","matrix","CSmfa"),function(
 					grouploadings.labels=grouploadings.labels,grouploadings.cutoff=grouploadings.cutoff,
 					gene.highlight=gene.highlight,profile.type=profile.type,result.available.update=result.available.update)
 			
+			out <- trim_object(out)
+			
 		return(out)
 							
 		})
@@ -373,7 +376,8 @@ setMethod("CSanalysis",c("matrix","matrix","CSmfa"),function(
 # PCA
 #' "CSpca"
 #' 
-#' Doing interactive CS analysis with PCA (Principal Component Analysis). This analysis is meant for 1 reference signature.
+#' @description Doing interactive CS analysis with PCA (Principal Component Analysis). This analysis is meant for 1 reference signature.
+#' Uses the \code{\link[FactoMineR]{PCA}} function.
 #' 
 #' @export 
 #' @param refMat Reference matrix (Rows = genes and columns = compounds)
@@ -486,6 +490,8 @@ setMethod("CSanalysis",c("matrix","matrix","CSpca"),function(
 					grouploadings.labels=grouploadings.labels,grouploadings.cutoff=grouploadings.cutoff,
 					result.available.update=result.available.update)
 			
+			out <- trim_object(out)
+			
 			return(out)
 			
 					
@@ -495,7 +501,9 @@ setMethod("CSanalysis",c("matrix","matrix","CSpca"),function(
 # sMFA
 #' "CSsmfa"
 #' 
+#' @description
 #' Doing interactive CS analysis with sMFA (Sparse Multiple Factor Analysis). Should use multiple references for this analysis.
+#' Either \code{\link[elasticnet]{spca}} or \code{\link[elasticnet]{arrayspc}} is used.
 #' 
 #' @export 
 #' @param refMat Reference matrix (Rows = genes and columns = compounds)

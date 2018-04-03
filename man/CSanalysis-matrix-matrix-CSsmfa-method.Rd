@@ -111,4 +111,5 @@ An object of the S4 Class \code{\link{CSresult-class}}.
 }
 \description{
 Doing interactive CS analysis with sMFA (Sparse Multiple Factor Analysis). Should use multiple references for this analysis.
+Either \code{\link[elasticnet]{spca}} or \code{\link[elasticnet]{arrayspc}} is used.
 }

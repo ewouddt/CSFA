@@ -102,4 +102,5 @@ An object of the S4 Class \code{\link{CSresult-class}}.
 }
 \description{
 Doing interactive CS analysis with MFA (Multiple Factor Analysis). Should use multiple references for this analysis.
+Uses the \code{\link[FactoMineR]{MFA}} function.
 }

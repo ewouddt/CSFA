@@ -104,4 +104,5 @@ An object of the S4 Class \code{\link{CSresult-class}}.
 }
 \description{
 Doing interactive CS analysis with PCA (Principal Component Analysis). This analysis is meant for 1 reference signature.
+Uses the \code{\link[FactoMineR]{PCA}} function.
 }
