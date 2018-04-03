@@ -6,3 +6,4 @@ pkg.Rproj
 vignettes/cache/
 *.bbl
 *.blg
+cran-comments.md

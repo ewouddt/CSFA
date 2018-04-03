@@ -102,4 +102,3 @@ This can then later be used for the \code{CSlabelscompare} function to compare t
 \description{
 Doing interactive CS analysis with PCA (Principal Component Analysis). This analysis is meant for 1 reference signature.
 }
-

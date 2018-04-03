@@ -40,9 +40,9 @@
 #' @param plot.type How should the plots be outputted? \code{"pdf"} to save them in pdf files, \code{device} to draw them in a graphics device (default), \code{sweave} to use them in a sweave or knitr file.
 #' @param color.columns Option to color the compounds on the volcano plot (\code{which=1}). Should be a vector of colors with the length of number of queries.
 #' @param basefilename Basename of the graphs if saved in pdf files
-#' @param MultiCores Logical value parallelisation should be used for permutation. \code{FALSE} by default. (This option uses \code{\link[snowFT]{clusterApplyFT}} in order to provide load balancing and reproducible results with \code{\link{MultiCores.seed}})
+#' @param MultiCores Logical value parallelisation should be used for permutation. \code{FALSE} by default. (This option uses \code{\link[snowFT]{clusterApplyFT}} in order to provide load balancing and reproducible results with \code{MultiCores.seed})
 #' @param MultiCores.number Number of cores to be used for \code{MultiCores=TRUE}. By default total number of physical cores.
-#' @param MultiCores.seed Seed to be used for \code{MultiCores=TRUE} using (\code{\link[snowFT]{see clusterSetupRNG.FT}})
+#' @param MultiCores.seed Seed to be used for \code{MultiCores=TRUE} using see (\code{\link[snowFT]{clusterSetupRNG.FT}})
 #' @return Returns the same CSresult object with added p-values to the CS slot and added information to the permutation.object slot. This CSresult can be reused in CSpermute to redraw the plots without calculation.
 #' @examples
 #' \dontrun{

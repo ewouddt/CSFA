@@ -41,11 +41,11 @@ CSpermute(refMat, querMat, CSresult, B = 500, mfa.factor = NULL,
 
 \item{basefilename}{Basename of the graphs if saved in pdf files}
 
-\item{MultiCores}{Logical value parallelisation should be used for permutation. \code{FALSE} by default. (This option uses \code{\link[snowFT]{clusterApplyFT}} in order to provide load balancing and reproducible results with \code{\link{MultiCores.seed}})}
+\item{MultiCores}{Logical value parallelisation should be used for permutation. \code{FALSE} by default. (This option uses \code{\link[snowFT]{clusterApplyFT}} in order to provide load balancing and reproducible results with \code{MultiCores.seed})}
 
 \item{MultiCores.number}{Number of cores to be used for \code{MultiCores=TRUE}. By default total number of physical cores.}
 
-\item{MultiCores.seed}{Seed to be used for \code{MultiCores=TRUE} using (\code{\link[snowFT]{see clusterSetupRNG.FT}})}
+\item{MultiCores.seed}{Seed to be used for \code{MultiCores=TRUE} using see (\code{\link[snowFT]{clusterSetupRNG.FT}})}
 }
 \value{
 Returns the same CSresult object with added p-values to the CS slot and added information to the permutation.object slot. This CSresult can be reused in CSpermute to redraw the plots without calculation.
@@ -71,4 +71,3 @@ MFA_analysis <- CSanalysis(Mat1,Mat2,"CSmfa")
 MFA_analysis <- CSpermute(Mat1,Mat2,MFA_analysis,B=200)
 }
 }
-

@@ -48,4 +48,3 @@ CSlabelscompare(CSresult=MFA_out,labels=labels,type="factors")
 CSlabelscompare(CSresult=MFA_out,labels=labels,type="factorlabels")
 }
 }
-

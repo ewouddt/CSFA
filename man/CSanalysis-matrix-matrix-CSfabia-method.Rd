@@ -127,4 +127,3 @@ An object of the S4 Class \code{CSresult}.
 \description{
 Doing interactive CS analysis with FABIA (Factor Analysis for Bicluster Acquisition). One or multiple reference compounds are possible in this analysis.
 }
-

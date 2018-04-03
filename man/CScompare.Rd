@@ -71,4 +71,3 @@ ZHANG_analysis <- CSanalysis(Mat1,Mat2,"CSzhang")
 CScompare(MFA_analysis,ZHANG_analysis,1)
 }
 }
-

@@ -54,4 +54,3 @@ An object of the S4 Class \code{CSresult}. The CS slot will also contain the top
 \description{
 Compute the Connectivity Scores by Zhang and Gant (2008). One or multiple reference compounds are possible in this analysis.
 }
-

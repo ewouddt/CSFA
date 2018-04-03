@@ -8,4 +8,3 @@
 A matrix containing some simulated example microarray data. 
 The first 6 columns of this matrix make up the reference matrix part.
 }
-

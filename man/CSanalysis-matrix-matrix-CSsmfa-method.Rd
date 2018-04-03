@@ -112,4 +112,3 @@ An object of the S4 Class \code{CSresult}.
 \description{
 Doing interactive CS analysis with sMFA (Sparse Multiple Factor Analysis). Should use multiple references for this analysis.
 }
-
