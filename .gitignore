@@ -8,6 +8,7 @@ vignettes/figure/
 vignettes/CSFA-concordance.tex
 vignettes/CSFA.log
 vignettes/CSFA.synctex.gz
+vignettes/CSFA.tex
 *.bbl
 *.blg
 cran-comments.md
