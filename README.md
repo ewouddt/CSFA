@@ -18,5 +18,5 @@ install.packages("devtools") # If not yet installed on your R Version
 devtools::install_github("hadley/devtools") # Only run this if your currently installed 
                                             # devtools version is <= 1.12 (recursive dependencies bug)
 
-devtools::install_github("ewouddt/CSFA")
+devtools::install_github("ewouddt/CSFA",build_vignettes=TRUE)
 ```

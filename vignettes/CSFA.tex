@@ -442,9 +442,16 @@ In the code below, we plot both type of graphs for the MFA result with a pre-det
 \hlstd{out_MFA} \hlkwb{<-} \hlkwd{CSpermute}\hlstd{(refMat,querMat,out_MFA,}\hlkwc{B}\hlstd{=}\hlnum{250}\hlstd{,}\hlkwc{method.adjust}\hlstd{=}\hlstr{"BH"}\hlstd{,}
                 \hlkwc{which}\hlstd{=}\hlkwd{c}\hlstd{(}\hlnum{1}\hlstd{,}\hlnum{2}\hlstd{),}\hlkwc{cmpd.hist}\hlstd{=}\hlkwd{c}\hlstd{(}\hlnum{23}\hlstd{,}\hlnum{99}\hlstd{),}\hlkwc{plot.type}\hlstd{=}\hlstr{"sweave"}\hlstd{)}
 \end{alltt}
+\end{kframe}\begin{figure}[H]
+
+\includegraphics[width=9cm,height=10cm]{figure/CSpermuteplots-1} 
+\includegraphics[width=9cm,height=10cm]{figure/CSpermuteplots-2} 
+\includegraphics[width=9cm,height=10cm]{figure/CSpermuteplots-3} \hfill{}
+
+\caption[CSpermute graphs for MFA result]{CSpermute graphs for MFA result}\label{fig:CSpermuteplots}
+\end{figure}
 
 
-{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in if ((ncol(CSresult@permutation.object[[1]]) == B)) \{: argument is of length zero}}\end{kframe}
 \end{knitrout}
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
@@ -452,9 +459,16 @@ In the code below, we plot both type of graphs for the MFA result with a pre-det
 \hlstd{out_MFA} \hlkwb{<-} \hlkwd{CSpermute}\hlstd{(refMat,querMat,out_MFA,}\hlkwc{B}\hlstd{=}\hlnum{250}\hlstd{,}\hlkwc{method.adjust}\hlstd{=}\hlstr{"BH"}\hlstd{,}
                 \hlkwc{which}\hlstd{=}\hlkwd{c}\hlstd{(}\hlnum{3}\hlstd{,}\hlnum{4}\hlstd{),}\hlkwc{cmpd.hist}\hlstd{=}\hlkwd{c}\hlstd{(}\hlnum{23}\hlstd{,}\hlnum{99}\hlstd{),}\hlkwc{plot.type}\hlstd{=}\hlstr{"sweave"}\hlstd{)}
 \end{alltt}
+\end{kframe}\begin{figure}[H]
+
+\includegraphics[width=9cm,height=10cm]{figure/CSpermuteplots2-1} 
+\includegraphics[width=9cm,height=10cm]{figure/CSpermuteplots2-2} 
+\includegraphics[width=9cm,height=10cm]{figure/CSpermuteplots2-3} \hfill{}
+
+\caption[CSpermute graphs for MFA result]{CSpermute graphs for MFA result}\label{fig:CSpermuteplots2}
+\end{figure}
 
 
-{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in if ((ncol(CSresult@permutation.object[[1]]) == B)) \{: argument is of length zero}}\end{kframe}
 \end{knitrout}
 
 \section{Example Compare CS Results}
@@ -492,13 +506,13 @@ comparison plot will be colored according to these thresholds.
 ## 
 ## $pvalues
 ##                      CLoadings CRankScores
-## Correlation_Pearson  0.9547908   0.9102831
-## Correlation_Spearman 0.8754101   0.7146388
+## Correlation_Pearson  0.9532248   0.9113716
+## Correlation_Spearman 0.8737479   0.7128987
 ## 
 ## $adj.pvalues
 ##                      CLoadings CRankScores
-## Correlation_Pearson  0.9497074   0.9423659
-## Correlation_Spearman 0.5733172   0.5346304
+## Correlation_Pearson  0.9509475    0.946321
+## Correlation_Spearman 0.5533918    0.542450
 \end{verbatim}
 \begin{alltt}
         \hlstd{comp_MFA_FABIA[[}\hlnum{1}\hlstd{]]}
@@ -545,7 +559,7 @@ significant p-values. The significancy threshold can be changed with the
 ## $pvalues
 ##                 Result1.Sign Result1.NotSign
 ## Result2.Sign              35               0
-## Result2.NotSign           10             290
+## Result2.NotSign            9             291
 ## 
 ## $adj.pvalues
 ##                 Result1.Sign Result1.NotSign

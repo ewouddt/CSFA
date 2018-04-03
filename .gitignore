@@ -7,7 +7,7 @@ vignettes/cache/
 vignettes/figure/
 vignettes/CSFA-concordance.tex
 vignettes/CSFA.log
-vignettes/CSFA.syntex.gz
+vignettes/CSFA.synctex.gz
 *.bbl
 *.blg
 cran-comments.md
