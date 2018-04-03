@@ -4,6 +4,7 @@
 .Ruserdata
 pkg.Rproj
 vignettes/cache/
+vignettes/figure/
 *.bbl
 *.blg
 cran-comments.md
