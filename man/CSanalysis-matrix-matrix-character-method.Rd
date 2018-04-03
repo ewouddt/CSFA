@@ -17,7 +17,7 @@
 \item{...}{Additional parameters for analysis}
 }
 \value{
-An object of the S4 Class \code{CSresult}.
+An object of the S4 Class \code{\link{CSresult-class}}.
 }
 \description{
 Doing a CS analysis, interactively generating graphs. See specific type for additional parameteres.\cr

@@ -98,7 +98,7 @@ This can then later be used for the \code{CSlabelscompare} function to compare t
 \item{basefilename}{Basename of the graphs if saved in pdf files}
 }
 \value{
-An object of the S4 Class \code{CSresult}.
+An object of the S4 Class \code{\link{CSresult-class}}.
 }
 \description{
 Doing interactive CS analysis with MFA (Multiple Factor Analysis). Should use multiple references for this analysis.

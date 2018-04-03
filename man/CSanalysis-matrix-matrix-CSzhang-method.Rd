@@ -49,7 +49,7 @@
 \item{basefilename}{Basename of the graphs if saved in pdf files}
 }
 \value{
-An object of the S4 Class \code{CSresult}. The CS slot will also contain the top positive and negative scores as well as the top p-values. The GS slot will be empty for Zhang and Gant.
+An object of the S4 Class \code{\link{CSresult-class}}. The CS slot will also contain the top positive and negative scores as well as the top p-values. The GS slot will be empty for Zhang and Gant.
 }
 \description{
 Compute the Connectivity Scores by Zhang and Gant (2008). One or multiple reference compounds are possible in this analysis.

@@ -39,7 +39,7 @@ setClass("CSzhang",slots=c(call="call"))
 #' @slot CS List of any number of lists (depending on how many components were selected) which contain the connectivity loadings and ranking scores for the query (and reference loadings). If permutation was applied, will also contain p-values.
 #' @slot GS Dataframe containing the gene scores.
 #' @slot extra List which contains \code{CSRank_Full} (contains all intermediate values while calculating the CS Ranking Score), \code{Object} (contains the complete original FA or Zhang result) and \code{samplefactorlabels} (contains thresholded labels based on the factor loadings, see plot \code{which=9}).
-#' @slot permutation.object Contains permuted data, CS for permuted data and a dataframe with the p-values (only for MFA and Zhang).
+#' @slot permutation.object Contains CS for permuted data (matrix) and a dataframe with the p-values (only for MFA and Zhang).
 #' @slot call List object containing the original call of \code{CSanalysis} as well as the parameters for the chosen method.
 setClass("CSresult",slots=list(type="character",CS="list",GS="data.frame",extra="list",permutation.object="ANY",call="ANY"))
 
@@ -67,7 +67,7 @@ setClass("CSresult",slots=list(type="character",CS="list",GS="data.frame",extra=
 #' @param querMat Query matrix
 #' @param type Type of Factor Analysis or Zhang & Gant ( \code{"CSfabia"}, \code{"CSmfa"}, \code{"CSpca"}, \code{"CSsmfa"} or \code{"CSzhang"})
 #' @param ... Additional parameters for analysis
-#' @return An object of the S4 Class \code{CSresult}.
+#' @return An object of the S4 Class \code{\link{CSresult-class}}.
 #' @examples
 #' \dontrun{
 #' data("dataSIM",package="CSFA")
@@ -98,7 +98,7 @@ setGeneric('CSanalysis', function(refMat,querMat,type, ...){standardGeneric('CSa
 #' @param querMat Query matrix
 #' @param type Type of Factor Analysis or Zhang & Gant ( \code{"CSfabia"}, \code{"CSmfa"}, \code{"CSpca"}, \code{"CSsmfa"} or \code{"CSzhang"})
 #' @param ... Additional parameters for analysis
-#' @return An object of the S4 Class \code{CSresult}.
+#' @return An object of the S4 Class \code{\link{CSresult-class}}.
 #' @examples
 #' \dontrun{
 #' data("dataSIM",package="CSFA")
@@ -192,7 +192,7 @@ setMethod('CSanalysis', c('matrix','matrix','character'),
 #' @param result.available.update Logical value. If \code{TRUE}, the CS and GS will be overwritten depending on the new \code{component.plot} choice. This would also delete the p-values if \code{permutation.object} was available.
 #' @param plot.type How should the plots be outputted? \code{"pdf"} to save them in pdf files, \code{device} to draw them in a graphics device (default), \code{sweave} to use them in a sweave or knitr file.
 #' @param basefilename Basename of the graphs if saved in pdf files
-#' @return An object of the S4 Class \code{CSresult}.
+#' @return An object of the S4 Class \code{\link{CSresult-class}}.
 setMethod('CSanalysis',c('matrix','matrix','CSfabia'),
 		function(refMat,querMat,type="CSfabia",p=13,alpha=0.01,cyc=500,spl=0,spz=0.5,non_negative=0,random=1.0,center=2,norm=1,scale=0.0,lap=1.0,nL=0,lL=0,bL=0
 				,which=c(2,3,4,5)
@@ -309,7 +309,7 @@ setMethod('CSanalysis',c('matrix','matrix','CSfabia'),
 #' @param result.available.update Logical value. If \code{TRUE}, the CS and GS will be overwritten depending on the new \code{component.plot} choice. This would also delete the p-values if \code{permutation.object} was available.
 #' @param plot.type How should the plots be outputted? \code{"pdf"} to save them in pdf files, \code{device} to draw them in a graphics device (default), \code{sweave} to use them in a sweave or knitr file.
 #' @param basefilename Basename of the graphs if saved in pdf files
-#' @return An object of the S4 Class \code{CSresult}.
+#' @return An object of the S4 Class \code{\link{CSresult-class}}.
 setMethod("CSanalysis",c("matrix","matrix","CSmfa"),function(
 				refMat,querMat,type="CSmfa",ncp=5,weight.col.mfa=NULL,row.w=NULL,
 				which=c(2,3,4,5)
@@ -430,6 +430,7 @@ setMethod("CSanalysis",c("matrix","matrix","CSmfa"),function(
 #' @param result.available.update Logical value. If \code{TRUE}, the CS and GS will be overwritten depending on the new \code{component.plot} choice. This would also delete the p-values if \code{permutation.object} was available.
 #' @param plot.type How should the plots be outputted? \code{"pdf"} to save them in pdf files, \code{device} to draw them in a graphics device (default), \code{sweave} to use them in a sweave or knitr file.
 #' @param basefilename Basename of the graphs if saved in pdf files#' @return An object of the S4 Class \code{CSresult}.
+#' @return An object of the S4 Class \code{\link{CSresult-class}}.
 setMethod("CSanalysis",c("matrix","matrix","CSpca"),function(
 				refMat,querMat,type="CSpca",ncp=5,scale.unit=TRUE,row.w=NULL,col.w=NULL,
 				which=c(2,3,4,5),
@@ -554,7 +555,7 @@ setMethod("CSanalysis",c("matrix","matrix","CSpca"),function(
 #' @param result.available.update Logical value. If \code{TRUE}, the CS and GS will be overwritten depending on the new \code{component.plot} choice. This would also delete the p-values if \code{permutation.object} was available.
 #' @param plot.type How should the plots be outputted? \code{"pdf"} to save them in pdf files, \code{device} to draw them in a graphics device (default), \code{sweave} to use them in a sweave or knitr file.
 #' @param basefilename Basename of the graphs if saved in pdf files#' @return An object of the S4 Class \code{CSresult}.
-#' @return An object of the S4 Class \code{CSresult}.
+#' @return An object of the S4 Class \code{\link{CSresult-class}}.
 setMethod("CSanalysis",c("matrix","matrix","CSsmfa"),function(
 				refMat,querMat,type="Csmfa",K=15,para,lambda=1e-6,sparse.dim=2,sparse="penalty",max.iter=200,eps.conv=1e-3,
 				which=c(2,3,4,5),
@@ -638,7 +639,7 @@ setMethod("CSanalysis",c("matrix","matrix","CSsmfa"),function(
 #' @param result.available.update Logical value. If \code{TRUE}, the CS and GS will be overwritten depending on the new \code{component.plot} choice. This would also delete the p-values if \code{permutation.object} was available.
 #' @param plot.type How should the plots be outputted? \code{"pdf"} to save them in pdf files, \code{device} to draw them in a graphics device (default), \code{sweave} to use them in a sweave or knitr file.
 #' @param basefilename Basename of the graphs if saved in pdf files
-#' @return An object of the S4 Class \code{CSresult}. The CS slot will also contain the top positive and negative scores as well as the top p-values. The GS slot will be empty for Zhang and Gant.
+#' @return An object of the S4 Class \code{\link{CSresult-class}}. The CS slot will also contain the top positive and negative scores as well as the top p-values. The GS slot will be empty for Zhang and Gant.
 setMethod("CSanalysis",c("matrix","matrix","CSzhang"),function(refMat,querMat,type="CSzhang",
 				nref=NULL,nquery=NULL,ord.query=TRUE,ntop.scores=20,
 				which=c(1),
@@ -676,7 +677,7 @@ setMethod("CSanalysis",c("matrix","matrix","CSzhang"),function(refMat,querMat,ty
 			
 			CS <- list(CS.query=data.frame(
 							ZGscore=out$All[,1],
-							ZGrank=as.integer(rank(-out$All[,1],)),
+							ZGrank=as.integer(rank(-out$All[,1])),
 							ZGabsrank=as.integer(rank(-abs(out$All[,1]))),
 							row.names=rownames(out$All)
 							))

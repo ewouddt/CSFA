@@ -77,9 +77,16 @@ CSpermute <- function(refMat,querMat,CSresult,B=500,mfa.factor=NULL,method.adjus
 	if(MultiCores & is.null(MultiCores.seed)){MultiCores.seed <- sample(1:9999999,1)}
 	
 	
+	perm_boolean <- TRUE
+	if(!is.null(CSresult@permutation.object)){
+	  if((ncol(CSresult@permutation.object[[1]])==B)){
+	    perm_boolean <- FALSE
+	  }
+	}
+	
 	
 	# redo permutation and analysis if object not available of different number of permutations is asked
-	if(is.null(CSresult@permutation.object) | (length(CSresult@permutation.object[[1]])!=B)){ 
+	if(perm_boolean){ 
 		
 		permutation.object <- list()
 		
@@ -367,11 +374,17 @@ CSpermute <- function(refMat,querMat,CSresult,B=500,mfa.factor=NULL,method.adjus
 		permutation.object <- CSresult@permutation.object # If the previous part was not necessary to do, extract the existing permutation.objects
 	
 		if(type=="CSzhang"){
-			CS.Perm <- CSresult@permutation.object$ZGscore
+			CS.Perm <- lapply(as.list(1:ncol(CSresult@permutation.object$ZGscore)),FUN=function(bootcol){
+			  return(CSresult@permutation.object$ZGscore[,bootcol])
+			})
 			CS.Perm.rank <- NULL
 		}else{
-			CS.Perm <- CSresult@permutation.object$CLoadings.Perm
-			CS.Perm.rank <- CSresult@permutation.object$CRankScores.Perm
+			CS.Perm <- lapply(as.list(1:ncol(CSresult@permutation.object$CLoadings.Perm)),FUN=function(bootcol){
+			  return(CSresult@permutation.object$CLoadings.Perm[,bootcol])
+			})
+			CS.Perm.rank <- lapply(as.list(1:ncol(CSresult@permutation.object$CRankScores.Perm)),FUN=function(bootcol){
+			  return(CSresult@permutation.object$CRankScores.Perm[,bootcol])
+			})
 			mfa.factor <- CSresult@permutation.object$extra.parameters$mfa.factor
 		
 			CS.extrafactor <- FALSE
@@ -579,6 +592,18 @@ CSpermute <- function(refMat,querMat,CSresult,B=500,mfa.factor=NULL,method.adjus
 	
 	# add p-value information + for which factor it was done
 	CSresult@permutation.object$extra.parameters <- list(mfa.factor=mfa.factor,method.adjust=method.adjust) #change to component.select
+	
+	# Transform Permuted loadings/scores to a more readable format (list to matrix)
+	if(perm_boolean){
+	  if(type=="CSzhang"){
+	    CSresult@permutation.object$ZGscore <- do.call(cbind,CSresult@permutation.object$ZGscore)
+	  }else{
+	    CSresult@permutation.object$CLoadings.Perm <- do.call(cbind,CSresult@permutation.object$CLoadings.Perm)
+	    CSresult@permutation.object$CRankScores.Perm <- do.call(cbind,CSresult@permutation.object$CRankScores.Perm)
+	  }
+	}
+
+	
 	
 	return(CSresult)
 	# Contains:
