@@ -4,14 +4,6 @@
 Installing the CSFA Package - Development Version
 -------------------------------------------------
 
-
-``` r
-setRepositories(ind=c(1:5))
-install.packages("CSFA",repos="http://R-Forge.R-project.org")
-```
-
-or
-
 ``` r
 setRepositories(ind=c(1:5))
 install.packages("devtools") # If not yet installed on your R Version

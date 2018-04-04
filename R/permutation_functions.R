@@ -43,7 +43,9 @@
 #' @param MultiCores Logical value parallelisation should be used for permutation. \code{FALSE} by default. (This option uses \code{\link[snowFT]{clusterApplyFT}} in order to provide load balancing and reproducible results with \code{MultiCores.seed})
 #' @param MultiCores.number Number of cores to be used for \code{MultiCores=TRUE}. By default total number of physical cores.
 #' @param MultiCores.seed Seed to be used for \code{MultiCores=TRUE} using see (\code{\link[snowFT]{clusterSetupRNG.FT}})
-#' @return Returns the same CSresult object with added p-values to the CS slot and added information to the permutation.object slot. This CSresult can be reused in CSpermute to redraw the plots without calculation.
+#' @param save.permutation Logical value if the scores (CLoadings, CRankingScores, ZG Scores) of each permuted data set should be saved (default=\code{TRUE}). 
+#' This information is necessary to recalculate the p-values for different components as well as for producing the histograms. However for larger data, disabling this option will reduce the size of the resulting \code{\link{CSresult-class}} object.
+#' @return Returns the same \code{\link{CSresult-class}} object with added p-values to the CS slot and added information to the permutation.object slot. This CSresult can be reused in CSpermute to redraw the plots without calculation.
 #' @examples
 #' \dontrun{
 #' data("dataSIM",package="CSFA")
@@ -56,7 +58,8 @@
 CSpermute <- function(refMat,querMat,CSresult,B=500,mfa.factor=NULL,method.adjust="none",verbose=TRUE,
 #		querMat.Perm=NULL,save.querMat.Perm=FALSE,
 		which=c(1,3),cmpd.hist=NULL,color.columns=NULL,plot.type="device",basefilename="CSpermute",
-    MultiCores=FALSE,MultiCores.number=detectCores(logical=FALSE),MultiCores.seed=NULL
+    MultiCores=FALSE,MultiCores.number=detectCores(logical=FALSE),MultiCores.seed=NULL,
+    save.permutation=TRUE
   ){
 	
 	if(class(CSresult)!="CSresult"){stop("CSresult is not a class object of CSresult")}
@@ -78,11 +81,35 @@ CSpermute <- function(refMat,querMat,CSresult,B=500,mfa.factor=NULL,method.adjus
 	
 	
 	perm_boolean <- TRUE
+	use_old_pvalues <- FALSE
+	
 	if(!is.null(CSresult@permutation.object)){
-	  if((ncol(CSresult@permutation.object[[1]])==B)){
-	    perm_boolean <- FALSE
+	  
+	  if(any(c("CLoadings.Perm","ZGscore")%in%names(CSresult@permutation.object))){ # Scores are available. Need extra if in case save.permutation=FALSE and the object==NULL
+	    
+	    # !is.null(CSresult@permutation.object[[1]])
+	    
+	    if((ncol(CSresult@permutation.object[[1]])==B)){ # permutation object exists and we have scores -> no need to recalculate
+	      perm_boolean <- FALSE
+	    }
+	    
+	  }else{
+	    # Add the case where permutation scores were not saved before, but are requested now -> perm_boolean = TRUE
+	    # Display a message that this happens
+	    if(save.permutation){ # Only in the case where there is a permutation.object, but scores are missing
+	      perm_boolean <- TRUE
+	      message("save.permutation=TRUE for a CSresult with p-values without the permuted scores.\nThe permutation procedure will be done again:")
+	    }else{
+	      perm_boolean <- FALSE
+	      use_old_pvalues <- TRUE
+	      message("save.permutation=FALSE for a CSresult with p-values without the permuted scores.\nThe permutation procedure is skipped and the existing p-values are used.")
+	    }
+	    
 	  }
+
 	}
+	
+
 	
 	
 	# redo permutation and analysis if object not available of different number of permutations is asked
@@ -374,17 +401,23 @@ CSpermute <- function(refMat,querMat,CSresult,B=500,mfa.factor=NULL,method.adjus
 		permutation.object <- CSresult@permutation.object # If the previous part was not necessary to do, extract the existing permutation.objects
 	
 		if(type=="CSzhang"){
-			CS.Perm <- lapply(as.list(1:ncol(CSresult@permutation.object$ZGscore)),FUN=function(bootcol){
-			  return(CSresult@permutation.object$ZGscore[,bootcol])
-			})
-			CS.Perm.rank <- NULL
+		  if(!use_old_pvalues){
+		    CS.Perm <- lapply(as.list(1:ncol(CSresult@permutation.object$ZGscore)),FUN=function(bootcol){
+		      return(CSresult@permutation.object$ZGscore[,bootcol])
+		    })
+		    CS.Perm.rank <- NULL
+		  }
+
 		}else{
-			CS.Perm <- lapply(as.list(1:ncol(CSresult@permutation.object$CLoadings.Perm)),FUN=function(bootcol){
-			  return(CSresult@permutation.object$CLoadings.Perm[,bootcol])
-			})
-			CS.Perm.rank <- lapply(as.list(1:ncol(CSresult@permutation.object$CRankScores.Perm)),FUN=function(bootcol){
-			  return(CSresult@permutation.object$CRankScores.Perm[,bootcol])
-			})
+		  if(!use_old_pvalues){
+		    CS.Perm <- lapply(as.list(1:ncol(CSresult@permutation.object$CLoadings.Perm)),FUN=function(bootcol){
+		      return(CSresult@permutation.object$CLoadings.Perm[,bootcol])
+		    })
+		    CS.Perm.rank <- lapply(as.list(1:ncol(CSresult@permutation.object$CRankScores.Perm)),FUN=function(bootcol){
+		      return(CSresult@permutation.object$CRankScores.Perm[,bootcol])
+		    })
+		  }
+
 			mfa.factor <- CSresult@permutation.object$extra.parameters$mfa.factor
 		
 			CS.extrafactor <- FALSE
@@ -402,18 +435,37 @@ CSpermute <- function(refMat,querMat,CSresult,B=500,mfa.factor=NULL,method.adjus
 	
 	##### COMPUTING THE P-VALUES  + FINISHING PERMUTATION.OBJECT #####
 	
-	# Note: pvalues will always be re-computed to allow for different mfa.factor
 	
-#	# Getting Pvalues from CS and CSrank
-	pval.dataframe.temp <- pvalue_compute(obs.result=CSresult,ref.index=ref.index,list.h0.result=CS.Perm,list.h0.result.rank=CS.Perm.rank,mfa.factor=mfa.factor,method.adjust=method.adjust)
-	pval.dataframe <- pval.dataframe.temp[[1]]
-	pval.dataframe.rank <- pval.dataframe.temp[[2]]
+	# If old p-values are used, they are not re-computed, simply copied
+	if(use_old_pvalues){
+	  pval.dataframe <- permutation.object$CS.pval.dataframe
+	  pval.dataframe.rank <- permutation.object$CSRank.pval.dataframe
+	  
+	  
+	  # Remove histogram plots from which
+	  if(any(c(2,4)%in%which)){warning("The requested histogram plots will not be drawn due to missing permuted scores (save.permutation=FALSE)")}
+	  which <- setdiff(which,c(2,4))
+	  
+	}else{
+	  
+	  # Note: pvalues will always be re-computed to allow for different mfa.factor
+	  
+	  #	# Getting Pvalues from CS and CSrank
+	  pval.dataframe.temp <- pvalue_compute(obs.result=CSresult,ref.index=ref.index,list.h0.result=CS.Perm,list.h0.result.rank=CS.Perm.rank,mfa.factor=mfa.factor,method.adjust=method.adjust)
+	  pval.dataframe <- pval.dataframe.temp[[1]]
+	  pval.dataframe.rank <- pval.dataframe.temp[[2]]
+	  
+	  permutation.object$CS.pval.dataframe <- pval.dataframe
+	  permutation.object$CSRank.pval.dataframe <- pval.dataframe.rank
+	  
+	  
+	  CSresult@permutation.object <- permutation.object # Saving the updated permutation.object in CSresult
+	  
+	}
 	
-	permutation.object$CS.pval.dataframe <- pval.dataframe
-	permutation.object$CSRank.pval.dataframe <- pval.dataframe.rank
 	
 	
-	CSresult@permutation.object <- permutation.object # Saving the updated permutation.object in CSresult
+	
 	
 	
 	#### UPDATE THE CSresult object which will be returned in the end
@@ -603,7 +655,19 @@ CSpermute <- function(refMat,querMat,CSresult,B=500,mfa.factor=NULL,method.adjus
 	    CSresult@permutation.object$CRankScores.Perm <- do.call(cbind,CSresult@permutation.object$CRankScores.Perm)
 	  }
 	}
+	
+	
+	# Remove the permuted scores if saving is disabled
+	if(!save.permutation){
+	  if(type=="CSzhang"){
+	    CSresult@permutation.object$ZGscore <- NULL
+	  }else{
+	    CSresult@permutation.object$CLoadings.Perm <- NULL
+	    CSresult@permutation.object$CRankScores.Perm <- NULL
+	  }
+	}
 
+	
 	
 	
 	return(CSresult)

@@ -8,7 +8,8 @@ CSpermute(refMat, querMat, CSresult, B = 500, mfa.factor = NULL,
   method.adjust = "none", verbose = TRUE, which = c(1, 3),
   cmpd.hist = NULL, color.columns = NULL, plot.type = "device",
   basefilename = "CSpermute", MultiCores = FALSE,
-  MultiCores.number = detectCores(logical = FALSE), MultiCores.seed = NULL)
+  MultiCores.number = detectCores(logical = FALSE), MultiCores.seed = NULL,
+  save.permutation = TRUE)
 }
 \arguments{
 \item{refMat}{Reference matrix (Rows = genes and columns = compounds).}
@@ -46,9 +47,12 @@ CSpermute(refMat, querMat, CSresult, B = 500, mfa.factor = NULL,
 \item{MultiCores.number}{Number of cores to be used for \code{MultiCores=TRUE}. By default total number of physical cores.}
 
 \item{MultiCores.seed}{Seed to be used for \code{MultiCores=TRUE} using see (\code{\link[snowFT]{clusterSetupRNG.FT}})}
+
+\item{save.permutation}{Logical value if the scores (CLoadings, CRankingScores, ZG Scores) of each permuted data set should be saved (default=\code{TRUE}). 
+This information is necessary to recalculate the p-values for different components as well as for producing the histograms. However for larger data, disabling this option will reduce the size of the resulting \code{\link{CSresult-class}} object.}
 }
 \value{
-Returns the same CSresult object with added p-values to the CS slot and added information to the permutation.object slot. This CSresult can be reused in CSpermute to redraw the plots without calculation.
+Returns the same \code{\link{CSresult-class}} object with added p-values to the CS slot and added information to the permutation.object slot. This CSresult can be reused in CSpermute to redraw the plots without calculation.
 }
 \description{
 Apply permutation on MFA or Zhang results to obtain p-values of 1 of the components. 
