@@ -20,5 +20,5 @@ Lamb, J. et al. (2006), "The Connectivity Map: Using Gene-Expression Signatures 
 
 Zhang, S.-D. and Gant, T.W. (2008), "A simple and robust method for connecting small-molecule drugs using gene-expression signatures," \emph{BMC Bioinformatics}, 9, 10.
 
-\emph{Working Paper:} De Troyer E., Shkedzy Z., Kasim A. and Perualila-Tan N.-J. (2018), Connectivity Mapping Using Multople Factor Analysis
+\emph{Working Paper:} De Troyer E., Shkedzy Z., Kasim A. and Perualila-Tan N.-J. (2018), Connectivity Mapping Using Multiple Factor Analysis
 }

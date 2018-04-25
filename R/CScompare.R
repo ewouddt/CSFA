@@ -36,7 +36,7 @@
 #' @param plot.type How should the plots be outputted? \code{"pdf"} to save them in pdf files, \code{device} to draw them in a graphics device (default), \code{sweave} to use them in a sweave or knitr file.
 #' @param basefilename Basename of the graphs if saved in pdf files
 #' @param threshold.pvalues If both CSresult1 and CSresult contain pvalues (and adjusted pvalues), this threshold will be used to compare the number of overlapping significant results. 
-#' @return A list object with 2 slotes. In the first slot, Pearson and Spearman correlation between the results (CLoadings, Gene Scores, CRanking Scores, (adjusted) p-values) can be found. The second slot, if permutation was applied, contaisn a small comparison between the significant results based on \code{threshold.pvalues}.
+#' @return A list object with 2 slots. In the first slot, Pearson and Spearman correlation between the results (CLoadings, Gene Scores, CRanking Scores, (adjusted) p-values) can be found. The second slot, if permutation was applied, contains a small comparison between the significant results based on \code{threshold.pvalues}.
 #' @examples
 #' \dontrun{
 #' data("dataSIM",package="CSFA")

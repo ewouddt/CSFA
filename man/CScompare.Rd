@@ -52,7 +52,7 @@ CScompare(CSresult1, CSresult2, component1.plot, component2.plot,
 \item{basefilename}{Basename of the graphs if saved in pdf files}
 }
 \value{
-A list object with 2 slotes. In the first slot, Pearson and Spearman correlation between the results (CLoadings, Gene Scores, CRanking Scores, (adjusted) p-values) can be found. The second slot, if permutation was applied, contaisn a small comparison between the significant results based on \code{threshold.pvalues}.
+A list object with 2 slots. In the first slot, Pearson and Spearman correlation between the results (CLoadings, Gene Scores, CRanking Scores, (adjusted) p-values) can be found. The second slot, if permutation was applied, contains a small comparison between the significant results based on \code{threshold.pvalues}.
 }
 \description{
 After applying different CSanalysis on the same data, you can compare 2 different results of connectivity loadings, connectivity ranking scores and gene scores

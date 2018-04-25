@@ -15,7 +15,7 @@
 #' @references Hochreiter, S. et al., "FABIA: Factor Analysis for Bicluster acquisition," \emph{Bioinformatics}, 26, 1520-1527.
 #' @references Lamb, J. et al. (2006), "The Connectivity Map: Using Gene-Expression Signatures to Connect Small Molecules, Genes, and Disease," \emph{Science}, 313, 1929-1934.
 #' @references Zhang, S.-D. and Gant, T.W. (2008), "A simple and robust method for connecting small-molecule drugs using gene-expression signatures," \emph{BMC Bioinformatics}, 9, 10.
-#' @references \emph{Working Paper:} De Troyer E., Shkedzy Z., Kasim A. and Perualila-Tan N.-J. (2018), Connectivity Mapping Using Multople Factor Analysis
+#' @references \emph{Working Paper:} De Troyer E., Shkedzy Z., Kasim A. and Perualila-Tan N.-J. (2018), Connectivity Mapping Using Multiple Factor Analysis
 #'
 #' @docType package
 #' @name CSFA
