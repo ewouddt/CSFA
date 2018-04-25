@@ -166,7 +166,9 @@ CSpermute <- function(refMat,querMat,CSresult,B=500,mfa.factor=NULL,method.adjus
 
 
 			  
-			  clusterCall(cl, eval, substitute(library(FactoMineR)), env = .GlobalEnv)
+			  # clusterCall(cl, eval, substitute(library(FactoMineR)), env = .GlobalEnv)
+			  clusterCall(cl, eval, substitute(requireNamespace("FactoMineR")), env = .GlobalEnv)
+			  
 			  clusterExport(cl, c("worker_divide","querMat","refMat","CSresult","ref.index"), envir=current_environment)
 			  
 			  clusterSetupRNG.FT(cl, type = gentype, streamper = "replicate", 
