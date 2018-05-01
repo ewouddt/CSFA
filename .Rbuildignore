@@ -1,7 +1,6 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
 cran-comments.md
-vignettes/figure/
 vignettes/cache/
 vignettes/CSFA-concordance.tex
 vignettes/CSFA.log
