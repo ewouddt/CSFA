@@ -123,7 +123,7 @@ image(c(1:dim(d)[2]),c(1:dim(d)[1]),t(d),xlab="condition",ylab="genes",col=virid
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.7\textwidth]{figure/data_heatmap-1.png}
+\includegraphics[width=0.7\textwidth]{figures/data_heatmap-1.png}
 \caption{Heatmap of Reference and Query Matrix}\label{fig:data_heatmap}
 \end{figure}
 
@@ -163,7 +163,7 @@ using either "device" or "pdf".
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.7\textwidth]{figure/ZG-1.pdf}
+\includegraphics[width=0.7\textwidth]{figures/ZG-1.pdf}
 \caption{CSanalysis Graphs for CSzhang}\label{fig:ZG}
 \end{figure}
 
@@ -210,10 +210,10 @@ out_MFA <- CSanalysis(refMat,querMat,"CSmfa",plot.type="sweave",which=c(2,3,4,7)
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.45\textwidth]{figure/MFA-1.pdf}
-\includegraphics[width=0.45\textwidth]{figure/MFA-2.pdf}
-\includegraphics[width=0.45\textwidth]{figure/MFA-3.pdf}
-\includegraphics[width=0.45\textwidth]{figure/MFA-4.pdf}
+\includegraphics[width=0.45\textwidth]{figures/MFA-1.pdf}
+\includegraphics[width=0.45\textwidth]{figures/MFA-2.pdf}
+\includegraphics[width=0.45\textwidth]{figures/MFA-3.pdf}
+\includegraphics[width=0.45\textwidth]{figures/MFA-4.pdf}
 \caption{CSanalysis Graphs for CSmfa}\label{fig:MFA}
 \end{figure}
 
@@ -233,7 +233,7 @@ Connectivity Score Ranks are shown.
 @
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.7\textwidth]{figure/MFA2-1.pdf}
+\includegraphics[width=0.7\textwidth]{figures/MFA2-1.pdf}
 \caption{CSanalysis Graphs for CSmfa}\label{fig:MFA2}
 \end{figure}
 
@@ -250,7 +250,7 @@ The others are the ordered in decreasing CScore.
 @
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.7\textwidth]{figure/MFA3-1.pdf}
+\includegraphics[width=0.7\textwidth]{figures/MFA3-1.pdf}
 \caption{CSanalysis Graphs for CSmfa}\label{fig:MFA3}
 \end{figure}
 
@@ -301,9 +301,9 @@ have a reproducible result.
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.45\textwidth]{figure/FABIA-1.pdf}
-\includegraphics[width=0.45\textwidth]{figure/FABIA-2.pdf}
-\includegraphics[width=0.45\textwidth]{figure/FABIA-3.pdf}
+\includegraphics[width=0.45\textwidth]{figures/FABIA-1.pdf}
+\includegraphics[width=0.45\textwidth]{figures/FABIA-2.pdf}
+\includegraphics[width=0.45\textwidth]{figures/FABIA-3.pdf}
 \caption{CSanalysis Graphs for CSfabia}\label{fig:FABIA}
 \end{figure}
 
@@ -376,9 +376,9 @@ out_MFA <- CSpermute(refMat,querMat,out_MFA,B=250,method.adjust="BH",
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.45\textwidth]{figure/CSpermuteplots-1.pdf}
-\includegraphics[width=0.45\textwidth]{figure/CSpermuteplots-2.pdf}
-\includegraphics[width=0.45\textwidth]{figure/CSpermuteplots-3.pdf}
+\includegraphics[width=0.45\textwidth]{figures/CSpermuteplots-1.pdf}
+\includegraphics[width=0.45\textwidth]{figures/CSpermuteplots-2.pdf}
+\includegraphics[width=0.45\textwidth]{figures/CSpermuteplots-3.pdf}
 \caption{CSpermute graphs for MFA result}\label{fig:CSpermuteplots}
 \end{figure}
 
@@ -389,9 +389,9 @@ out_MFA <- CSpermute(refMat,querMat,out_MFA,B=250,method.adjust="BH",
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.45\textwidth]{figure/CSpermuteplots2-1.pdf}
-\includegraphics[width=0.45\textwidth]{figure/CSpermuteplots2-2.pdf}
-\includegraphics[width=0.45\textwidth]{figure/CSpermuteplots2-3.pdf}
+\includegraphics[width=0.45\textwidth]{figures/CSpermuteplots2-1.pdf}
+\includegraphics[width=0.45\textwidth]{figures/CSpermuteplots2-2.pdf}
+\includegraphics[width=0.45\textwidth]{figures/CSpermuteplots2-3.pdf}
 \caption{CSpermute graphs for MFA result}\label{fig:CSpermuteplots2}
 \end{figure}
 
@@ -440,11 +440,11 @@ comparison plot will be colored according to these thresholds.
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.3\textwidth]{figure/CScompare-1.pdf}
-\includegraphics[width=0.3\textwidth]{figure/CScompare-2.pdf}
-\includegraphics[width=0.3\textwidth]{figure/CScompare-3.pdf}
-\includegraphics[width=0.3\textwidth]{figure/CScompare-4.pdf}
-\includegraphics[width=0.3\textwidth]{figure/CScompare-5.pdf}
+\includegraphics[width=0.3\textwidth]{figures/CScompare-1.pdf}
+\includegraphics[width=0.3\textwidth]{figures/CScompare-2.pdf}
+\includegraphics[width=0.3\textwidth]{figures/CScompare-3.pdf}
+\includegraphics[width=0.3\textwidth]{figures/CScompare-4.pdf}
+\includegraphics[width=0.3\textwidth]{figures/CScompare-5.pdf}
 \caption{Compare CSresults}\label{fig:CScompare}
 \end{figure}
 
