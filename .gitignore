@@ -12,3 +12,4 @@ vignettes/CSFA.tex
 *.bbl
 *.blg
 cran-comments.md
+vignettes/CSFA.pdf
