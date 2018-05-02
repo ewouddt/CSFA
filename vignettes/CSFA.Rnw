@@ -15,19 +15,19 @@
 \usepackage{subcaption}
 \usepackage{multirow}
 \usepackage{float}
-\usepackage{floatflt}
+%\usepackage{floatflt}
 \usepackage{subcaption}
 \usepackage[english]{babel}
 \usepackage{natbib}
 
-\usepackage{hyperref}
-\hypersetup{
-	colorlinks, 
-	citecolor=black,
-	filecolor=black,
-	linkcolor=black,
-	urlcolor=black
-}
+% \usepackage{hyperref}
+% \hypersetup{
+% 	colorlinks, 
+% 	citecolor=black,
+% 	filecolor=black,
+% 	linkcolor=black,
+% 	urlcolor=black
+% }
 
 
 
