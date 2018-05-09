@@ -31,7 +31,7 @@
 
 
 
-\title{CSFA 0.9.2 - Vignette}
+\title{CSFA 1.0.0 - Vignette}
 \date{}
 \author{Ewoud De Troyer}
 
@@ -104,7 +104,7 @@ positive connected compounds, 20 weakly positive connected compounds, 10
 strongly negative connected compounds and 300 compounds which are not connected
 at all.
 
-<<load,echo=FALSE,warning=FALSE,message=FALSE,results='hide'>>=
+<<load,echo=FALSE,warning=FALSE,message=FALSE,results='hide', eval=FALSE>>=
 require(viridis)
 library(CSFA)
 data("dataSIM",package="CSFA")
@@ -133,12 +133,12 @@ Start by first loading both the CSFA library and the example data available
 in the package. The simulated data is split up in the reference and query
 matrix.
 
-<<packageload,echo=TRUE,eval=TRUE,warning=FALSE,message=FALSE>>=
-	library(CSFA)
-	data("dataSIM",package="CSFA")
+<<packageload,echo=TRUE,eval=FALSE,warning=FALSE,message=FALSE>>=
+library(CSFA)
+data("dataSIM",package="CSFA")
 	
-	refMat <- dataSIM[,c(1:6)]
-	querMat <- dataSIM[,-c(1:6)]
+refMat <- dataSIM[,c(1:6)]
+querMat <- dataSIM[,-c(1:6)]
 @
 
 \noindent Next, the Connectivity Scores from Zhang and Gant, MFA and FABIA will
@@ -158,7 +158,7 @@ sweave document, we use the "sweave" \texttt{plot.type}. Normally you would be
 using either "device" or "pdf".
 
 <<ZG,echo=TRUE,eval=FALSE,cache=FALSE,fig.keep="high",fig.pos='H',out.width="11cm",fig.align='center',fig.cap="CSanalysis Graphs for CSzhang">>= 
-	out_ZG <- CSanalysis(refMat,querMat,"CSzhang",plot.type="sweave")
+out_ZG <- CSanalysis(refMat,querMat,"CSzhang",plot.type="sweave")
 @
 
 \begin{figure}[H]
@@ -196,7 +196,7 @@ Next, in order to drawn compound profiles, set \texttt{profile.type} to
 be chosen in the {\it "Compound Loadings"} plot (instead of simply providing it
 to \texttt{CSanalysis} beforehand). You can left-click on multiple compounds you wish to draw in the compound profiles graph (and right-click to stop the selection procedure). 
 
-<<MFA_hidden,echo=FALSE,eval=TRUE,cache=FALSE,fig.keep="high",fig.show='hold',fig.pos='H',out.width='9cm',out.height='10cm',fig.align='left',fig.cap="CSanalysis Graphs for CSmfa">>= 
+<<MFA_hidden,echo=FALSE,eval=FALSE,cache=FALSE,fig.keep="high",fig.show='hold',fig.pos='H',out.width='9cm',out.height='10cm',fig.align='left',fig.cap="CSanalysis Graphs for CSmfa">>= 
 out_MFA <- CSanalysis(refMat,querMat,"CSmfa",plot.type="sweave",which=c(),
 		profile.type="cmpd",gene.thresP=2.3,gene.thresN=-2.3,component.plot=1,
 		column.interest=c(21,22,23))
@@ -228,8 +228,8 @@ additional plots without re-computing the factor analysis. This is done through 
 Connectivity Score Ranks are shown.
 
 <<MFA2,echo=TRUE,eval=FALSE,cache=FALSE,fig.keep="high",fig.show='hold',fig.pos='H',out.width='9cm',out.height='10cm',fig.align='left',fig.cap="CSanalysis Graphs for CSmfa">>= 
-	out_MFA <- CSanalysis(refMat,querMat,"CSmfa",plot.type="sweave",which=c(5),
-			component.plot=1,column.interest=c(1,2,3),result.available=out_MFA)
+out_MFA <- CSanalysis(refMat,querMat,"CSmfa",plot.type="sweave",which=c(5),
+		component.plot=1,column.interest=c(1,2,3),result.available=out_MFA)
 @
 \begin{figure}[H]
 \centering
@@ -244,9 +244,9 @@ this is also done interactively in the gene score plot. In this graph, the
 x-axis contains all compounds, starting with the reference and selected ones.
 The others are the ordered in decreasing CScore.
 <<MFA3,echo=TRUE,eval=FALSE,cache=FALSE,fig.keep="high",fig.show='hold',fig.pos='H',out.width='9cm',out.height='10cm',fig.align='left',fig.cap="CSanalysis Graphs for CSfma">>= 
-	out_MFA <- CSanalysis(refMat,querMat,"CSmfa",plot.type="sweave",which=c(7),
-			profile.type="gene",component.plot=1,column.interest=c(1,2,3),
-			row.interest=c(846,871,4,6),result.available=out_MFA)
+out_MFA <- CSanalysis(refMat,querMat,"CSmfa",plot.type="sweave",which=c(7),
+		profile.type="gene",component.plot=1,column.interest=c(1,2,3),
+		row.interest=c(846,871,4,6),result.available=out_MFA)
 @
 \begin{figure}[H]
 \centering
@@ -272,31 +272,31 @@ have a reproducible result.
 
 %can use multiple BC for fabia
 
-<<FABIA_hidden,echo=FALSE,eval=TRUE,cache=FALSE,message=FALSE,results='hide',fig.keep="high",fig.show='hold',fig.pos='H',out.width='9cm',out.height='10cm',fig.align='left',fig.cap="CSanalysis Graphs for CSfabia">>= 
-	color.columns <- rep("black",dim(dataSIM)[2])
-	color.columns[1:6] <- "blue"
-	color.columns[c(29,30,31)] <- "red"
+<<FABIA_hidden,echo=FALSE,eval=FALSE,cache=FALSE,message=FALSE,results='hide',fig.keep="high",fig.show='hold',fig.pos='H',out.width='9cm',out.height='10cm',fig.align='left',fig.cap="CSanalysis Graphs for CSfabia">>= 
+color.columns <- rep("black",dim(dataSIM)[2])
+color.columns[1:6] <- "blue"
+color.columns[c(29,30,31)] <- "red"
 	
-	set.seed(8956)
-	out_FABIA <- CSanalysis(refMat,querMat,"CSfabia",plot.type="sweave",which=c(),
-			color.columns=color.columns,
-			legend.names=c("References","SP Connected"),
-			legend.cols=c("blue","red"), component.plot=c(1,2),
-			gene.thresP=2,gene.thresN=-2)
+set.seed(8956)
+out_FABIA <- CSanalysis(refMat,querMat,"CSfabia",plot.type="sweave",which=c(),
+		color.columns=color.columns,
+		legend.names=c("References","SP Connected"),
+		legend.cols=c("blue","red"), component.plot=c(1,2),
+		gene.thresP=2,gene.thresN=-2)
 @
 
 
 <<FABIA,echo=TRUE,eval=FALSE,cache=FALSE,message=FALSE,results='hide',fig.keep="high",fig.show='hold',fig.pos='H',out.width='9cm',out.height='10cm',fig.align='left',fig.cap="CSanalysis Graphs for CSfabia">>= 
-	color.columns <- rep("black",dim(dataSIM)[2])
-	color.columns[1:6] <- "blue"
-	color.columns[c(29,30,31)] <- "red"
+color.columns <- rep("black",dim(dataSIM)[2])
+color.columns[1:6] <- "blue"
+color.columns[c(29,30,31)] <- "red"
 	
-	set.seed(8956)
-	out_FABIA <- CSanalysis(refMat,querMat,"CSfabia",plot.type="sweave",which=c(2,5),
-			color.columns=color.columns,
-			legend.names=c("References","SP Connected"),
-			legend.cols=c("blue","red"), component.plot=c(1,2),
-			gene.thresP=2,gene.thresN=-2)
+set.seed(8956)
+out_FABIA <- CSanalysis(refMat,querMat,"CSfabia",plot.type="sweave",which=c(2,5),
+		color.columns=color.columns,
+		legend.names=c("References","SP Connected"),
+		legend.cols=c("blue","red"), component.plot=c(1,2),
+		gene.thresP=2,gene.thresN=-2)
 @
 
 \begin{figure}[H]
@@ -332,13 +332,13 @@ p-values of the Component in which the structure (loadings) of the references is
 
 
 <<CSpermute_compute,eval=FALSE,echo=TRUE,cache=FALSE>>=
-	out_MFA <- CSpermute(refMat,querMat,CSresult=out_MFA,B=250,method.adjust="BH",
-			which=c(),verbose=FALSE,MultiCores=TRUE)
-	out_ZG <- CSpermute(refMat,querMat,CSresult=out_ZG,B=250,method.adjust="BH",
-			which=c(),verbose=FALSE,MultiCores=TRUE)
+out_MFA <- CSpermute(refMat,querMat,CSresult=out_MFA,B=250,method.adjust="BH",
+		which=c(),verbose=FALSE,MultiCores=TRUE)
+out_ZG <- CSpermute(refMat,querMat,CSresult=out_ZG,B=250,method.adjust="BH",
+		which=c(),verbose=FALSE,MultiCores=TRUE)
 
 @
-<<cheat1,echo=FALSE>>=
+<<cheat1,echo=FALSE, eval=FALSE>>=
 	
 # out_MFA@extra <- list()
 # save(list="out_MFA",file="vignettes/perm_data/out_MFA.RData")
@@ -354,10 +354,71 @@ out_MFA@extra <- extra_temp
 
 @
 
-<<CSpermute_compute2,echo=TRUE,cache=FALSE>>=
+<<CSpermute_compute2,echo=FALSE,cache=FALSE, eval=FALSE>>=
 head(out_MFA@CS[[1]]$CS.query)
+
+##       CLoadings   CLpvalues CLpvalues.adjusted CRankScores   CRpvalues
+## cWP-1 0.5858096 0.003984064         0.03813318   0.6800244 0.003984064
+## cWP-2 0.5771857 0.003984064         0.03813318   0.6690638 0.003984064
+## cWP-3 0.5739775 0.003984064         0.03813318   0.6649862 0.003984064
+## cWP-4 0.5867910 0.003984064         0.03813318   0.6812717 0.003984064
+## cWP-5 0.5770335 0.003984064         0.03813318   0.6688703 0.003984064
+## cWP-6 0.5852554 0.003984064         0.03813318   0.6793200 0.003984064
+##       CRpvalues.adjusted CLrank CLabsrank CRrank CRabsrank
+## cWP-1         0.03813318     14        24     14        24
+## cWP-2         0.03813318     17        27     17        27
+## cWP-3         0.03813318     19        29     19        29
+## cWP-4         0.03813318     13        23     13        23
+## cWP-5         0.03813318     18        28     18        28
+## cWP-6         0.03813318     15        25     15        25
+
 head(out_ZG@CS$CS.query)
+
+##         ZGscore     pvalues pvalues.adjusted ZGrank ZGabsrank
+## cWP-1 0.5590061 0.003984064       0.03707393     14        24
+## cWP-2 0.5473340 0.003984064       0.03707393     20        30
+## cWP-3 0.5621351 0.003984064       0.03707393     13        23
+## cWP-4 0.5649765 0.003984064       0.03707393     11        21
+## cWP-5 0.5578107 0.003984064       0.03707393     16        26
+## cWP-6 0.5468158 0.003984064       0.03707393     21        31
 @
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{head}\hlstd{(out_MFA}\hlopt{@}\hlkwc{CS}\hlstd{[[}\hlnum{1}\hlstd{]]}\hlopt{$}\hlstd{CS.query)}
+\end{alltt}
+\begin{verbatim}
+##       CLoadings   CLpvalues CLpvalues.adjusted CRankScores   CRpvalues
+## cWP-1 0.5858096 0.003984064         0.03813318   0.6800244 0.003984064
+## cWP-2 0.5771857 0.003984064         0.03813318   0.6690638 0.003984064
+## cWP-3 0.5739775 0.003984064         0.03813318   0.6649862 0.003984064
+## cWP-4 0.5867910 0.003984064         0.03813318   0.6812717 0.003984064
+## cWP-5 0.5770335 0.003984064         0.03813318   0.6688703 0.003984064
+## cWP-6 0.5852554 0.003984064         0.03813318   0.6793200 0.003984064
+##       CRpvalues.adjusted CLrank CLabsrank CRrank CRabsrank
+## cWP-1         0.03813318     14        24     14        24
+## cWP-2         0.03813318     17        27     17        27
+## cWP-3         0.03813318     19        29     19        29
+## cWP-4         0.03813318     13        23     13        23
+## cWP-5         0.03813318     18        28     18        28
+## cWP-6         0.03813318     15        25     15        25
+\end{verbatim}
+\begin{alltt}
+\hlkwd{head}\hlstd{(out_ZG}\hlopt{@}\hlkwc{CS}\hlopt{$}\hlstd{CS.query)}
+\end{alltt}
+\begin{verbatim}
+##         ZGscore     pvalues pvalues.adjusted ZGrank ZGabsrank
+## cWP-1 0.5590061 0.003984064       0.03707393     14        24
+## cWP-2 0.5473340 0.003984064       0.03707393     20        30
+## cWP-3 0.5621351 0.003984064       0.03707393     13        23
+## cWP-4 0.5649765 0.003984064       0.03707393     11        21
+## cWP-5 0.5578107 0.003984064       0.03707393     16        26
+## cWP-6 0.5468158 0.003984064       0.03707393     21        31
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
 
 \noindent Next, we can actually re-use the updated \texttt{out\_MFA} and
 \texttt{out\_ZG} in \texttt{CSpermute}.
@@ -413,7 +474,7 @@ be created. Further because we set thresholds for the genes, the gene score
 comparison plot will be colored according to these thresholds.
 
 
-<<CScompare_hidden,echo=FALSE,eval=TRUE,cache=FALSE,message=FALSE,fig.keep="high",fig.show='hold',fig.pos='H',out.width='9cm',out.height='10cm',fig.align='left',fig.cap="Compare CSresults">>=
+<<CScompare_hidden,echo=FALSE,eval=FALSE,cache=FALSE,message=FALSE,fig.keep="high",fig.show='hold',fig.pos='H',out.width='9cm',out.height='10cm',fig.align='left',fig.cap="Compare CSresults">>=
 	comp_ZG_MFA <- CScompare(out_ZG,out_MFA,component2.plot=1,plot.type="sweave",which=c())
 	
 	comp_MFA_FABIA <- CScompare(out_MFA,out_FABIA,component1.plot=1,component2.plot=1,
@@ -421,22 +482,90 @@ comparison plot will be colored according to these thresholds.
 	
 	comp_ZG_MFA[[1]]	
 	comp_MFA_FABIA[[1]]
-	
 @
 
 
 
 
-<<CScompare,echo=TRUE,eval=FALSE,cache=FALSE,message=FALSE,fig.keep="high",fig.show='hold',fig.pos='H',out.width='9cm',out.height='10cm',fig.align='left',fig.cap="Compare CSresults">>=
-	comp_ZG_MFA <- CScompare(out_ZG,out_MFA,component2.plot=1,plot.type="sweave")
+<<CScompare,echo=FALSE,eval=FALSE,cache=FALSE,message=FALSE,fig.keep="high",fig.show='hold',fig.pos='H',out.width='9cm',out.height='10cm',fig.align='left',fig.cap="Compare CSresults">>=
+comp_ZG_MFA <- CScompare(out_ZG,out_MFA,component2.plot=1,plot.type="sweave")
 	
-	comp_MFA_FABIA <- CScompare(out_MFA,out_FABIA,component1.plot=1,component2.plot=1,
+comp_MFA_FABIA <- CScompare(out_MFA,out_FABIA,component1.plot=1,component2.plot=1,
 			gene.thresP=c(2,2),gene.thresN=c(-2,-2),plot.type="sweave")
 	
-	comp_ZG_MFA[[1]]	
-	comp_MFA_FABIA[[1]]
-	
+comp_ZG_MFA[[1]]	
+
+## $scores
+##                      CLoadings CRankScores GeneScores
+## Correlation_Pearson  0.9965602   0.9982107         NA
+## Correlation_Spearman 0.9627536   0.7273489         NA
+## 
+## $pvalues
+##                      CLoadings CRankScores
+## Correlation_Pearson  0.9532248   0.9113716
+## Correlation_Spearman 0.8737479   0.7128987
+## 
+## $adj.pvalues
+##                      CLoadings CRankScores
+## Correlation_Pearson  0.9509475    0.946321
+## Correlation_Spearman 0.5533918    0.542450	
+		
+comp_MFA_FABIA[[1]]
+
+## $scores
+##                       CLoadings CRankScores GeneScores
+## Correlation_Pearson  -0.9573119   0.9801271 -0.7752930
+## Correlation_Spearman -0.5693159   0.5550448 -0.7996527
+## 
+## $pvalues
+## NULL
+## 
+## $adj.p	
 @
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{comp_ZG_MFA} \hlkwb{<-} \hlkwd{CScompare}\hlstd{(out_ZG,out_MFA,}\hlkwc{component2.plot}\hlstd{=}\hlnum{1}\hlstd{,}\hlkwc{plot.type}\hlstd{=}\hlstr{"sweave"}\hlstd{)}
+
+\hlstd{comp_MFA_FABIA} \hlkwb{<-} \hlkwd{CScompare}\hlstd{(out_MFA,out_FABIA,}\hlkwc{component1.plot}\hlstd{=}\hlnum{1}\hlstd{,}\hlkwc{component2.plot}\hlstd{=}\hlnum{1}\hlstd{,}
+                \hlkwc{gene.thresP}\hlstd{=}\hlkwd{c}\hlstd{(}\hlnum{2}\hlstd{,}\hlnum{2}\hlstd{),}\hlkwc{gene.thresN}\hlstd{=}\hlkwd{c}\hlstd{(}\hlopt{-}\hlnum{2}\hlstd{,}\hlopt{-}\hlnum{2}\hlstd{),}\hlkwc{plot.type}\hlstd{=}\hlstr{"sweave"}\hlstd{)}
+
+\hlstd{comp_ZG_MFA[[}\hlnum{1}\hlstd{]]}
+\begin{verbatim}
+## $scores
+##                      CLoadings CRankScores GeneScores
+## Correlation_Pearson  0.9965602   0.9982107         NA
+## Correlation_Spearman 0.9627536   0.7273489         NA
+## 
+## $pvalues
+##                      CLoadings CRankScores
+## Correlation_Pearson  0.9532248   0.9113716
+## Correlation_Spearman 0.8737479   0.7128987
+## 
+## $adj.pvalues
+##                      CLoadings CRankScores
+## Correlation_Pearson  0.9509475    0.946321
+## Correlation_Spearman 0.5533918    0.542450
+\end{verbatim}
+\hlstd{comp_MFA_FABIA[[}\hlnum{1}\hlstd{]]}
+\begin{verbatim}
+## $scores
+##                       CLoadings CRankScores GeneScores
+## Correlation_Pearson  -0.9573119   0.9801271 -0.7752930
+## Correlation_Spearman -0.5693159   0.5550448 -0.7996527
+## 
+## $pvalues
+## NULL
+## 
+## $adj.pvalues
+## NULL
+\end{verbatim}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
+
 
 \begin{figure}[H]
 \centering
@@ -457,10 +586,38 @@ Further because both the MFA and ZG contain p-values and adjusted p-values, the
 returned object also contains a small comparison between the number of
 significant p-values. The significancy threshold can be changed with the
 \texttt{threshold.pvalues} parameter and is defaulted to 0.05.
-<<CScompare2,echo=TRUE>>=
+<<CScompare2,echo=FALSE, eval=FALSE>>=
 comp_ZG_MFA[[2]]	
-comp_MFA_FABIA[[2]]
+
+## $pvalues
+##                 Result1.Sign Result1.NotSign
+## Result2.Sign              35               0
+## Result2.NotSign            9             291
+## 
+## $adj.pvalues
+##                 Result1.Sign Result1.NotSign
+## Result2.Sign              35               0
+## Result2.NotSign            1             299		
 @
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{comp_ZG_MFA[[}\hlnum{2}\hlstd{]]}
+\end{alltt}
+\begin{verbatim}
+## $pvalues
+##                 Result1.Sign Result1.NotSign
+## Result2.Sign              35               0
+## Result2.NotSign            9             291
+## 
+## $adj.pvalues
+##                 Result1.Sign Result1.NotSign
+## Result2.Sign              35               0
+## Result2.NotSign            1             299
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
 
 \newpage
 \nocite{*}

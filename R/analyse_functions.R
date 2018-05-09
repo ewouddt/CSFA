@@ -711,6 +711,31 @@ analyse_FA2 <- function(data,result,loadings,scores,ref.index,modeltype,
 
 }
 
+
+
+#' @title Internal Function: Zhang and Gant Analysis
+#' @description \strong{Internal function not meant for end-users.} Internal function involved in the computation of the Zhang and Gant score when using multiple cores with \code{parallel}.
+#' @export
+#' @keywords internal
+#' @param dataref NA
+#' @param dataquery NA
+#' @param nref NA
+#' @param nquery NA
+#' @param ord.query NA
+#' @param permute NA
+#' @param B NA
+#' @param ntop.pvalues NA
+#' @param ntop.scores NA
+#' @param basefilename NA
+#' @param colour.query NA
+#' @param legend.names NA
+#' @param legend.cols NA
+#' @param legend.pos NA
+#' @param result.available NA
+#' @param plot.type NA
+#' @param print.top NA
+#' @param which NA
+#' @return NA
 analyse_zhang <- function(dataref,dataquery,nref=NULL,nquery=NULL,ord.query=TRUE,permute=FALSE,B=100000,ntop.pvalues=20,ntop.scores=20,
 		basefilename="analyseZhang",
 		#column.interest=NULL,
