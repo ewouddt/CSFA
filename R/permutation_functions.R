@@ -324,7 +324,7 @@ CSpermute <- function(refMat,querMat,CSresult,B=500,mfa.factor=NULL,method.adjus
 			  cl <- do.call("makeClusterFT", c(list(min(MultiCores.number, length(worker_divide)), 
 			                                        "SOCK", ft_verbose = FALSE), NULL))
 			  
-			  clusterCall(cl, eval, substitute(library(CSFA)), env = .GlobalEnv)
+			  clusterCall(cl, eval, substitute(requireNamespace("CSFA")), env = .GlobalEnv)
 
 			  clusterExport(cl, c("worker_divide","querMat","refMat","CSresult","ref.index"), envir=current_environment)
 			  clusterSetupRNG.FT(cl, type = gentype, streamper = "replicate", 
@@ -344,7 +344,7 @@ CSpermute <- function(refMat,querMat,CSresult,B=500,mfa.factor=NULL,method.adjus
 			                            rownames(querMat.Perm) <- rownames(refMat)
 			                            colnames(querMat.Perm) <- colnames(querMat)
 			                            
-			                            out_zhang <- CSFA:::analyse_zhang(refMat,querMat.Perm,
+			                            out_zhang <- analyse_zhang(refMat,querMat.Perm,
 			                                                              nref=CSresult@call$analysis.pm$nref,nquery=CSresult@call$analysis.pm$nquery,ord.query=CSresult@call$analysis.pm$ord.query,ntop.scores=CSresult@call$analysis.pm$ntop.scores,
 			                                                              basefilename="analyseZhang",which=c(),plot.type="device",print.top=FALSE)
 			                            
