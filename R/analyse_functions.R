@@ -350,7 +350,7 @@ analyse_FA2 <- function(data,result,loadings,scores,ref.index,modeltype,
 	
 	## LOADINGS FOR REFERENCE COMPOUNDS ##
 	if(2 %in% which){
-		plot.in(plot.type,paste0(basefilename,"_RefLoadings"))
+		plot.in(plot.type,paste0(basefilename,"_RefLoadings.pdf"))
 		plot(0,0,type="n",main=paste0(method.name," Loadings for Ref ",paste(ref.index,collapse=",")),xlab=paste0(component.name," Index"),ylab="Loadings",ylim=c(min(loadings[ref.index,]),max(loadings[ref.index,])),xlim=c(1,dim(loadings)[2]))
 		for(i.ref in ref.index){
 			points(c(1:dim(loadings)[2]),loadings[i.ref,],col=i.ref)

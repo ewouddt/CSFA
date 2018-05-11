@@ -39,7 +39,7 @@
 #' @param cmpd.hist Query index vector which decides which query compounds are plotted for the histogram distribution under null hypothesis (\code{which=2}). If \code{NULL}, you can select which compounds you want interactively on the volcano plot.
 #' @param plot.type How should the plots be outputted? \code{"pdf"} to save them in pdf files, \code{device} to draw them in a graphics device (default), \code{sweave} to use them in a sweave or knitr file.
 #' @param color.columns Option to color the compounds on the volcano plot (\code{which=1}). Should be a vector of colors with the length of number of queries.
-#' @param basefilename Basename of the graphs if saved in pdf files
+#' @param basefilename Directory including filename of the graphs if saved in pdf files
 #' @param MultiCores Logical value parallelisation should be used for permutation. \code{FALSE} by default. (This option uses \code{\link[snowFT]{clusterApplyFT}} in order to provide load balancing and reproducible results with \code{MultiCores.seed})
 #' @param MultiCores.number Number of cores to be used for \code{MultiCores=TRUE}. By default total number of physical cores.
 #' @param MultiCores.seed Seed to be used for \code{MultiCores=TRUE} using see (\code{\link[snowFT]{clusterSetupRNG.FT}})
@@ -47,6 +47,14 @@
 #' This information is necessary to recalculate the p-values for different components as well as for producing the histograms. However for larger data, disabling this option will reduce the size of the resulting \code{\link{CSresult-class}} object.
 #' @return Returns the same \code{\link{CSresult-class}} object with added p-values to the CS slot and added information to the permutation.object slot. This CSresult can be reused in CSpermute to redraw the plots without calculation.
 #' @examples
+#' \dontshow{
+#' data("dataSIM",package="CSFA")
+#' Mat1 <- dataSIM[1:250,c(1:6)]
+#' Mat2 <- dataSIM[1:250,-c(1:6)]
+#' 
+#' ZHANG_analysis <- CSanalysis(Mat1,Mat2,"CSzhang",which=c())
+#' CSpermute(Mat1,Mat2,ZHANG_analysis,B=5,verbose=FALSE)
+#' }
 #' \dontrun{
 #' data("dataSIM",package="CSFA")
 #' Mat1 <- dataSIM[,c(1:6)]
@@ -57,11 +65,13 @@
 #' }
 CSpermute <- function(refMat,querMat,CSresult,B=500,mfa.factor=NULL,method.adjust="none",verbose=TRUE,
 #		querMat.Perm=NULL,save.querMat.Perm=FALSE,
-		which=c(1,3),cmpd.hist=NULL,color.columns=NULL,plot.type="device",basefilename="CSpermute",
+		which=c(1,3),cmpd.hist=NULL,color.columns=NULL,plot.type="device",basefilename=NULL,
     MultiCores=FALSE,MultiCores.number=detectCores(logical=FALSE),MultiCores.seed=NULL,
     save.permutation=TRUE
   ){
 	
+  check_filename(plot.type,basefilename)
+  
 	if(class(CSresult)!="CSresult"){stop("CSresult is not a class object of CSresult")}
 	if(!(method.adjust %in% c("holm", "hochberg", "hommel", "bonferroni", "BH", "BY","fdr", "none"))){stop("Incorrect method.adjust. Should we one of the following 'none', 'holm', 'hochberg', 'hommel', 'bonferroni', 'BH', 'BY', 'fdr'")}
 	

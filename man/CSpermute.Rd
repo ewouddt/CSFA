@@ -7,7 +7,7 @@
 CSpermute(refMat, querMat, CSresult, B = 500, mfa.factor = NULL,
   method.adjust = "none", verbose = TRUE, which = c(1, 3),
   cmpd.hist = NULL, color.columns = NULL, plot.type = "device",
-  basefilename = "CSpermute", MultiCores = FALSE,
+  basefilename = NULL, MultiCores = FALSE,
   MultiCores.number = detectCores(logical = FALSE), MultiCores.seed = NULL,
   save.permutation = TRUE)
 }
@@ -40,7 +40,7 @@ CSpermute(refMat, querMat, CSresult, B = 500, mfa.factor = NULL,
 
 \item{plot.type}{How should the plots be outputted? \code{"pdf"} to save them in pdf files, \code{device} to draw them in a graphics device (default), \code{sweave} to use them in a sweave or knitr file.}
 
-\item{basefilename}{Basename of the graphs if saved in pdf files}
+\item{basefilename}{Directory including filename of the graphs if saved in pdf files}
 
 \item{MultiCores}{Logical value parallelisation should be used for permutation. \code{FALSE} by default. (This option uses \code{\link[snowFT]{clusterApplyFT}} in order to provide load balancing and reproducible results with \code{MultiCores.seed})}
 
@@ -66,6 +66,14 @@ This because in each permutation the factor with the highest average reference l
 The ability to compute p-values of other factors (in which the reference set also increased loadings) will be added in a later release.
 }
 \examples{
+\dontshow{
+data("dataSIM",package="CSFA")
+Mat1 <- dataSIM[1:250,c(1:6)]
+Mat2 <- dataSIM[1:250,-c(1:6)]
+
+ZHANG_analysis <- CSanalysis(Mat1,Mat2,"CSzhang",which=c())
+CSpermute(Mat1,Mat2,ZHANG_analysis,B=5,verbose=FALSE)
+}
 \dontrun{
 data("dataSIM",package="CSFA")
 Mat1 <- dataSIM[,c(1:6)]

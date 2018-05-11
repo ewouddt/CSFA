@@ -411,7 +411,6 @@ get.loadings <- function(CSresult){
 #' @param basefilename Base of the filename when saving the graph as a pdf (\code{plot.type="pdf"})
 #' @param plot.type How should the plots be outputted? \code{"pdf"} to save them in pdf files, \code{device} to draw them in a graphics device (default), \code{sweave} to use them in a sweave or knitr file.
 #' @examples
-#' \dontrun{
 #' data("dataSIM",package="CSFA")
 #' Mat1 <- dataSIM[,c(1:6)]
 #' Mat2 <- dataSIM[,-c(1:6)]
@@ -423,7 +422,6 @@ get.loadings <- function(CSresult){
 #' 
 #' CSlabelscompare(CSresult=MFA_out,labels=labels,type="factors")
 #' CSlabelscompare(CSresult=MFA_out,labels=labels,type="factorlabels")
-#' }
 CSlabelscompare <- function(CSresult,labels,type="factors",basefilename="CSanalysis",plot.type="device"){
 	
 	if(class(CSresult)!="CSresult"){stop("CSresult is not of the correct class type",call.=FALSE)}
@@ -565,3 +563,16 @@ trim_object <- function(CSresult){
   return(CSresult)
 }
 
+
+
+check_filename <- function(plot.type,basefilename){
+  if(plot.type=="pdf"){
+    if(is.null(basefilename)){
+      stop("Please provide a directory and file name in the basefilename parameter.",call. = FALSE)
+    }else if(class(basefilename)!="character"){
+      stop("The basefilename parameter needs to be a character string.",call.=FALSE) 
+    }
+  }
+}
+
+# check_filename(plot.type,basefilename)

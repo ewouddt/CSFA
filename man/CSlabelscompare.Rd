@@ -34,7 +34,6 @@ See the \code{type} parameter which two plots can be created.\cr
 Note that the automatic created factor labels in \emph{CSanalysis} denote which factors this loading has a high/low value and these can be regenerated (with different a different cut-off) by simply running \emph{CSanalysis} again. Providing \code{resultavailable} will skip the analysis computation step and only regenerate the labels.
 }
 \examples{
-\dontrun{
 data("dataSIM",package="CSFA")
 Mat1 <- dataSIM[,c(1:6)]
 Mat2 <- dataSIM[,-c(1:6)]
@@ -46,5 +45,4 @@ labels[c(1:31,332:341)] <- "Signal"
 
 CSlabelscompare(CSresult=MFA_out,labels=labels,type="factors")
 CSlabelscompare(CSresult=MFA_out,labels=labels,type="factorlabels")
-}
 }

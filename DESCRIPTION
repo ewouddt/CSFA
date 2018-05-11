@@ -5,9 +5,9 @@ Version: 1.0.0
 Date: 2018-05-09
 Author: Ewoud De Troyer
 Maintainer: Ewoud De Troyer <ewoud.detroyer@uhasselt.be>
-Description: Applies Factor Analysis methodology to microarray data in order
+Description: Applies factor analysis methodology to microarray data in order
     to derive connectivity scores between compounds. The package also contains an
-    implementation of the Connectivity Score algorithm by Zhang and Gant.
+    implementation of the connectivity score algorithm by Zhang and Gant (2008) <doi:10.1186/1471-2105-9-258>.
 License: GPL-3
 Imports:
     methods, stats, graphics, grDevices,

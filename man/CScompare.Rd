@@ -9,7 +9,7 @@ CScompare(CSresult1, CSresult2, component1.plot, component2.plot,
   gene.thresP = NULL, gene.thresN = NULL, thresP.col = c("blue",
   "light blue"), thresN.col = c("red", "pink"), legend.names = NULL,
   legend.cols = NULL, legend.pos = "topright", plot.type = "device",
-  basefilename = "CScompare")
+  basefilename = NULL)
 }
 \arguments{
 \item{CSresult1}{First result.}
@@ -49,7 +49,7 @@ CScompare(CSresult1, CSresult2, component1.plot, component2.plot,
 
 \item{plot.type}{How should the plots be outputted? \code{"pdf"} to save them in pdf files, \code{device} to draw them in a graphics device (default), \code{sweave} to use them in a sweave or knitr file.}
 
-\item{basefilename}{Basename of the graphs if saved in pdf files}
+\item{basefilename}{Directory including filename of the graphs if saved in pdf files}
 }
 \value{
 A list object with 2 slots. In the first slot, Pearson and Spearman correlation between the results (CLoadings, Gene Scores, CRanking Scores, (adjusted) p-values) can be found. The second slot, if permutation was applied, contains a small comparison between the significant results based on \code{threshold.pvalues}.
@@ -60,14 +60,12 @@ Unless the result came from a Zhang and Gant analysis, you choose from which com
 Further, for Zhang and Gant analysis, the "CRanking Scores" and "CLoadings" will be the same as the ZG Score as well as the p-values.
 }
 \examples{
-\dontrun{
 data("dataSIM",package="CSFA")
 Mat1 <- dataSIM[,c(1:6)]
 Mat2 <- dataSIM[,-c(1:6)]
 
-MFA_analysis <- CSanalysis(Mat1,Mat2,"CSmfa")
+MFA_analysis <- CSanalysis(Mat1,Mat2,"CSmfa",component.plot=1)
 ZHANG_analysis <- CSanalysis(Mat1,Mat2,"CSzhang")
 
 CScompare(MFA_analysis,ZHANG_analysis,1)
-}
 }

@@ -14,7 +14,7 @@
   grouploadings.labels = NULL, grouploadings.cutoff = NULL,
   legend.names = NULL, legend.cols = NULL, legend.pos = "topright",
   result.available = NULL, result.available.update = FALSE,
-  plot.type = "device", basefilename = "analysePCA")
+  plot.type = "device", basefilename = NULL)
 }
 \arguments{
 \item{refMat}{Reference matrix (Rows = genes and columns = compounds)}
@@ -97,7 +97,7 @@ This can then later be used for the \code{CSlabelscompare} function to compare t
 
 \item{plot.type}{How should the plots be outputted? \code{"pdf"} to save them in pdf files, \code{device} to draw them in a graphics device (default), \code{sweave} to use them in a sweave or knitr file.}
 
-\item{basefilename}{Basename of the graphs if saved in pdf files#' @return An object of the S4 Class \code{CSresult}.}
+\item{basefilename}{Directory including filename of the graphs if saved in pdf files.}
 }
 \value{
 An object of the S4 Class \code{\link{CSresult-class}}.

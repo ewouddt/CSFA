@@ -34,23 +34,22 @@
 #' @param legend.cols Colors to be used for the \code{legend.names}.
 #' @param legend.pos The location of the legend: \code{"bottomright"}, \code{"bottom"}, \code{"bottomleft"}, \code{"left"}, \code{"topleft"}, \code{"top"}, \code{"topright"}, \code{"right"} and \code{"center"}.
 #' @param plot.type How should the plots be outputted? \code{"pdf"} to save them in pdf files, \code{device} to draw them in a graphics device (default), \code{sweave} to use them in a sweave or knitr file.
-#' @param basefilename Basename of the graphs if saved in pdf files
+#' @param basefilename Directory including filename of the graphs if saved in pdf files
 #' @param threshold.pvalues If both CSresult1 and CSresult contain pvalues (and adjusted pvalues), this threshold will be used to compare the number of overlapping significant results. 
 #' @return A list object with 2 slots. In the first slot, Pearson and Spearman correlation between the results (CLoadings, Gene Scores, CRanking Scores, (adjusted) p-values) can be found. The second slot, if permutation was applied, contains a small comparison between the significant results based on \code{threshold.pvalues}.
 #' @examples
-#' \dontrun{
 #' data("dataSIM",package="CSFA")
 #' Mat1 <- dataSIM[,c(1:6)]
 #' Mat2 <- dataSIM[,-c(1:6)]
 #' 
-#' MFA_analysis <- CSanalysis(Mat1,Mat2,"CSmfa")
+#' MFA_analysis <- CSanalysis(Mat1,Mat2,"CSmfa",component.plot=1)
 #' ZHANG_analysis <- CSanalysis(Mat1,Mat2,"CSzhang")
 #' 
 #' CScompare(MFA_analysis,ZHANG_analysis,1)
-#' }
-CScompare <- function(CSresult1,CSresult2,component1.plot,component2.plot,threshold.pvalues=0.05,which=c(1,2,3),color.columns=NULL,gene.thresP=NULL,gene.thresN=NULL,thresP.col=c("blue","light blue"),thresN.col=c("red","pink"),legend.names=NULL,legend.cols=NULL,legend.pos="topright",plot.type="device",basefilename="CScompare"){
+CScompare <- function(CSresult1,CSresult2,component1.plot,component2.plot,threshold.pvalues=0.05,which=c(1,2,3),color.columns=NULL,gene.thresP=NULL,gene.thresN=NULL,thresP.col=c("blue","light blue"),thresN.col=c("red","pink"),legend.names=NULL,legend.cols=NULL,legend.pos="topright",plot.type="device",basefilename=NULL){
 	
-
+  check_filename(plot.type,basefilename)
+  
 	if(class(CSresult1)!="CSresult"){stop("CSresult1 is not of the correct class type")}
 	if(class(CSresult2)!="CSresult"){stop("CSresult2 is not of the correct class type")}
 	
