@@ -37,7 +37,7 @@ Mat2 <- dataSIM[,-c(1:6)]
 ZHANG_analysis <- CSanalysis(Mat1,Mat2,"CSzhang")
 }
  
-\dontrun{
+\donttest{
 data("dataSIM",package="CSFA")
 Mat1 <- dataSIM[,c(1:6)]
 Mat2 <- dataSIM[,-c(1:6)]

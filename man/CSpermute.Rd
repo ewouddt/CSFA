@@ -74,7 +74,7 @@ Mat2 <- dataSIM[1:250,-c(1:6)]
 ZHANG_analysis <- CSanalysis(Mat1,Mat2,"CSzhang",which=c())
 CSpermute(Mat1,Mat2,ZHANG_analysis,B=5,verbose=FALSE)
 }
-\dontrun{
+\donttest{
 data("dataSIM",package="CSFA")
 Mat1 <- dataSIM[,c(1:6)]
 Mat2 <- dataSIM[,-c(1:6)]

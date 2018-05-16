@@ -76,7 +76,7 @@ setClass("CSresult",slots=list(type="character",CS="list",GS="data.frame",extra=
 #' ZHANG_analysis <- CSanalysis(Mat1,Mat2,"CSzhang")
 #' }
 #'  
-#' \dontrun{
+#' \donttest{
 #' data("dataSIM",package="CSFA")
 #' Mat1 <- dataSIM[,c(1:6)]
 #' Mat2 <- dataSIM[,-c(1:6)]
@@ -113,7 +113,7 @@ setGeneric('CSanalysis', function(refMat,querMat,type, ...){standardGeneric('CSa
 #' Mat2 <- dataSIM[,-c(1:6)]
 #' ZHANG_analysis <- CSanalysis(Mat1,Mat2,"CSzhang")
 #' }
-#' \dontrun{
+#' \donttest{
 #' data("dataSIM",package="CSFA")
 #' Mat1 <- dataSIM[,c(1:6)]
 #' Mat2 <- dataSIM[,-c(1:6)]
