@@ -278,6 +278,7 @@ setMethod('CSanalysis',c('matrix','matrix','CSfabia'),
 #' @param ncp \emph{MFA Parameter:} Number of dimensions kept in the results (by default 5).
 #' @param weight.col.mfa \emph{MFA Parameter:} Vector of weights, useful for HMFA method (by default, \code{NULL} and an MFA is performed).
 #' @param row.w \emph{MFA Parameter:} An optional row weights (by default, a vector of 1 for uniform row weights).
+#' @param mfa.type \emph{MFA Parameter:} The type of column variables (compounds) in both the Query and Reference matrix. "c" or "s" (= default) for quantitative variables (the difference is that for "s" variables are scaled to unit variance), "n" for categorical variables and "f" for frequencies (from a contingency tables)
 #' @param which Choose one or more plots to draw: 
 #' \enumerate{
 #' \item Percentage Variance Explained / Information Content for Component (Factor/Bicluster)
@@ -328,6 +329,7 @@ setMethod('CSanalysis',c('matrix','matrix','CSfabia'),
 #' @return An object of the S4 Class \code{\link{CSresult-class}}.
 setMethod("CSanalysis",c("matrix","matrix","CSmfa"),function(
 				refMat,querMat,type="CSmfa",ncp=5,weight.col.mfa=NULL,row.w=NULL,
+				mfa.type="s",
 				which=c(2,3,4,5)
 				,component.plot=NULL,CSrank.refplot=FALSE
 				,column.interest=NULL,row.interest=NULL,profile.type="gene",
@@ -338,6 +340,10 @@ setMethod("CSanalysis",c("matrix","matrix","CSmfa"),function(
 				result.available=NULL,result.available.update=FALSE,
 				plot.type="device",basefilename=NULL
 				){
+  
+      if(length(mfa.type)!=1){stop("mfa.type needs to be of length 1")}
+      if(class(mfa.type)!="character"){stop("mfa.type needs to be a character")}
+      if(!(mfa.type %in% c("c","s","n","f"))){stop("mfa.type needs to be \"c\", \"s\", \"n\" or \"f\"")}
   
       check_filename(plot.type,basefilename)
 				
@@ -373,7 +379,7 @@ setMethod("CSanalysis",c("matrix","matrix","CSmfa"),function(
 			if(!is.null(column.interest)){column.interest <- column.interest + dim(refMat)[2]}
 			
 			out <- analyse_FA(matchcall=type@call,modeltype=class(type),ref.index=c(1:dim(refMat)[2]),
-					data=data,type.mfa=rep("s",2),ind.sup=NULL,ncp=ncp,name.group=c("Reference","Query"),num.group.sup=NULL,graph=FALSE,weight.col.mfa=weight.col.mfa,row.w=row.w,axes=c(1,2),tab.comp=NULL,
+					data=data,type.mfa=rep(mfa.type,2),ind.sup=NULL,ncp=ncp,name.group=c("Reference","Query"),num.group.sup=NULL,graph=FALSE,weight.col.mfa=weight.col.mfa,row.w=row.w,axes=c(1,2),tab.comp=NULL,
 					basefilename=basefilename,
 					component.plot=component.plot,column.interest=column.interest,row.interest=row.interest,gene.thresP=gene.thresP,gene.thresN=gene.thresN,
 					colour.columns=colour.columns,legend.pos=legend.pos,legend.names=legend.names,legend.cols=legend.cols,thresP.col=thresP.col,thresN.col=thresN.col,

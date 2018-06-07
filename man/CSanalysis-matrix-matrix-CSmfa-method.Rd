@@ -6,15 +6,15 @@
 \title{"CSmfa"}
 \usage{
 \S4method{CSanalysis}{matrix,matrix,CSmfa}(refMat, querMat, type = "CSmfa",
-  ncp = 5, weight.col.mfa = NULL, row.w = NULL, which = c(2, 3, 4, 5),
-  component.plot = NULL, CSrank.refplot = FALSE, column.interest = NULL,
-  row.interest = NULL, profile.type = "gene", color.columns = NULL,
-  gene.highlight = NULL, gene.thresP = 1, gene.thresN = -1,
-  thresP.col = "blue", thresN.col = "red", grouploadings.labels = NULL,
-  grouploadings.cutoff = NULL, legend.names = NULL, legend.cols = NULL,
-  legend.pos = "topright", result.available = NULL,
-  result.available.update = FALSE, plot.type = "device",
-  basefilename = NULL)
+  ncp = 5, weight.col.mfa = NULL, row.w = NULL, mfa.type = "s",
+  which = c(2, 3, 4, 5), component.plot = NULL, CSrank.refplot = FALSE,
+  column.interest = NULL, row.interest = NULL, profile.type = "gene",
+  color.columns = NULL, gene.highlight = NULL, gene.thresP = 1,
+  gene.thresN = -1, thresP.col = "blue", thresN.col = "red",
+  grouploadings.labels = NULL, grouploadings.cutoff = NULL,
+  legend.names = NULL, legend.cols = NULL, legend.pos = "topright",
+  result.available = NULL, result.available.update = FALSE,
+  plot.type = "device", basefilename = NULL)
 }
 \arguments{
 \item{refMat}{Reference matrix (Rows = genes and columns = compounds)}
@@ -28,6 +28,8 @@
 \item{weight.col.mfa}{\emph{MFA Parameter:} Vector of weights, useful for HMFA method (by default, \code{NULL} and an MFA is performed).}
 
 \item{row.w}{\emph{MFA Parameter:} An optional row weights (by default, a vector of 1 for uniform row weights).}
+
+\item{mfa.type}{\emph{MFA Parameter:} The type of column variables (compounds) in both the Query and Reference matrix. "c" or "s" (= default) for quantitative variables (the difference is that for "s" variables are scaled to unit variance), "n" for categorical variables and "f" for frequencies (from a contingency tables)}
 
 \item{which}{Choose one or more plots to draw: 
 \enumerate{
