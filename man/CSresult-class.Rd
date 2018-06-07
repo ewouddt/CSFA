@@ -12,7 +12,7 @@ An S4 class in which the results of the Connectivity Scores by Factor Analysis a
 \describe{
 \item{\code{type}}{A character string containing the analysis type.}
 
-\item{\code{CS}}{List of any number of lists (depending on how many components were selected) which contain the connectivity loadings and ranking scores for the query (and reference loadings). If permutation was applied, will also contain p-values.}
+\item{\code{CS}}{List of any number of lists (depending on how many components were selected) which contain the connectivity loadings and ranking scores for the reference (and query loadings). If permutation was applied, will also contain p-values.}
 
 \item{\code{GS}}{Dataframe containing the gene scores.}
 

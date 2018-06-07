@@ -5,11 +5,11 @@
 \alias{CSanalysis,matrix,matrix,CSfabia-method}
 \title{"CSfabia"}
 \usage{
-\S4method{CSanalysis}{matrix,matrix,CSfabia}(refMat, querMat,
+\S4method{CSanalysis}{matrix,matrix,CSfabia}(querMat, refMat,
   type = "CSfabia", p = 13, alpha = 0.01, cyc = 500, spl = 0,
   spz = 0.5, non_negative = 0, random = 1, center = 2, norm = 1,
   scale = 0, lap = 1, nL = 0, lL = 0, bL = 0, which = c(2, 3, 4, 5),
-  component.plot = NULL, CSrank.refplot = FALSE, column.interest = NULL,
+  component.plot = NULL, CSrank.queryplot = FALSE, column.interest = NULL,
   row.interest = NULL, profile.type = "gene", color.columns = NULL,
   gene.highlight = NULL, gene.thresP = 1, gene.thresN = -1,
   thresP.col = "blue", thresN.col = "red", grouploadings.labels = NULL,
@@ -19,9 +19,9 @@
   basefilename = NULL)
 }
 \arguments{
-\item{refMat}{Reference matrix (Rows = genes and columns = compounds)}
+\item{querMat}{Query matrix (Rows = genes and columns = compounds)}
 
-\item{querMat}{Query matrix}
+\item{refMat}{Reference matrix}
 
 \item{type}{\code{"CSfabia"}}
 
@@ -56,7 +56,7 @@
 \item{which}{Choose one or more plots to draw: 
 \enumerate{
 \item Information Content for Bicluster (Only available for "CSfabia")
-\item Loadings for reference compounds
+\item Loadings for query compounds
 \item Loadings for Component (Factor/Bicluster) \code{component.plot}
 \item Gene Scores for Component (Factor/Bicluster) \code{component.Plot}
 \item Connectivity Ranking Scores for Component \code{component.plot}
@@ -65,21 +65,21 @@
 \item Group Loadings Plots for all components (see \code{grouploadings.labels}).
 }}
 
-\item{component.plot}{Which components (Factor/Bicluster) should be investigated? Can be a vector of multiple (e.g. \code{c(1,3,5)}). If \code{NULL}, you can choose components of interest interactively from reference loadings plot.}
+\item{component.plot}{Which components (Factor/Bicluster) should be investigated? Can be a vector of multiple (e.g. \code{c(1,3,5)}). If \code{NULL}, you can choose components of interest interactively from query loadings plot.}
 
-\item{CSrank.refplot}{Logical value deciding if the CS Rank Scores (\code{which=5}) should also be plotted per reference (instead of only the weighted mean).}
+\item{CSrank.queryplot}{Logical value deciding if the CS Rank Scores (\code{which=5}) should also be plotted per query (instead of only the weighted mean).}
 
-\item{column.interest}{Numeric vector of indices of query columns which should be in the profiles plots (\code{which=7}). If \code{NULL}, you can interactively select genes on the Compound Loadings plot (\code{which=3}).}
+\item{column.interest}{Numeric vector of indices of reference columns which should be in the profiles plots (\code{which=7}). If \code{NULL}, you can interactively select genes on the Compound Loadings plot (\code{which=3}).}
 
 \item{row.interest}{Numeric vector of gene indices to be plotted in gene profiles plot (\code{which=7}, \code{profile.type="gene"}). If \code{NULL}, you can interactively select them in the gene scores plot (\code{which=4}).}
 
 \item{profile.type}{Type of \code{which=7} plot:
 \itemize{
-\item \code{"gene"}: Gene profiles plot of selected genes in \code{row.interest} with the reference compounds and those selected in \code{column.interest} ordered first on the x axis. The other compounds are ordered in decreasing CScore. 
-\item \code{"cmpd"}: Compound profiles plot of reference and selected compounds (\code{column.interest}) and only those genes on the x-axis which beat the thresholds (\code{gene.thresP}, \code{gene.thresN})
+\item \code{"gene"}: Gene profiles plot of selected genes in \code{row.interest} with the query compounds and those selected in \code{column.interest} ordered first on the x axis. The other compounds are ordered in decreasing CScore. 
+\item \code{"cmpd"}: Compound profiles plot of query and selected compounds (\code{column.interest}) and only those genes on the x-axis which beat the thresholds (\code{gene.thresP}, \code{gene.thresN})
 }}
 
-\item{color.columns}{Vector of colors for the reference and query columns (compounds). If \code{NULL}, blue will be used for reference and black for query. Use this option to highlight reference columns and query columns of interest.}
+\item{color.columns}{Vector of colors for the query and reference columns (compounds). If \code{NULL}, blue will be used for query and black for reference. Use this option to highlight query columns and reference columns of interest.}
 
 \item{gene.highlight}{Single numeric vector or list of maximum 5 numeric vectors. This highlights gene of interest in gene scores plot (\code{which=4}) up to 5 different colors. (e.g. You can use this to highlight genes you know to be differentially expressed)}
 
@@ -94,12 +94,12 @@
 \item{grouploadings.labels}{This parameter used for the Group Loadings Plots (\code{which=8}). In general this plot will contain the loadings of all factors, grouped and colored by the labels given in this parameter.
 \itemize{
 \item If \code{grouploadings.labels!=NULL}:\cr
-Provide a vector for all samples (ref + query) containing labels on which the plot will be based on.
+Provide a vector for all samples (query + ref) containing labels on which the plot will be based on.
 
 \item If \code{grouploadings.labels=NULL}: \cr
 If no labels are provided when choosing \code{which=8}, automatic labels ("Top Samples of Component 1, 2....") will be created. These labels are given to the top \code{grouploadings.cutoff}  number of samples based on the absolute values of the loadings. 
 }
-Plot \code{which=8} can be used to check 2 different situations. Either to check if your provided labels coincide with the discovered structure in the analysis. The other aim is to find new interesting structures (of samples) which strongly appear in one or multiple components. A subsequent step could be to take some strong samples/compounds of these compounds and use them as a new reference set in a new CS analysis to check its validity or to find newly connected compounds.
+Plot \code{which=8} can be used to check 2 different situations. Either to check if your provided labels coincide with the discovered structure in the analysis. The other aim is to find new interesting structures (of samples) which strongly appear in one or multiple components. A subsequent step could be to take some strong samples/compounds of these compounds and use them as a new query set in a new CS analysis to check its validity or to find newly connected compounds.
 
 Please note that even when \code{group.loadings.labels!=NULL}, that the labels based on the absolute loadings of all the factors (the top \code{grouploadings.cutoff}) will always be generated and saved in \code{samplefactorlabels} in the \code{extra} slot of the \code{CSresult} object. 
 This can then later be used for the \code{CSlabelscompare} function to compare them with your true labels.}
@@ -108,7 +108,7 @@ This can then later be used for the \code{CSlabelscompare} function to compare t
 
 \item{legend.names}{Option to draw a legend of for example colored columns in Compound Loadings plot (\code{which=3}). If \code{NULL}, only "References" will be in the legend.}
 
-\item{legend.cols}{Colors to be used in legends. If \code{NULL}, only blue for "References is used".}
+\item{legend.cols}{Colors to be used in legends. If \code{NULL}, only blue for "Queries is used".}
 
 \item{legend.pos}{Position of the legend in all requested plots, can be \code{"topright"}, \code{"topleft"}, \code{"bottomleft"}, \code{"bottomright"}, \code{"bottom"}, \code{"top"}, \code{"left"}, \code{"right"}, \code{"center"}.}
 
@@ -126,5 +126,5 @@ This can then later be used for the \code{CSlabelscompare} function to compare t
 An object of the S4 Class \code{\link{CSresult-class}}.
 }
 \description{
-Doing interactive CS analysis with FABIA (Factor Analysis for Bicluster Acquisition). One or multiple reference compounds are possible in this analysis.
+Doing interactive CS analysis with FABIA (Factor Analysis for Bicluster Acquisition). One or multiple query compounds are possible in this analysis.
 }

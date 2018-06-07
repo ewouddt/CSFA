@@ -7,7 +7,7 @@
 #' Simulated Microarray Data
 #'
 #' A matrix containing some simulated example microarray data. 
-#' The first 6 columns of this matrix make up the reference matrix part.
+#' The first 6 columns of this matrix make up the query matrix part.
 #'
 #' @format A matrix with 1000 rows and 341 columns.
 #' @name dataSIM
@@ -36,7 +36,7 @@ setClass("CSzhang",slots=c(call="call"))
 #' 
 #' @export
 #' @slot type A character string containing the analysis type.
-#' @slot CS List of any number of lists (depending on how many components were selected) which contain the connectivity loadings and ranking scores for the query (and reference loadings). If permutation was applied, will also contain p-values.
+#' @slot CS List of any number of lists (depending on how many components were selected) which contain the connectivity loadings and ranking scores for the reference (and query loadings). If permutation was applied, will also contain p-values.
 #' @slot GS Dataframe containing the gene scores.
 #' @slot extra List which contains \code{CSRank_Full} (contains all intermediate values while calculating the CS Ranking Score), \code{Object} (contains the complete original FA or Zhang result) and \code{samplefactorlabels} (contains thresholded labels based on the factor loadings, see plot \code{which=8}).
 #' @slot permutation.object Contains CS for permuted data (matrix) and a dataframe with the p-values (only for MFA and Zhang).
@@ -63,8 +63,8 @@ setClass("CSresult",slots=list(type="character",CS="list",GS="data.frame",extra=
 #' }
 #' 
 #' @export
-#' @param refMat Reference matrix (Rows = genes and columns = compounds)
-#' @param querMat Query matrix
+#' @param querMat Query matrix (Rows = genes and columns = compounds)
+#' @param refMat Reference matrix
 #' @param type Type of Factor Analysis or Zhang & Gant ( \code{"CSfabia"}, \code{"CSmfa"}, \code{"CSpca"}, \code{"CSsmfa"} or \code{"CSzhang"})
 #' @param ... Additional parameters for analysis
 #' @return An object of the S4 Class \code{\link{CSresult-class}}.
@@ -85,7 +85,7 @@ setClass("CSresult",slots=list(type="character",CS="list",GS="data.frame",extra=
 #' FABIA_analysis <- CSanalysis(Mat1,Mat2,"CSfabia")
 #' ZHANG_analysis <- CSanalysis(Mat1,Mat2,"CSzhang")
 #' }
-setGeneric('CSanalysis', function(refMat,querMat,type, ...){standardGeneric('CSanalysis')})
+setGeneric('CSanalysis', function(querMat,refMat,type, ...){standardGeneric('CSanalysis')})
 
 
 #' Connectivity Score Analysis.
@@ -101,8 +101,8 @@ setGeneric('CSanalysis', function(refMat,querMat,type, ...){standardGeneric('CSa
 #' }
 #' 
 #' @export
-#' @param refMat Reference matrix (Rows = genes and columns = compounds)
-#' @param querMat Query matrix
+#' @param querMat Query matrix (Rows = genes and columns = compounds)
+#' @param refMat Reference matrix
 #' @param type Type of Factor Analysis or Zhang & Gant ( \code{"CSfabia"}, \code{"CSmfa"}, \code{"CSpca"}, \code{"CSsmfa"} or \code{"CSzhang"})
 #' @param ... Additional parameters for analysis
 #' @return An object of the S4 Class \code{\link{CSresult-class}}.
@@ -123,10 +123,10 @@ setGeneric('CSanalysis', function(refMat,querMat,type, ...){standardGeneric('CSa
 #' ZHANG_analysis <- CSanalysis(Mat1,Mat2,"CSzhang")
 #' }
 setMethod('CSanalysis', c('matrix','matrix','character'),
-		function(refMat,querMat,type, ...) {
+		function(querMat,refMat,type, ...) {
 			if(type %in% c("CSfabia","CSmfa","CSpca","CSsmfa","CSzhang")){
 				type <- new(type,call=match.call())
-				CSanalysis(refMat,querMat,type,...)
+				CSanalysis(querMat,refMat,type,...)
 			}
 			else{
 				stop("This method type is not available.")
@@ -138,11 +138,11 @@ setMethod('CSanalysis', c('matrix','matrix','character'),
 
 #' "CSfabia"
 #' 
-#' Doing interactive CS analysis with FABIA (Factor Analysis for Bicluster Acquisition). One or multiple reference compounds are possible in this analysis.
+#' Doing interactive CS analysis with FABIA (Factor Analysis for Bicluster Acquisition). One or multiple query compounds are possible in this analysis.
 #' 
 #' @export 
-#' @param refMat Reference matrix (Rows = genes and columns = compounds)
-#' @param querMat Query matrix
+#' @param querMat Query matrix (Rows = genes and columns = compounds)
+#' @param refMat Reference matrix
 #' @param type \code{"CSfabia"}
 #' @param p \emph{Fabia Parameter:} number of hidden factors = number of biclusters; default = 13
 #' @param alpha \emph{Fabia Parameter:} sparseness loadings (0 - 1.0); default = 0.01
@@ -161,7 +161,7 @@ setMethod('CSanalysis', c('matrix','matrix','character'),
 #' @param which Choose one or more plots to draw: 
 #' \enumerate{
 #' \item Information Content for Bicluster (Only available for "CSfabia")
-#' \item Loadings for reference compounds
+#' \item Loadings for query compounds
 #' \item Loadings for Component (Factor/Bicluster) \code{component.plot}
 #' \item Gene Scores for Component (Factor/Bicluster) \code{component.Plot}
 #' \item Connectivity Ranking Scores for Component \code{component.plot}
@@ -169,16 +169,16 @@ setMethod('CSanalysis', c('matrix','matrix','character'),
 #' \item Profile plot (see \code{profile.type})
 #' \item Group Loadings Plots for all components (see \code{grouploadings.labels}).
 #' }
-#' @param component.plot Which components (Factor/Bicluster) should be investigated? Can be a vector of multiple (e.g. \code{c(1,3,5)}). If \code{NULL}, you can choose components of interest interactively from reference loadings plot.
-#' @param CSrank.refplot Logical value deciding if the CS Rank Scores (\code{which=5}) should also be plotted per reference (instead of only the weighted mean).
-#' @param column.interest Numeric vector of indices of query columns which should be in the profiles plots (\code{which=7}). If \code{NULL}, you can interactively select genes on the Compound Loadings plot (\code{which=3}).
+#' @param component.plot Which components (Factor/Bicluster) should be investigated? Can be a vector of multiple (e.g. \code{c(1,3,5)}). If \code{NULL}, you can choose components of interest interactively from query loadings plot.
+#' @param CSrank.queryplot Logical value deciding if the CS Rank Scores (\code{which=5}) should also be plotted per query (instead of only the weighted mean).
+#' @param column.interest Numeric vector of indices of reference columns which should be in the profiles plots (\code{which=7}). If \code{NULL}, you can interactively select genes on the Compound Loadings plot (\code{which=3}).
 #' @param row.interest Numeric vector of gene indices to be plotted in gene profiles plot (\code{which=7}, \code{profile.type="gene"}). If \code{NULL}, you can interactively select them in the gene scores plot (\code{which=4}).
 #' @param profile.type Type of \code{which=7} plot:
 #' \itemize{
-#' \item \code{"gene"}: Gene profiles plot of selected genes in \code{row.interest} with the reference compounds and those selected in \code{column.interest} ordered first on the x axis. The other compounds are ordered in decreasing CScore. 
-#' \item \code{"cmpd"}: Compound profiles plot of reference and selected compounds (\code{column.interest}) and only those genes on the x-axis which beat the thresholds (\code{gene.thresP}, \code{gene.thresN})
+#' \item \code{"gene"}: Gene profiles plot of selected genes in \code{row.interest} with the query compounds and those selected in \code{column.interest} ordered first on the x axis. The other compounds are ordered in decreasing CScore. 
+#' \item \code{"cmpd"}: Compound profiles plot of query and selected compounds (\code{column.interest}) and only those genes on the x-axis which beat the thresholds (\code{gene.thresP}, \code{gene.thresN})
 #' }
-#' @param color.columns Vector of colors for the reference and query columns (compounds). If \code{NULL}, blue will be used for reference and black for query. Use this option to highlight reference columns and query columns of interest.
+#' @param color.columns Vector of colors for the query and reference columns (compounds). If \code{NULL}, blue will be used for query and black for reference. Use this option to highlight query columns and reference columns of interest.
 #' @param gene.highlight Single numeric vector or list of maximum 5 numeric vectors. This highlights gene of interest in gene scores plot (\code{which=4}) up to 5 different colors. (e.g. You can use this to highlight genes you know to be differentially expressed)
 #' @param gene.thresP Threshold for genes with a high score (\code{which=4}).
 #' @param gene.thresN Threshold for genes with a low score (\code{which=4}).
@@ -187,18 +187,18 @@ setMethod('CSanalysis', c('matrix','matrix','character'),
 #' @param grouploadings.labels This parameter used for the Group Loadings Plots (\code{which=8}). In general this plot will contain the loadings of all factors, grouped and colored by the labels given in this parameter.
 #' \itemize{
 #' \item If \code{grouploadings.labels!=NULL}:\cr
-#' Provide a vector for all samples (ref + query) containing labels on which the plot will be based on.
+#' Provide a vector for all samples (query + ref) containing labels on which the plot will be based on.
 #' 
 #' \item If \code{grouploadings.labels=NULL}: \cr
 #' If no labels are provided when choosing \code{which=8}, automatic labels ("Top Samples of Component 1, 2....") will be created. These labels are given to the top \code{grouploadings.cutoff}  number of samples based on the absolute values of the loadings. 
 #' }
-#' Plot \code{which=8} can be used to check 2 different situations. Either to check if your provided labels coincide with the discovered structure in the analysis. The other aim is to find new interesting structures (of samples) which strongly appear in one or multiple components. A subsequent step could be to take some strong samples/compounds of these compounds and use them as a new reference set in a new CS analysis to check its validity or to find newly connected compounds.
+#' Plot \code{which=8} can be used to check 2 different situations. Either to check if your provided labels coincide with the discovered structure in the analysis. The other aim is to find new interesting structures (of samples) which strongly appear in one or multiple components. A subsequent step could be to take some strong samples/compounds of these compounds and use them as a new query set in a new CS analysis to check its validity or to find newly connected compounds.
 #' 
 #' Please note that even when \code{group.loadings.labels!=NULL}, that the labels based on the absolute loadings of all the factors (the top \code{grouploadings.cutoff}) will always be generated and saved in \code{samplefactorlabels} in the \code{extra} slot of the \code{CSresult} object. 
 #' This can then later be used for the \code{CSlabelscompare} function to compare them with your true labels.
 #' @param grouploadings.cutoff Parameter used in plot \code{which=8}. See \code{grouploadings.labels=NULL} for more information. If this parameter is not provided, it will be automatically set to 10\% of the total number of loadings.
 #' @param legend.names Option to draw a legend of for example colored columns in Compound Loadings plot (\code{which=3}). If \code{NULL}, only "References" will be in the legend.
-#' @param legend.cols Colors to be used in legends. If \code{NULL}, only blue for "References is used".
+#' @param legend.cols Colors to be used in legends. If \code{NULL}, only blue for "Queries is used".
 #' @param legend.pos Position of the legend in all requested plots, can be \code{"topright"}, \code{"topleft"}, \code{"bottomleft"}, \code{"bottomright"}, \code{"bottom"}, \code{"top"}, \code{"left"}, \code{"right"}, \code{"center"}.
 #' @param labels Boolean value (default=TRUE) to use row and/or column text labels in the score plots (\code{which=c(3,4,5,6)}). 
 #' @param result.available You can a previously returned object by \code{CSanalysis} in order to only draw graphs, not recompute the scores.
@@ -207,9 +207,9 @@ setMethod('CSanalysis', c('matrix','matrix','character'),
 #' @param basefilename Directory including filename of the graphs if saved in pdf files
 #' @return An object of the S4 Class \code{\link{CSresult-class}}.
 setMethod('CSanalysis',c('matrix','matrix','CSfabia'),
-		function(refMat,querMat,type="CSfabia",p=13,alpha=0.01,cyc=500,spl=0,spz=0.5,non_negative=0,random=1.0,center=2,norm=1,scale=0.0,lap=1.0,nL=0,lL=0,bL=0
+		function(querMat,refMat,type="CSfabia",p=13,alpha=0.01,cyc=500,spl=0,spz=0.5,non_negative=0,random=1.0,center=2,norm=1,scale=0.0,lap=1.0,nL=0,lL=0,bL=0
 				,which=c(2,3,4,5)
-				,component.plot=NULL,CSrank.refplot=FALSE
+				,component.plot=NULL,CSrank.queryplot=FALSE
 				,column.interest=NULL,row.interest=NULL,profile.type="gene"
 				,color.columns=NULL,gene.highlight=NULL
 				,gene.thresP=1,gene.thresN=-1,thresP.col="blue",thresN.col="red"
@@ -222,7 +222,7 @@ setMethod('CSanalysis',c('matrix','matrix','CSfabia'),
 		  
 		  check_filename(plot.type,basefilename)
 
-			data <- cbind(as.matrix(refMat),as.matrix(querMat))
+			data <- cbind(as.matrix(querMat),as.matrix(refMat))
 
 
 			colour.columns <- color.columns
@@ -243,16 +243,16 @@ setMethod('CSanalysis',c('matrix','matrix','CSfabia'),
 			}
 		
 			
-			if(!is.null(column.interest)){column.interest <- column.interest + dim(refMat)[2]}
+			if(!is.null(column.interest)){column.interest <- column.interest + dim(querMat)[2]}
 
-			out <- analyse_FA(matchcall=type@call,modeltype=class(type),ref.index=c(1:dim(refMat)[2]),
+			out <- analyse_FA(matchcall=type@call,modeltype=class(type),ref.index=c(1:dim(querMat)[2]),
 					data=data,p=p,alpha=alpha,cyc=cyc,spl=spl,spz=spz,non_negative=non_negative,random=random,center=center,norm=norm,scale=scale,lap=lap,nL=nL,lL=lL,bL=bL,
 					basefilename=basefilename,
 #					weighted.data=TRUE,
 					component.plot=component.plot,
 					column.interest=column.interest,row.interest=row.interest,gene.thresP=gene.thresP,gene.thresN=gene.thresN,
 					colour.columns=colour.columns,legend.pos=legend.pos,legend.names=legend.names,legend.cols=legend.cols,thresP.col=thresP.col,thresN.col=thresN.col,
-					result.available=result.available,plot.type=plot.type,CSrank.refplot=CSrank.refplot,
+					result.available=result.available,plot.type=plot.type,CSrank.queryplot=CSrank.queryplot,
 					which=which,labels=labels,
 					gene.highlight=gene.highlight,profile.type=profile.type,
 					grouploadings.labels=grouploadings.labels,grouploadings.cutoff=grouploadings.cutoff,
@@ -269,12 +269,12 @@ setMethod('CSanalysis',c('matrix','matrix','CSfabia'),
 # MFA
 #' "CSmfa"
 #' 
-#' @description Doing interactive CS analysis with MFA (Multiple Factor Analysis). Should use multiple references for this analysis.
+#' @description Doing interactive CS analysis with MFA (Multiple Factor Analysis). Should use multiple queries for this analysis.
 #' Uses the \code{\link[FactoMineR]{MFA}} function.
 #' 
 #' @export 
-#' @param refMat Reference matrix (Rows = genes and columns = compounds)
-#' @param querMat Query matrix
+#' @param querMat Query matrix (Rows = genes and columns = compounds)
+#' @param refMat Reference matrix
 #' @param type \code{"CSmfa"}
 #' @param ncp \emph{MFA Parameter:} Number of dimensions kept in the results (by default 5).
 #' @param weight.col.mfa \emph{MFA Parameter:} Vector of weights, useful for HMFA method (by default, \code{NULL} and an MFA is performed).
@@ -283,7 +283,7 @@ setMethod('CSanalysis',c('matrix','matrix','CSfabia'),
 #' @param which Choose one or more plots to draw: 
 #' \enumerate{
 #' \item Information Content for Bicluster (Only available for "CSfabia")
-#' \item Loadings for reference compounds
+#' \item Loadings for query compounds
 #' \item Loadings for Component (Factor/Bicluster) \code{component.plot}
 #' \item Gene Scores for Component (Factor/Bicluster) \code{component.Plot}
 #' \item Connectivity Ranking Scores for Component \code{component.plot}
@@ -291,16 +291,16 @@ setMethod('CSanalysis',c('matrix','matrix','CSfabia'),
 #' \item Profile plot (see \code{profile.type})
 #' \item Group Loadings Plots for all components (see \code{grouploadings.labels}).
 #' }
-#' @param component.plot Which components (Factor/Bicluster) should be investigated? Can be a vector of multiple (e.g. \code{c(1,3,5)}). If \code{NULL}, you can choose components of interest interactively from reference loadings plot.
-#' @param CSrank.refplot Logical value deciding if the CS Rank Scores (\code{which=5}) should also be plotted per reference (instead of only the weighted mean).
-#' @param column.interest Numeric vector of indices of query columns which should be in the profiles plots (\code{which=7}). If \code{NULL}, you can interactively select genes on the Compound Loadings plot (\code{which=3}).
+#' @param component.plot Which components (Factor/Bicluster) should be investigated? Can be a vector of multiple (e.g. \code{c(1,3,5)}). If \code{NULL}, you can choose components of interest interactively from query loadings plot.
+#' @param CSrank.queryplot Logical value deciding if the CS Rank Scores (\code{which=5}) should also be plotted per query (instead of only the weighted mean).
+#' @param column.interest Numeric vector of indices of reference columns which should be in the profiles plots (\code{which=7}). If \code{NULL}, you can interactively select genes on the Compound Loadings plot (\code{which=3}).
 #' @param row.interest Numeric vector of gene indices to be plotted in gene profiles plot (\code{which=7}, \code{profile.type="gene"}). If \code{NULL}, you can interactively select them in the gene scores plot (\code{which=4}).
 #' @param profile.type Type of \code{which=7} plot:
 #' \itemize{
-#' \item \code{"gene"}: Gene profiles plot of selected genes in \code{row.interest} with the reference compounds and those selected in \code{column.interest} ordered first on the x axis. The other compounds are ordered in decreasing CScore. 
-#' \item \code{"cmpd"}: Compound profiles plot of reference and selected compounds (\code{column.interest}) and only those genes on the x-axis which beat the thresholds (\code{gene.thresP}, \code{gene.thresN})
+#' \item \code{"gene"}: Gene profiles plot of selected genes in \code{row.interest} with the query compounds and those selected in \code{column.interest} ordered first on the x axis. The other compounds are ordered in decreasing CScore. 
+#' \item \code{"cmpd"}: Compound profiles plot of query and selected compounds (\code{column.interest}) and only those genes on the x-axis which beat the thresholds (\code{gene.thresP}, \code{gene.thresN})
 #' }
-#' @param color.columns Vector of colors for the reference and query columns (compounds). If \code{NULL}, blue will be used for reference and black for query. Use this option to highlight reference columns and query columns of interest.
+#' @param color.columns Vector of colors for the query and reference columns (compounds). If \code{NULL}, blue will be used for query and black for reference. Use this option to highlight query columns and reference columns of interest.
 #' @param gene.highlight Single numeric vector or list of maximum 5 numeric vectors. This highlights gene of interest in gene scores plot (\code{which=4}) up to 5 different colors. (e.g. You can use this to highlight genes you know to be differentially expressed)
 #' @param gene.thresP Threshold for genes with a high score (\code{which=4}).
 #' @param gene.thresN Threshold for genes with a low score (\code{which=4}).
@@ -309,18 +309,18 @@ setMethod('CSanalysis',c('matrix','matrix','CSfabia'),
 #' @param grouploadings.labels This parameter used for the Group Loadings Plots (\code{which=8}). In general this plot will contain the loadings of all factors, grouped and colored by the labels given in this parameter.
 #' \itemize{
 #' \item If \code{grouploadings.labels!=NULL}:\cr
-#' Provide a vector for all samples (ref + query) containing labels on which the plot will be based on.
+#' Provide a vector for all samples (query + ref) containing labels on which the plot will be based on.
 #' 
 #' \item If \code{grouploadings.labels=NULL}: \cr
 #' If no labels are provided when choosing \code{which=8}, automatic labels ("Top Samples of Component 1, 2....") will be created. These labels are given to the top \code{grouploadings.cutoff}  number of samples based on the absolute values of the loadings. 
 #' }
-#' Plot \code{which=8} can be used to check 2 different situations. Either to check if your provided labels coincide with the discovered structure in the analysis. The other aim is to find new interesting structures (of samples) which strongly appear in one or multiple components. A subsequent step could be to take some strong samples/compounds of these compounds and use them as a new reference set in a new CS analysis to check its validity or to find newly connected compounds.
+#' Plot \code{which=8} can be used to check 2 different situations. Either to check if your provided labels coincide with the discovered structure in the analysis. The other aim is to find new interesting structures (of samples) which strongly appear in one or multiple components. A subsequent step could be to take some strong samples/compounds of these compounds and use them as a new query set in a new CS analysis to check its validity or to find newly connected compounds.
 #' 
 #' Please note that even when \code{group.loadings.labels!=NULL}, that the labels based on the absolute loadings of all the factors (the top \code{grouploadings.cutoff}) will always be generated and saved in \code{samplefactorlabels} in the \code{extra} slot of the \code{CSresult} object. 
 #' This can then later be used for the \code{CSlabelscompare} function to compare them with your true labels.
 #' @param grouploadings.cutoff Parameter used in plot \code{which=8}. See \code{grouploadings.labels=NULL} for more information. If this parameter is not provided, it will be automatically set to 10\% of the total number of loadings.
 #' @param legend.names Option to draw a legend of for example colored columns in Compound Loadings plot (\code{which=3}). If \code{NULL}, only "References" will be in the legend.
-#' @param legend.cols Colors to be used in legends. If \code{NULL}, only blue for "References is used".
+#' @param legend.cols Colors to be used in legends. If \code{NULL}, only blue for "Queries is used".
 #' @param legend.pos Position of the legend in all requested plots, can be \code{"topright"}, \code{"topleft"}, \code{"bottomleft"}, \code{"bottomright"}, \code{"bottom"}, \code{"top"}, \code{"left"}, \code{"right"}, \code{"center"}.
 #' @param labels Boolean value (default=TRUE) to use row and/or column text labels in the score plots (\code{which=c(3,4,5,6)}). 
 #' @param result.available You can a previously returned object by \code{CSanalysis} in order to only draw graphs, not recompute the scores.
@@ -329,10 +329,10 @@ setMethod('CSanalysis',c('matrix','matrix','CSfabia'),
 #' @param basefilename Directory including filename of the graphs if saved in pdf files
 #' @return An object of the S4 Class \code{\link{CSresult-class}}.
 setMethod("CSanalysis",c("matrix","matrix","CSmfa"),function(
-				refMat,querMat,type="CSmfa",ncp=5,weight.col.mfa=NULL,row.w=NULL,
+				querMat,refMat,type="CSmfa",ncp=5,weight.col.mfa=NULL,row.w=NULL,
 				mfa.type="s",
 				which=c(2,3,4,5)
-				,component.plot=NULL,CSrank.refplot=FALSE
+				,component.plot=NULL,CSrank.queryplot=FALSE
 				,column.interest=NULL,row.interest=NULL,profile.type="gene",
 				color.columns=NULL,gene.highlight=NULL,				
 				gene.thresP=1,gene.thresN=-1,thresP.col="blue",thresN.col="red",
@@ -349,14 +349,14 @@ setMethod("CSanalysis",c("matrix","matrix","CSmfa"),function(
   
       check_filename(plot.type,basefilename)
 				
-			if(!(dim(refMat)[2]>1)){
+			if(!(dim(querMat)[2]>1)){
 				stop("Reference matrix should have more than 1 reference")
 			}
-			if(dim(querMat)[2]==1){
+			if(dim(refMat)[2]==1){
 				stop("Query matrix only has 1 query.")
 			}
 			
-			data <- cbind(as.matrix(refMat),as.matrix(querMat))
+			data <- cbind(as.matrix(querMat),as.matrix(refMat))
 			
 			
 			colour.columns <- color.columns
@@ -378,14 +378,14 @@ setMethod("CSanalysis",c("matrix","matrix","CSmfa"),function(
 			}
 
 			
-			if(!is.null(column.interest)){column.interest <- column.interest + dim(refMat)[2]}
+			if(!is.null(column.interest)){column.interest <- column.interest + dim(querMat)[2]}
 			
-			out <- analyse_FA(matchcall=type@call,modeltype=class(type),ref.index=c(1:dim(refMat)[2]),
+			out <- analyse_FA(matchcall=type@call,modeltype=class(type),ref.index=c(1:dim(querMat)[2]),
 					data=data,type.mfa=rep(mfa.type,2),ind.sup=NULL,ncp=ncp,name.group=c("Reference","Query"),num.group.sup=NULL,graph=FALSE,weight.col.mfa=weight.col.mfa,row.w=row.w,axes=c(1,2),tab.comp=NULL,
 					basefilename=basefilename,
 					component.plot=component.plot,column.interest=column.interest,row.interest=row.interest,gene.thresP=gene.thresP,gene.thresN=gene.thresN,
 					colour.columns=colour.columns,legend.pos=legend.pos,legend.names=legend.names,legend.cols=legend.cols,thresP.col=thresP.col,thresN.col=thresN.col,
-					result.available=result.available,plot.type=plot.type,CSrank.refplot=CSrank.refplot,
+					result.available=result.available,plot.type=plot.type,CSrank.queryplot=CSrank.queryplot,
 					which=which,labels=labels,
 					grouploadings.labels=grouploadings.labels,grouploadings.cutoff=grouploadings.cutoff,
 					gene.highlight=gene.highlight,profile.type=profile.type,result.available.update=result.available.update)
@@ -401,12 +401,12 @@ setMethod("CSanalysis",c("matrix","matrix","CSmfa"),function(
 # PCA
 #' "CSpca"
 #' 
-#' @description Doing interactive CS analysis with PCA (Principal Component Analysis). This analysis is meant for 1 reference signature.
+#' @description Doing interactive CS analysis with PCA (Principal Component Analysis). This analysis is meant for 1 query signature.
 #' Uses the \code{\link[FactoMineR]{PCA}} function.
 #' 
 #' @export 
-#' @param refMat Reference matrix (Rows = genes and columns = compounds)
-#' @param querMat Query matrix
+#' @param querMat Query matrix (Rows = genes and columns = compounds)
+#' @param refMat Reference matrix
 #' @param type \code{"CSpca"}
 #' @param ncp \emph{PCA Parameter:} Number of dimensions kept in the results (by default 5).
 #' @param scale.unit \emph{PCA Parameter:} A boolean, if TRUE (value set by default) then data are scaled to unit variance.
@@ -415,7 +415,7 @@ setMethod("CSanalysis",c("matrix","matrix","CSmfa"),function(
 #' @param which Choose one or more plots to draw: 
 #' \enumerate{
 #' \item Information Content for Bicluster (Only available for "CSfabia")
-#' \item Loadings for reference compounds
+#' \item Loadings for query compounds
 #' \item Loadings for Component (Factor/Bicluster) \code{component.plot}
 #' \item Gene Scores for Component (Factor/Bicluster) \code{component.Plot}
 #' \item Connectivity Ranking Scores for Component \code{component.plot}
@@ -423,16 +423,16 @@ setMethod("CSanalysis",c("matrix","matrix","CSmfa"),function(
 #' \item Profile plot (see \code{profile.type})
 #' \item Group Loadings Plots for all components (see \code{grouploadings.labels}).
 #' }
-#' @param component.plot Which components (Factor/Bicluster) should be investigated? Can be a vector of multiple (e.g. \code{c(1,3,5)}). If \code{NULL}, you can choose components of interest interactively from reference loadings plot.
-#' @param CSrank.refplot Logical value deciding if the CS Rank Scores (\code{which=5}) should also be plotted per reference (instead of only the weighted mean).
-#' @param column.interest Numeric vector of indices of query columns which should be in the profiles plots (\code{which=7}). If \code{NULL}, you can interactively select genes on the Compound Loadings plot (\code{which=3}).
+#' @param component.plot Which components (Factor/Bicluster) should be investigated? Can be a vector of multiple (e.g. \code{c(1,3,5)}). If \code{NULL}, you can choose components of interest interactively from query loadings plot.
+#' @param CSrank.queryplot Logical value deciding if the CS Rank Scores (\code{which=5}) should also be plotted per query (instead of only the weighted mean).
+#' @param column.interest Numeric vector of indices of reference columns which should be in the profiles plots (\code{which=7}). If \code{NULL}, you can interactively select genes on the Compound Loadings plot (\code{which=3}).
 #' @param row.interest Numeric vector of gene indices to be plotted in gene profiles plot (\code{which=7}, \code{profile.type="gene"}). If \code{NULL}, you can interactively select them in the gene scores plot (\code{which=4}).
 #' @param profile.type Type of \code{which=7} plot:
 #' \itemize{
-#' \item \code{"gene"}: Gene profiles plot of selected genes in \code{row.interest} with the reference compounds and those selected in \code{column.interest} ordered first on the x axis. The other compounds are ordered in decreasing CScore. 
-#' \item \code{"cmpd"}: Compound profiles plot of reference and selected compounds (\code{column.interest}) and only those genes on the x-axis which beat the thresholds (\code{gene.thresP}, \code{gene.thresN})
+#' \item \code{"gene"}: Gene profiles plot of selected genes in \code{row.interest} with the query compounds and those selected in \code{column.interest} ordered first on the x axis. The other compounds are ordered in decreasing CScore. 
+#' \item \code{"cmpd"}: Compound profiles plot of query and selected compounds (\code{column.interest}) and only those genes on the x-axis which beat the thresholds (\code{gene.thresP}, \code{gene.thresN})
 #' }
-#' @param color.columns Vector of colors for the reference and query columns (compounds). If \code{NULL}, blue will be used for reference and black for query. Use this option to highlight reference columns and query columns of interest.
+#' @param color.columns Vector of colors for the query and reference columns (compounds). If \code{NULL}, blue will be used for query and black for reference. Use this option to highlight query columns and reference columns of interest.
 #' @param gene.highlight Single numeric vector or list of maximum 5 numeric vectors. This highlights gene of interest in gene scores plot (\code{which=4}) up to 5 different colors. (e.g. You can use this to highlight genes you know to be differentially expressed)
 #' @param gene.thresP Threshold for genes with a high score (\code{which=4}).
 #' @param gene.thresN Threshold for genes with a low score (\code{which=4}).
@@ -441,29 +441,29 @@ setMethod("CSanalysis",c("matrix","matrix","CSmfa"),function(
 #' @param grouploadings.labels This parameter used for the Group Loadings Plots (\code{which=8}). In general this plot will contain the loadings of all factors, grouped and colored by the labels given in this parameter.
 #' \itemize{
 #' \item If \code{grouploadings.labels!=NULL}:\cr
-#' Provide a vector for all samples (ref + query) containing labels on which the plot will be based on.
+#' Provide a vector for all samples (query + ref) containing labels on which the plot will be based on.
 #' 
-#' \item If \code{grouploadings.labels=NULL}:\cr 
+#' \item If \code{grouploadings.labels=NULL}: \cr
 #' If no labels are provided when choosing \code{which=8}, automatic labels ("Top Samples of Component 1, 2....") will be created. These labels are given to the top \code{grouploadings.cutoff}  number of samples based on the absolute values of the loadings. 
 #' }
-#' Plot \code{which=8} can be used to check 2 different situations. Either to check if your provided labels coincide with the discovered structure in the analysis. The other aim is to find new interesting structures (of samples) which strongly appear in one or multiple components. A subsequent step could be to take some strong samples/compounds of these compounds and use them as a new reference set in a new CS analysis to check its validity or to find newly connected compounds.
+#' Plot \code{which=8} can be used to check 2 different situations. Either to check if your provided labels coincide with the discovered structure in the analysis. The other aim is to find new interesting structures (of samples) which strongly appear in one or multiple components. A subsequent step could be to take some strong samples/compounds of these compounds and use them as a new query set in a new CS analysis to check its validity or to find newly connected compounds.
 #' 
 #' Please note that even when \code{group.loadings.labels!=NULL}, that the labels based on the absolute loadings of all the factors (the top \code{grouploadings.cutoff}) will always be generated and saved in \code{samplefactorlabels} in the \code{extra} slot of the \code{CSresult} object. 
 #' This can then later be used for the \code{CSlabelscompare} function to compare them with your true labels.
 #' @param grouploadings.cutoff Parameter used in plot \code{which=8}. See \code{grouploadings.labels=NULL} for more information. If this parameter is not provided, it will be automatically set to 10\% of the total number of loadings.
 #' @param legend.names Option to draw a legend of for example colored columns in Compound Loadings plot (\code{which=3}). If \code{NULL}, only "References" will be in the legend.
-#' @param legend.cols Colors to be used in legends. If \code{NULL}, only blue for "References is used".
+#' @param legend.cols Colors to be used in legends. If \code{NULL}, only blue for "Queries is used".
 #' @param legend.pos Position of the legend in all requested plots, can be \code{"topright"}, \code{"topleft"}, \code{"bottomleft"}, \code{"bottomright"}, \code{"bottom"}, \code{"top"}, \code{"left"}, \code{"right"}, \code{"center"}.
 #' @param labels Boolean value (default=TRUE) to use row and/or column text labels in the score plots (\code{which=c(3,4,5,6)}). 
 #' @param result.available You can a previously returned object by \code{CSanalysis} in order to only draw graphs, not recompute the scores.
 #' @param result.available.update Logical value. If \code{TRUE}, the CS and GS will be overwritten depending on the new \code{component.plot} choice. This would also delete the p-values if \code{permutation.object} was available.
 #' @param plot.type How should the plots be outputted? \code{"pdf"} to save them in pdf files, \code{device} to draw them in a graphics device (default), \code{sweave} to use them in a sweave or knitr file.
-#' @param basefilename Directory including filename of the graphs if saved in pdf files.
+#' @param basefilename Directory including filename of the graphs if saved in pdf files
 #' @return An object of the S4 Class \code{\link{CSresult-class}}.
 setMethod("CSanalysis",c("matrix","matrix","CSpca"),function(
-				refMat,querMat,type="CSpca",ncp=5,scale.unit=TRUE,row.w=NULL,col.w=NULL,
+				querMat,refMat,type="CSpca",ncp=5,scale.unit=TRUE,row.w=NULL,col.w=NULL,
 				which=c(2,3,4,5),
-				component.plot=NULL,CSrank.refplot=FALSE,
+				component.plot=NULL,CSrank.queryplot=FALSE,
 				column.interest=NULL,row.interest=NULL,profile.type="gene",
 				color.columns=NULL,gene.highlight=NULL,				
 				gene.thresP=1,gene.thresN=-1,thresP.col="blue",thresN.col="red",
@@ -476,14 +476,14 @@ setMethod("CSanalysis",c("matrix","matrix","CSpca"),function(
   
       check_filename(plot.type,basefilename)
   
-			if((dim(refMat)[2]!=1)){
+			if((dim(querMat)[2]!=1)){
 				stop("Reference matrix should have only 1 reference")
 			}
-			if(dim(querMat)[2]==1){
+			if(dim(refMat)[2]==1){
 				stop("Query matrix only has 1 query.")
 			}
 					
-			data <- cbind(as.matrix(refMat),as.matrix(querMat))
+			data <- cbind(as.matrix(querMat),as.matrix(refMat))
 									
 			colour.columns <- color.columns
 			if(!(legend.pos %in% c("topright", "topleft", "bottomleft", "bottomright", "bottom", "top", "left", "right", "center"))){stop(paste0("legend.pos can not be \"",legend.pos,"\""),call.=FALSE)}
@@ -504,16 +504,16 @@ setMethod("CSanalysis",c("matrix","matrix","CSpca"),function(
 			}
 	
 			
-			if(!is.null(column.interest)){column.interest <- column.interest + dim(refMat)[2]}
+			if(!is.null(column.interest)){column.interest <- column.interest + dim(querMat)[2]}
 				
-			out <- analyse_FA(matchcall=type@call,modeltype=class(type),ref.index=c(1:dim(refMat)[2]),
+			out <- analyse_FA(matchcall=type@call,modeltype=class(type),ref.index=c(1:dim(querMat)[2]),
 					data=data, 	scale.unit = scale.unit, ncp = ncp, ind.sup = NULL,
 					quanti.sup = NULL, quali.sup = NULL, row.w = row.w,
 					col.w = col.w, graph = FALSE, axes = c(1,2),
 					basefilename=basefilename,labels=labels,
 					component.plot=component.plot,column.interest=column.interest,gene.thresP=gene.thresP,gene.thresN=gene.thresN,
 					colour.columns=colour.columns,legend.pos=legend.pos,legend.names=legend.names,legend.cols=legend.cols,thresP.col=thresP.col,thresN.col=thresN.col,
-					result.available=result.available,plot.type=plot.type,which=which,CSrank.refplot=CSrank.refplot,
+					result.available=result.available,plot.type=plot.type,which=which,CSrank.queryplot=CSrank.queryplot,
 					profile.type=profile.type,gene.highlight=gene.highlight,
 					grouploadings.labels=grouploadings.labels,grouploadings.cutoff=grouploadings.cutoff,
 					result.available.update=result.available.update)
@@ -530,12 +530,12 @@ setMethod("CSanalysis",c("matrix","matrix","CSpca"),function(
 #' "CSsmfa"
 #' 
 #' @description
-#' Doing interactive CS analysis with sMFA (Sparse Multiple Factor Analysis). Should use multiple references for this analysis.
+#' Doing interactive CS analysis with sMFA (Sparse Multiple Factor Analysis). Should use multiple queries for this analysis.
 #' Either \code{\link[elasticnet]{spca}} or \code{\link[elasticnet]{arrayspc}} is used.
 #' 
 #' @export 
-#' @param refMat Reference matrix (Rows = genes and columns = compounds)
-#' @param querMat Query matrix
+#' @param querMat Query matrix (Rows = genes and columns = compounds)
+#' @param refMat Reference matrix
 #' @param type \code{"CSsmfa"}
 #' @param K \emph{sMFA Parameters:} Number of components.
 #' @param para \emph{sMFA Parameters:} A vector of length K. All elements should be positive. If \code{sparse="varnum"}, the elements integers. 
@@ -547,7 +547,7 @@ setMethod("CSanalysis",c("matrix","matrix","CSpca"),function(
 #' @param which Choose one or more plots to draw: 
 #' \enumerate{
 #' \item Information Content for Bicluster (Only available for "CSfabia")
-#' \item Loadings for reference compounds
+#' \item Loadings for query compounds
 #' \item Loadings for Component (Factor/Bicluster) \code{component.plot}
 #' \item Gene Scores for Component (Factor/Bicluster) \code{component.Plot}
 #' \item Connectivity Ranking Scores for Component \code{component.plot}
@@ -555,16 +555,16 @@ setMethod("CSanalysis",c("matrix","matrix","CSpca"),function(
 #' \item Profile plot (see \code{profile.type})
 #' \item Group Loadings Plots for all components (see \code{grouploadings.labels}).
 #' }
-#' @param component.plot Which components (Factor/Bicluster) should be investigated? Can be a vector of multiple (e.g. \code{c(1,3,5)}). If \code{NULL}, you can choose components of interest interactively from reference loadings plot.
-#' @param CSrank.refplot Logical value deciding if the CS Rank Scores (\code{which=5}) should also be plotted per reference (instead of only the weighted mean).
-#' @param column.interest Numeric vector of indices of query columns which should be in the profiles plots (\code{which=7}). If \code{NULL}, you can interactively select genes on the Compound Loadings plot (\code{which=3}).
+#' @param component.plot Which components (Factor/Bicluster) should be investigated? Can be a vector of multiple (e.g. \code{c(1,3,5)}). If \code{NULL}, you can choose components of interest interactively from query loadings plot.
+#' @param CSrank.queryplot Logical value deciding if the CS Rank Scores (\code{which=5}) should also be plotted per query (instead of only the weighted mean).
+#' @param column.interest Numeric vector of indices of reference columns which should be in the profiles plots (\code{which=7}). If \code{NULL}, you can interactively select genes on the Compound Loadings plot (\code{which=3}).
 #' @param row.interest Numeric vector of gene indices to be plotted in gene profiles plot (\code{which=7}, \code{profile.type="gene"}). If \code{NULL}, you can interactively select them in the gene scores plot (\code{which=4}).
 #' @param profile.type Type of \code{which=7} plot:
 #' \itemize{
-#' \item \code{"gene"}: Gene profiles plot of selected genes in \code{row.interest} with the reference compounds and those selected in \code{column.interest} ordered first on the x axis. The other compounds are ordered in decreasing CScore. 
-#' \item \code{"cmpd"}: Compound profiles plot of reference and selected compounds (\code{column.interest}) and only those genes on the x-axis which beat the thresholds (\code{gene.thresP}, \code{gene.thresN})
+#' \item \code{"gene"}: Gene profiles plot of selected genes in \code{row.interest} with the query compounds and those selected in \code{column.interest} ordered first on the x axis. The other compounds are ordered in decreasing CScore. 
+#' \item \code{"cmpd"}: Compound profiles plot of query and selected compounds (\code{column.interest}) and only those genes on the x-axis which beat the thresholds (\code{gene.thresP}, \code{gene.thresN})
 #' }
-#' @param color.columns Vector of colors for the reference and query columns (compounds). If \code{NULL}, blue will be used for reference and black for query. Use this option to highlight reference columns and query columns of interest.
+#' @param color.columns Vector of colors for the query and reference columns (compounds). If \code{NULL}, blue will be used for query and black for reference. Use this option to highlight query columns and reference columns of interest.
 #' @param gene.highlight Single numeric vector or list of maximum 5 numeric vectors. This highlights gene of interest in gene scores plot (\code{which=4}) up to 5 different colors. (e.g. You can use this to highlight genes you know to be differentially expressed)
 #' @param gene.thresP Threshold for genes with a high score (\code{which=4}).
 #' @param gene.thresN Threshold for genes with a low score (\code{which=4}).
@@ -573,29 +573,29 @@ setMethod("CSanalysis",c("matrix","matrix","CSpca"),function(
 #' @param grouploadings.labels This parameter used for the Group Loadings Plots (\code{which=8}). In general this plot will contain the loadings of all factors, grouped and colored by the labels given in this parameter.
 #' \itemize{
 #' \item If \code{grouploadings.labels!=NULL}:\cr
-#' Provide a vector for all samples (ref + query) containing labels on which the plot will be based on.
+#' Provide a vector for all samples (query + ref) containing labels on which the plot will be based on.
 #' 
 #' \item If \code{grouploadings.labels=NULL}: \cr
 #' If no labels are provided when choosing \code{which=8}, automatic labels ("Top Samples of Component 1, 2....") will be created. These labels are given to the top \code{grouploadings.cutoff}  number of samples based on the absolute values of the loadings. 
 #' }
-#' Plot \code{which=8} can be used to check 2 different situations. Either to check if your provided labels coincide with the discovered structure in the analysis. The other aim is to find new interesting structures (of samples) which strongly appear in one or multiple components. A subsequent step could be to take some strong samples/compounds of these compounds and use them as a new reference set in a new CS analysis to check its validity or to find newly connected compounds.
+#' Plot \code{which=8} can be used to check 2 different situations. Either to check if your provided labels coincide with the discovered structure in the analysis. The other aim is to find new interesting structures (of samples) which strongly appear in one or multiple components. A subsequent step could be to take some strong samples/compounds of these compounds and use them as a new query set in a new CS analysis to check its validity or to find newly connected compounds.
 #' 
 #' Please note that even when \code{group.loadings.labels!=NULL}, that the labels based on the absolute loadings of all the factors (the top \code{grouploadings.cutoff}) will always be generated and saved in \code{samplefactorlabels} in the \code{extra} slot of the \code{CSresult} object. 
 #' This can then later be used for the \code{CSlabelscompare} function to compare them with your true labels.
 #' @param grouploadings.cutoff Parameter used in plot \code{which=8}. See \code{grouploadings.labels=NULL} for more information. If this parameter is not provided, it will be automatically set to 10\% of the total number of loadings.
 #' @param legend.names Option to draw a legend of for example colored columns in Compound Loadings plot (\code{which=3}). If \code{NULL}, only "References" will be in the legend.
-#' @param legend.cols Colors to be used in legends. If \code{NULL}, only blue for "References is used".
+#' @param legend.cols Colors to be used in legends. If \code{NULL}, only blue for "Queries is used".
 #' @param legend.pos Position of the legend in all requested plots, can be \code{"topright"}, \code{"topleft"}, \code{"bottomleft"}, \code{"bottomright"}, \code{"bottom"}, \code{"top"}, \code{"left"}, \code{"right"}, \code{"center"}.
 #' @param labels Boolean value (default=TRUE) to use row and/or column text labels in the score plots (\code{which=c(3,4,5,6)}). 
 #' @param result.available You can a previously returned object by \code{CSanalysis} in order to only draw graphs, not recompute the scores.
 #' @param result.available.update Logical value. If \code{TRUE}, the CS and GS will be overwritten depending on the new \code{component.plot} choice. This would also delete the p-values if \code{permutation.object} was available.
 #' @param plot.type How should the plots be outputted? \code{"pdf"} to save them in pdf files, \code{device} to draw them in a graphics device (default), \code{sweave} to use them in a sweave or knitr file.
-#' @param basefilename Directory including filename of the graphs if saved in pdf files#' @return An object of the S4 Class \code{CSresult}.
+#' @param basefilename Directory including filename of the graphs if saved in pdf files
 #' @return An object of the S4 Class \code{\link{CSresult-class}}.
 setMethod("CSanalysis",c("matrix","matrix","CSsmfa"),function(
-				refMat,querMat,type="Csmfa",K=15,para,lambda=1e-6,sparse.dim=2,sparse="penalty",max.iter=200,eps.conv=1e-3,
+				querMat,refMat,type="Csmfa",K=15,para,lambda=1e-6,sparse.dim=2,sparse="penalty",max.iter=200,eps.conv=1e-3,
 				which=c(2,3,4,5),
-				component.plot=NULL,CSrank.refplot=FALSE,
+				component.plot=NULL,CSrank.queryplot=FALSE,
 				column.interest=NULL,row.interest=NULL,profile.type="gene",
 				color.columns=NULL,gene.highlight=NULL,
 				gene.thresP=1,gene.thresN=-1,thresP.col="blue",thresN.col="red",
@@ -608,11 +608,11 @@ setMethod("CSanalysis",c("matrix","matrix","CSsmfa"),function(
 			
       check_filename(plot.type,basefilename)
 			
-      if(!(dim(refMat)[2]>1)){
+      if(!(dim(querMat)[2]>1)){
 				stop("Reference matrix should have more than 1 reference")
 			}
 					
-			data <- cbind(as.matrix(refMat),as.matrix(querMat))
+			data <- cbind(as.matrix(querMat),as.matrix(refMat))
 					
 			colour.columns <- color.columns
 			if(!(legend.pos %in% c("topright", "topleft", "bottomleft", "bottomright", "bottom", "top", "left", "right", "center"))){stop(paste0("legend.pos can not be \"",legend.pos,"\""),call.=FALSE)}
@@ -633,14 +633,14 @@ setMethod("CSanalysis",c("matrix","matrix","CSsmfa"),function(
 			}
 
 			
-			if(!is.null(column.interest)){column.interest <- column.interest + dim(refMat)[2]}
+			if(!is.null(column.interest)){column.interest <- column.interest + dim(querMat)[2]}
 			
-			out <- analyse_FA(matchcall=type@call,modeltype=class(type),ref.index=c(1:dim(refMat)[2]),
+			out <- analyse_FA(matchcall=type@call,modeltype=class(type),ref.index=c(1:dim(querMat)[2]),
 					data=data,K=K,para=para,type.smfa="predictor",sparse=sparse,use.corr=FALSE,lambda=lambda,max.iter=max.iter,trace=FALSE,eps.conv=eps.conv,sparse.dim=sparse.dim,
 					basefilename=basefilename,labels=labels,
 					component.plot=component.plot,column.interest=column.interest,gene.thresP=gene.thresP,gene.thresN=gene.thresN,
 					colour.columns=colour.columns,legend.pos=legend.pos,legend.names=legend.names,legend.cols=legend.cols,thresP.col=thresP.col,thresN.col=thresN.col,
-					result.available=result.available,plot.type=plot.type,CSrank.refplot=CSrank.refplot,
+					result.available=result.available,plot.type=plot.type,CSrank.queryplot=CSrank.queryplot,
 					which=which,profile.type=profile.type,gene.highlight=gene.highlight,
 					grouploadings.labels=grouploadings.labels,grouploadings.cutoff=grouploadings.cutoff,
 					row.interest=row.interest,result.available.update=result.available.update)
@@ -653,15 +653,15 @@ setMethod("CSanalysis",c("matrix","matrix","CSsmfa"),function(
 # Zhang and Gant
 #' "CSzhang"
 #' 
-#' Compute the Connectivity Scores by Zhang and Gant (2008). One or multiple reference compounds are possible in this analysis.
+#' Compute the Connectivity Scores by Zhang and Gant (2008). One or multiple query compounds are possible in this analysis.
 #' 
 #' @export 
-#' @param refMat Reference matrix (Rows = genes and columns = compounds)
-#' @param querMat Query matrix
+#' @param querMat Query matrix (Rows = genes and columns = compounds)
+#' @param refMat Reference matrix
 #' @param type \code{"CSzhang"}
-#' @param nref \emph{Zhang Parameter:} Number of top up- and downregulated genes in reference signature. If \code{NULL}, all rows (genes) are used.
-#' @param nquery \emph{Zhang Parameter:} Number of top up- and downregulated genes in query signature. If \code{NULL}, all rows (genes) are used. (Note that \eqn{nref >= nquery})
-#' @param ord.query \emph{Zhang Parameter:} Logical value. Should the query signature be treated as ordered?
+#' @param nquery \emph{Zhang Parameter:} Number of top up- and downregulated genes in query signature. If \code{NULL}, all rows (genes) are used.
+#' @param nref \emph{Zhang Parameter:} Number of top up- and downregulated genes in reference signature. If \code{NULL}, all rows (genes) are used. (Note that \eqn{nquery >= nref})
+#' @param ord.ref \emph{Zhang Parameter:} Logical value. Should the reference signature be treated as ordered?
 #' @param which Choose plot to draw.
 #' \enumerate{
 #' \item Zhang and Gant Scores Plot
@@ -670,8 +670,8 @@ setMethod("CSanalysis",c("matrix","matrix","CSsmfa"),function(
 # @param B \emph{Zhang Parameter:} Number of permutations for p-value calculation.
 # @param ntop.pvalues \emph{Zhang Parameter:} Number of top p-values to be reported first. 
 #' @param ntop.scores \emph{Zhang Parameter:} Number of top positive and negative CS to be reported first.
-#' @param color.query Vector of colors for the query columns. You can use this option to highlight columns(compounds) of interest in the CS plot. (This does not include the reference columns since they are not included in the CS plot.)
-#' @param legend.names Option to draw a legend (about the highlights in \code{color.query}) in the CS plot. If \code{NULL}, no legend will be drawn.
+#' @param color.ref Vector of colors for the reference columns. You can use this option to highlight columns(compounds) of interest in the CS plot. (This does not include the query columns since they are not included in the CS plot.)
+#' @param legend.names Option to draw a legend (about the highlights in \code{color.ref}) in the CS plot. If \code{NULL}, no legend will be drawn.
 #' @param legend.cols Colors to be used for the \code{legend.names}.
 #' @param legend.pos Position of the legend in all requested plots, can be \code{"topright"}, \code{"topleft"}, \code{"bottomleft"}, \code{"bottomright"}, \code{"bottom"}, \code{"top"}, \code{"left"}, \code{"right"}, \code{"center"}.
 #' @param labels Boolean value (default=TRUE) to use column labels inside the ZG plot.  
@@ -680,11 +680,11 @@ setMethod("CSanalysis",c("matrix","matrix","CSsmfa"),function(
 #' @param plot.type How should the plots be outputted? \code{"pdf"} to save them in pdf files, \code{device} to draw them in a graphics device (default), \code{sweave} to use them in a sweave or knitr file.
 #' @param basefilename Directory including filename of the graphs if saved in pdf files
 #' @return An object of the S4 Class \code{\link{CSresult-class}}. The CS slot will also contain the top positive and negative scores as well as the top p-values. The GS slot will be empty for Zhang and Gant.
-setMethod("CSanalysis",c("matrix","matrix","CSzhang"),function(refMat,querMat,type="CSzhang",
-				nref=NULL,nquery=NULL,ord.query=TRUE,ntop.scores=20,
+setMethod("CSanalysis",c("matrix","matrix","CSzhang"),function(querMat,refMat,type="CSzhang",
+				nquery=NULL,nref=NULL,ord.ref=TRUE,ntop.scores=20,
 				which=c(1),
 #				B=100000,ntop.pvalues=20,permute=FALSE,
-				color.query=NULL,
+				color.ref=NULL,
 				legend.names=NULL,legend.cols=NULL,legend.pos="topright",
         labels=TRUE,
 				result.available=NULL,result.available.update=FALSE,
@@ -693,7 +693,7 @@ setMethod("CSanalysis",c("matrix","matrix","CSzhang"),function(refMat,querMat,ty
 			
       check_filename(plot.type,basefilename)
 		
-    	colour.query <- color.query
+    	colour.query <- color.ref
 			if(is.null(legend.cols)){legend.cols <- "black"}
 			
 			if(!(legend.pos %in% c("topright", "topleft", "bottomleft", "bottomright", "bottom", "top", "left", "right", "center"))){stop(paste0("legend.pos can not be \"",legend.pos,"\""),call.=FALSE)}
@@ -709,7 +709,7 @@ setMethod("CSanalysis",c("matrix","matrix","CSzhang"),function(refMat,querMat,ty
 			}
 
 			
-			out <- analyse_zhang(dataref=refMat,dataquery=querMat,nref=nref,nquery=nquery,ord.query=ord.query,ntop.pvalues=20,ntop.scores=ntop.scores,
+			out <- analyse_zhang(dataref=querMat,dataquery=refMat,nref=nquery,nquery=nref,ord.query=ord.ref,ntop.pvalues=20,ntop.scores=ntop.scores,
 #					permute=permute,B=B,ntop.pvalues=ntop.values,
 					basefilename=basefilename,
 					colour.query=colour.query,legend.names=legend.names,legend.cols=legend.cols,legend.pos=legend.pos,
@@ -717,7 +717,7 @@ setMethod("CSanalysis",c("matrix","matrix","CSzhang"),function(refMat,querMat,ty
 					which=which)
 			
 			
-			CS <- list(CS.query=data.frame(
+			CS <- list(CS.ref=data.frame(
 							ZGscore=out$All[,1],
 							ZGrank=as.integer(rank(-out$All[,1])),
 							ZGabsrank=as.integer(rank(-abs(out$All[,1]))),
@@ -726,7 +726,7 @@ setMethod("CSanalysis",c("matrix","matrix","CSzhang"),function(refMat,querMat,ty
 			
 			
 			call.object <- list(match.call=type@call,analysis.pm=list(nref=nref,nquery=nquery,ord.query=ord.query,ntop.scores=ntop.scores))
-			call.object$dimensions <- list(row=dim(refMat)[1],col=c(ref=dim(refMat)[2],query=dim(querMat)[2]))
+			call.object$dimensions <- list(row=dim(querMat)[1],col=c(query=dim(querMat)[2],ref=dim(refMat)[2]))
 			
 			
 			if(!is.null(result.available)){ 

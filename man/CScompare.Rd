@@ -8,8 +8,8 @@ CScompare(CSresult1, CSresult2, component1.plot, component2.plot,
   threshold.pvalues = 0.05, which = c(1, 2, 3), color.columns = NULL,
   gene.thresP = NULL, gene.thresN = NULL, thresP.col = c("blue",
   "light blue"), thresN.col = c("red", "pink"), legend.names = NULL,
-  legend.cols = NULL, legend.pos = "topright", plot.type = "device",
-  basefilename = NULL)
+  legend.cols = NULL, legend.pos = "topright", labels = TRUE,
+  plot.type = "device", basefilename = NULL)
 }
 \arguments{
 \item{CSresult1}{First result.}
@@ -31,7 +31,7 @@ CScompare(CSresult1, CSresult2, component1.plot, component2.plot,
 \item CRankScores p-values comparison plot (Raw & Adjusted).
 }}
 
-\item{color.columns}{Vector of colors for the reference and query columns (compounds). If \code{NULL}, blue will be used for reference and black for query. Use this option to highlight reference columns and query columns of interest.}
+\item{color.columns}{Vector of colors for the query and reference columns (compounds). If \code{NULL}, blue will be used for query and black for reference. Use this option to highlight query columns and reference columns of interest.}
 
 \item{gene.thresP}{Vector of length 2 containing the positive gene thresholds for \code{CSresult1} and \code{CSresult2}. Genes above the threshold will be colored. (e.g. \code{c(1,2)})}
 
@@ -41,11 +41,13 @@ CScompare(CSresult1, CSresult2, component1.plot, component2.plot,
 
 \item{thresN.col}{Vector of length 2 containing the colors for the low gene scores for \code{CSresult1} and \code{CSresult2} (e.g. \code{c("red","pink")}).}
 
-\item{legend.names}{Option to draw a legend (about the highlights in \code{color.columns}) in the CS plot. If \code{NULL}, only references are in the legend.}
+\item{legend.names}{Option to draw a legend (about the highlights in \code{color.columns}) in the CS plot. If \code{NULL}, only queries are in the legend.}
 
 \item{legend.cols}{Colors to be used for the \code{legend.names}.}
 
 \item{legend.pos}{The location of the legend: \code{"bottomright"}, \code{"bottom"}, \code{"bottomleft"}, \code{"left"}, \code{"topleft"}, \code{"top"}, \code{"topright"}, \code{"right"} and \code{"center"}.}
+
+\item{labels}{Boolean value (default=TRUE) to use row and/or column text labels in the comparison score plots.}
 
 \item{plot.type}{How should the plots be outputted? \code{"pdf"} to save them in pdf files, \code{device} to draw them in a graphics device (default), \code{sweave} to use them in a sweave or knitr file.}
 

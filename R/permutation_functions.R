@@ -15,20 +15,20 @@
 #' If asked, the CSpermute function will also draw a volcanoplot and/or histograms of the p-values. If you simply want to redraw these plots, simply use the returned CSresult object by CSpermute again in the CSpermute function.
 #' If the number of permutations was not changed, this will prevent the entire permutation analysis from being redone.
 #' 
-#' \bold{IMPORTANT!} For MFA, \code{CSpermute} should \emph{only} be used to compute the p-values of the Component in which the structure (loadings) of the references is the strongest.
-#' This because in each permutation the factor with the highest average reference loadings will be chosen. 
-#' The ability to compute p-values of other factors (in which the reference set also increased loadings) will be added in a later release. 
+#' \bold{IMPORTANT!} For MFA, \code{CSpermute} should \emph{only} be used to compute the p-values of the Component in which the structure (loadings) of the queries is the strongest.
+#' This because in each permutation the factor with the highest average query loadings will be chosen. 
+#' The ability to compute p-values of other factors (in which the query set also increased loadings) will be added in a later release. 
 #' 
 #' @export
-#' @param refMat Reference matrix (Rows = genes and columns = compounds).
-#' @param querMat Query matrix
+#' @param querMat Query matrix (Rows = genes and columns = compounds).
+#' @param refMat Reference matrix
 #' @param CSresult A CSresult class object.
 #' @param B Number of permutations.
 #' @param mfa.factor If permuting a CSmfa result, mfa.factor will decide of which factor the p-values should be computed. If \code{NULL}, the factor chosen in CSanalysis will be chosen (the factor chosen in the CS slot of the CSresult). NOTE: If the mfa.factor is different from the factor in the CS slot, the CS slot will be overwritten with this new factor.
 #' @param method.adjust Correction method of multiplicity adjusted p-values: "none", "holm", "hochberg", "hommel", "bonferroni", "BH", "BY" or "fdr". (Raw p-values are also always provided)
 #' @param verbose If \code{TRUE}, progression dots	 of the permutation analysis will be printed.
-# @param querMat.Perm Possible to provide user-created permuted querMat data. Should be a list object of B times permuted querMat matrices.
-# @param save.querMat.Perm If \code{TRUE}, the list of permuted querMat matrices will be saved in the permutation.object slot of the CSresult.
+# @param refMat.Perm Possible to provide user-created permuted refMat data. Should be a list object of B times permuted refMat matrices.
+# @param save.refMat.Perm If \code{TRUE}, the list of permuted refMat matrices will be saved in the permutation.object slot of the CSresult.
 #' @param which Choose which plot to draw:
 #' \enumerate{
 #' \item A volcano plot of the -log(p-values) versus the observed connection scores.
@@ -36,9 +36,10 @@
 #' \item Analog to \code{which=1}, but for CSRankScores.
 #' \item Analog to \code{which=2}, but for CSRankScores.
 #' }
-#' @param cmpd.hist Query index vector which decides which query compounds are plotted for the histogram distribution under null hypothesis (\code{which=2}). If \code{NULL}, you can select which compounds you want interactively on the volcano plot.
+#' @param cmpd.hist Reference index vector which decides which reference compounds are plotted for the histogram distribution under null hypothesis (\code{which=2}). If \code{NULL}, you can select which compounds you want interactively on the volcano plot.
 #' @param plot.type How should the plots be outputted? \code{"pdf"} to save them in pdf files, \code{device} to draw them in a graphics device (default), \code{sweave} to use them in a sweave or knitr file.
-#' @param color.columns Option to color the compounds on the volcano plot (\code{which=1}). Should be a vector of colors with the length of number of queries.
+#' @param color.columns Option to color the compounds on the volcano plot (\code{which=1}). Should be a vector of colors with the length of number of references.
+#' @param labels Boolean value (default=TRUE) to use row and/or column text labels in the volcano plots (\code{which=c(1,3)}). 
 #' @param basefilename Directory including filename of the graphs if saved in pdf files
 #' @param MultiCores Logical value parallelisation should be used for permutation. \code{FALSE} by default. (This option uses \code{\link[snowFT]{clusterApplyFT}} in order to provide load balancing and reproducible results with \code{MultiCores.seed})
 #' @param MultiCores.number Number of cores to be used for \code{MultiCores=TRUE}. By default total number of physical cores.
@@ -63,9 +64,10 @@
 #' MFA_analysis <- CSanalysis(Mat1,Mat2,"CSmfa")
 #' MFA_analysis <- CSpermute(Mat1,Mat2,MFA_analysis,B=200)
 #' }
-CSpermute <- function(refMat,querMat,CSresult,B=500,mfa.factor=NULL,method.adjust="none",verbose=TRUE,
-#		querMat.Perm=NULL,save.querMat.Perm=FALSE,
-		which=c(1,3),cmpd.hist=NULL,color.columns=NULL,plot.type="device",basefilename=NULL,
+CSpermute <- function(querMat,refMat,CSresult,B=500,mfa.factor=NULL,method.adjust="none",verbose=TRUE,
+#		refMat.Perm=NULL,save.refMat.Perm=FALSE,
+		which=c(1,3),cmpd.hist=NULL,color.columns=NULL,labels=TRUE,
+    plot.type="device",basefilename=NULL,
     MultiCores=FALSE,MultiCores.number=detectCores(logical=FALSE),MultiCores.seed=NULL,
     save.permutation=TRUE
   ){
@@ -76,7 +78,7 @@ CSpermute <- function(refMat,querMat,CSresult,B=500,mfa.factor=NULL,method.adjus
 	if(!(method.adjust %in% c("holm", "hochberg", "hommel", "bonferroni", "BH", "BY","fdr", "none"))){stop("Incorrect method.adjust. Should we one of the following 'none', 'holm', 'hochberg', 'hommel', 'bonferroni', 'BH', 'BY', 'fdr'")}
 	
 	type <- CSresult@type
-	ref.index <- c(1:dim(refMat)[2])
+	ref.index <- c(1:dim(querMat)[2])
 	
 	if(!(type %in% c("CSmfa","CSzhang"))){stop("Permutation is only available for MFA and Zhang results")}
 	
@@ -153,7 +155,7 @@ CSpermute <- function(refMat,querMat,CSresult,B=500,mfa.factor=NULL,method.adjus
 			
 			##
 
-			if(verbose){cat("Analysing Permuted Data with MFA\n(Factor is chosen based on highest average reference loadings):\n")}
+			if(verbose){cat("Analysing Permuted Data with MFA\n(Factor is chosen based on highest average query loadings):\n")}
 			
 			CS.Perm <- vector("list",B)
 			MFA.factor.Perm <- c(1:B)
@@ -179,7 +181,7 @@ CSpermute <- function(refMat,querMat,CSresult,B=500,mfa.factor=NULL,method.adjus
 			  # clusterCall(cl, eval, substitute(library(FactoMineR)), env = .GlobalEnv)
 			  clusterCall(cl, eval, substitute(requireNamespace("FactoMineR")), env = .GlobalEnv)
 			  
-			  clusterExport(cl, c("worker_divide","querMat","refMat","CSresult","ref.index"), envir=current_environment)
+			  clusterExport(cl, c("worker_divide","refMat","querMat","CSresult","ref.index"), envir=current_environment)
 			  
 			  clusterSetupRNG.FT(cl, type = gentype, streamper = "replicate", 
 			                       seed = MultiCores.seed, n = length(worker_divide), prngkind = "default")
@@ -195,18 +197,18 @@ CSpermute <- function(refMat,querMat,CSresult,B=500,mfa.factor=NULL,method.adjus
 			                          
 			                          for(i in 1:length(worker_divide[[x]])){
 			                            ## Permuting Query Matrix
-			                            querMat.Perm <- matrix(sample(as.vector(querMat),(dim(querMat)[1]*dim(querMat)[2]),replace=FALSE),nrow=dim(querMat)[1],ncol=dim(querMat)[2])
+			                            refMat.Perm <- matrix(sample(as.vector(refMat),(dim(refMat)[1]*dim(refMat)[2]),replace=FALSE),nrow=dim(refMat)[1],ncol=dim(refMat)[2])
 			                            
-			                            rownames(querMat.Perm) <- rownames(refMat)
-			                            colnames(querMat.Perm) <- colnames(querMat)
+			                            rownames(refMat.Perm) <- rownames(querMat)
+			                            colnames(refMat.Perm) <- colnames(refMat)
 			                            
 			                            #########################
 			                            
-			                            data_comb <- cbind(refMat,querMat.Perm)
-			                            rownames(data_comb) <- rownames(refMat)
-			                            colnames(data_comb) <- c(colnames(refMat),colnames(querMat))
+			                            data_comb <- cbind(querMat,refMat.Perm)
+			                            rownames(data_comb) <- rownames(querMat)
+			                            colnames(data_comb) <- c(colnames(querMat),colnames(refMat))
 			                            
-			                            out_MFA <- MFA(base=data_comb,group=c(ncol(refMat),ncol(querMat)),type=c("s","s"),ind.sup=NULL,row.w=CSresult@call$analysis.pm$row.w,weight.col.mfa=CSresult@call$analysis.pm$weight.col.mfa,ncp=CSresult@call$analysis.pm$ncp,name.group=c("Reference","Query"),graph=FALSE)
+			                            out_MFA <- MFA(base=data_comb,group=c(ncol(querMat),ncol(refMat)),type=c("s","s"),ind.sup=NULL,row.w=CSresult@call$analysis.pm$row.w,weight.col.mfa=CSresult@call$analysis.pm$weight.col.mfa,ncp=CSresult@call$analysis.pm$ncp,name.group=c("Reference","Query"),graph=FALSE)
 			                            
 			                            ## FACTOR IS CHOSEN BASED ON HIGHEST AVERAGE REFERENCE LOADINGS  (put other options here later)
 			                            ref.loadings <- apply(out_MFA$quanti.var$cor,MARGIN=2,FUN=function(x){mean(x[ref.index])})
@@ -228,7 +230,7 @@ CSpermute <- function(refMat,querMat,CSresult,B=500,mfa.factor=NULL,method.adjus
 			  # res <- performParallel(MultiCores.number,1:length(worker_divide),
 			  #                        seed=MultiCores.seed,cltype="SOCK",
 			  #                        initexpr=library(FactoMineR),
-			  #                        export=c("worker_divide","querMat","refMat","CSresult","ref.index"),
+			  #                        export=c("worker_divide","refMat","querMat","CSresult","ref.index"),
 			  #                        
 			  #                        
 			  #                        fun=function(x){
@@ -238,18 +240,18 @@ CSpermute <- function(refMat,querMat,CSresult,B=500,mfa.factor=NULL,method.adjus
 			  #  
 			  #  for(i in 1:length(worker_divide[[x]])){
 			  #    ## Permuting Query Matrix
-			  #    querMat.Perm <- matrix(sample(as.vector(querMat),(dim(querMat)[1]*dim(querMat)[2]),replace=FALSE),nrow=dim(querMat)[1],ncol=dim(querMat)[2])
+			  #    refMat.Perm <- matrix(sample(as.vector(refMat),(dim(refMat)[1]*dim(refMat)[2]),replace=FALSE),nrow=dim(refMat)[1],ncol=dim(refMat)[2])
 			  #    
-			  #    rownames(querMat.Perm) <- rownames(refMat)
-			  #    colnames(querMat.Perm) <- colnames(querMat)
+			  #    rownames(refMat.Perm) <- rownames(querMat)
+			  #    colnames(refMat.Perm) <- colnames(refMat)
 			  #    
 			  #    #########################
 			  #    
-			  #    data_comb <- cbind(refMat,querMat.Perm)
-			  #    rownames(data_comb) <- rownames(refMat)
-			  #    colnames(data_comb) <- c(colnames(refMat),colnames(querMat))
+			  #    data_comb <- cbind(querMat,refMat.Perm)
+			  #    rownames(data_comb) <- rownames(querMat)
+			  #    colnames(data_comb) <- c(colnames(querMat),colnames(refMat))
 			  #    
-			  #    out_MFA <- MFA(base=data_comb,group=c(ncol(refMat),ncol(querMat)),type=c("s","s"),ind.sup=NULL,row.w=CSresult@call$analysis.pm$row.w,weight.col.mfa=CSresult@call$analysis.pm$weight.col.mfa,ncp=CSresult@call$analysis.pm$ncp,name.group=c("Reference","Query"),graph=FALSE)
+			  #    out_MFA <- MFA(base=data_comb,group=c(ncol(querMat),ncol(refMat)),type=c("s","s"),ind.sup=NULL,row.w=CSresult@call$analysis.pm$row.w,weight.col.mfa=CSresult@call$analysis.pm$weight.col.mfa,ncp=CSresult@call$analysis.pm$ncp,name.group=c("Reference","Query"),graph=FALSE)
 			  #    
 			  #    ## FACTOR IS CHOSEN BASED ON HIGHEST AVERAGE REFERENCE LOADINGS  (put other options here later)
 			  #    ref.loadings <- apply(out_MFA$quanti.var$cor,MARGIN=2,FUN=function(x){mean(x[ref.index])})
@@ -272,18 +274,18 @@ CSpermute <- function(refMat,querMat,CSresult,B=500,mfa.factor=NULL,method.adjus
 			  for(i in 1:B){
 			    
 			    ## Permuting Query Matrix
-			    querMat.Perm <- matrix(sample(as.vector(querMat),(dim(querMat)[1]*dim(querMat)[2]),replace=FALSE),nrow=dim(querMat)[1],ncol=dim(querMat)[2])
+			    refMat.Perm <- matrix(sample(as.vector(refMat),(dim(refMat)[1]*dim(refMat)[2]),replace=FALSE),nrow=dim(refMat)[1],ncol=dim(refMat)[2])
 			    
-			    rownames(querMat.Perm) <- rownames(refMat)
-			    colnames(querMat.Perm) <- colnames(querMat)
+			    rownames(refMat.Perm) <- rownames(querMat)
+			    colnames(refMat.Perm) <- colnames(refMat)
 			    
 			    #########################
 			    
-			    data_comb <- cbind(refMat,querMat.Perm)
-			    rownames(data_comb) <- rownames(refMat)
-			    colnames(data_comb) <- c(colnames(refMat),colnames(querMat))
+			    data_comb <- cbind(querMat,refMat.Perm)
+			    rownames(data_comb) <- rownames(querMat)
+			    colnames(data_comb) <- c(colnames(querMat),colnames(refMat))
 			    
-			    out_MFA <- MFA(base=data_comb,group=c(ncol(refMat),ncol(querMat)),type=c("s","s"),ind.sup=NULL,row.w=CSresult@call$analysis.pm$row.w,weight.col.mfa=CSresult@call$analysis.pm$weight.col.mfa,ncp=CSresult@call$analysis.pm$ncp,name.group=c("Reference","Query"),graph=FALSE)
+			    out_MFA <- MFA(base=data_comb,group=c(ncol(querMat),ncol(refMat)),type=c("s","s"),ind.sup=NULL,row.w=CSresult@call$analysis.pm$row.w,weight.col.mfa=CSresult@call$analysis.pm$weight.col.mfa,ncp=CSresult@call$analysis.pm$ncp,name.group=c("Reference","Query"),graph=FALSE)
 			    
 			    ## FACTOR IS CHOSEN BASED ON HIGHEST AVERAGE REFERENCE LOADINGS  (put other options here later)
 			    ref.loadings <- apply(out_MFA$quanti.var$cor,MARGIN=2,FUN=function(x){mean(x[ref.index])})
@@ -336,7 +338,7 @@ CSpermute <- function(refMat,querMat,CSresult,B=500,mfa.factor=NULL,method.adjus
 			  
 			  clusterCall(cl, eval, substitute(requireNamespace("CSFA")), env = .GlobalEnv)
 
-			  clusterExport(cl, c("worker_divide","querMat","refMat","CSresult","ref.index"), envir=current_environment)
+			  clusterExport(cl, c("worker_divide","refMat","querMat","CSresult","ref.index"), envir=current_environment)
 			  clusterSetupRNG.FT(cl, type = gentype, streamper = "replicate", 
 			                     seed = MultiCores.seed, n = length(worker_divide), prngkind = "default")
 			  
@@ -348,13 +350,13 @@ CSpermute <- function(refMat,querMat,CSresult,B=500,mfa.factor=NULL,method.adjus
 
 			                          for(i in 1:length(worker_divide[[x]])){
 			                            ## Permuting Query Matrix
-			                            querMat.Perm <- matrix(sample(as.vector(querMat),(dim(querMat)[1]*dim(querMat)[2]),replace=FALSE),nrow=dim(querMat)[1],ncol=dim(querMat)[2])
+			                            refMat.Perm <- matrix(sample(as.vector(refMat),(dim(refMat)[1]*dim(refMat)[2]),replace=FALSE),nrow=dim(refMat)[1],ncol=dim(refMat)[2])
 			                            ##########################
 			                            
-			                            rownames(querMat.Perm) <- rownames(refMat)
-			                            colnames(querMat.Perm) <- colnames(querMat)
+			                            rownames(refMat.Perm) <- rownames(querMat)
+			                            colnames(refMat.Perm) <- colnames(refMat)
 			                            
-			                            out_zhang <- analyse_zhang(refMat,querMat.Perm,
+			                            out_zhang <- analyse_zhang(querMat,refMat.Perm,
 			                                                              nref=CSresult@call$analysis.pm$nref,nquery=CSresult@call$analysis.pm$nquery,ord.query=CSresult@call$analysis.pm$ord.query,ntop.scores=CSresult@call$analysis.pm$ntop.scores,
 			                                                              basefilename="analyseZhang",which=c(),plot.type="device",print.top=FALSE)
 			                            
@@ -377,13 +379,13 @@ CSpermute <- function(refMat,querMat,CSresult,B=500,mfa.factor=NULL,method.adjus
 			  for(i in 1:B){
 			    
 			    ## Permuting Query Matrix
-			    querMat.Perm <- matrix(sample(as.vector(querMat),(dim(querMat)[1]*dim(querMat)[2]),replace=FALSE),nrow=dim(querMat)[1],ncol=dim(querMat)[2])
+			    refMat.Perm <- matrix(sample(as.vector(refMat),(dim(refMat)[1]*dim(refMat)[2]),replace=FALSE),nrow=dim(refMat)[1],ncol=dim(refMat)[2])
 			    ##########################
 			    
-			    rownames(querMat.Perm) <- rownames(refMat)
-			    colnames(querMat.Perm) <- colnames(querMat)
+			    rownames(refMat.Perm) <- rownames(querMat)
+			    colnames(refMat.Perm) <- colnames(refMat)
 			    
-			    out_zhang <- analyse_zhang(refMat,querMat.Perm,
+			    out_zhang <- analyse_zhang(querMat,refMat.Perm,
 			                               nref=CSresult@call$analysis.pm$nref,nquery=CSresult@call$analysis.pm$nquery,ord.query=CSresult@call$analysis.pm$ord.query,ntop.scores=CSresult@call$analysis.pm$ntop.scores,
 			                               basefilename="analyseZhang",which=c(),plot.type="device",print.top=FALSE)
 			    
@@ -487,13 +489,13 @@ CSpermute <- function(refMat,querMat,CSresult,B=500,mfa.factor=NULL,method.adjus
 		
 		CS <- CSresult@CS
 		
-		CS$CS.query$pvalues <- pval.dataframe$pvalues
+		CS$CS.ref$pvalues <- pval.dataframe$pvalues
 		col.order <- c("ZGscore","pvalues","ZGrank","ZGabsrank")
 		if(method.adjust!="none"){
-			CS$CS.query$pvalues.adjusted <- pval.dataframe$pvalues.adjusted
+			CS$CS.ref$pvalues.adjusted <- pval.dataframe$pvalues.adjusted
 			col.order <- c("ZGscore","pvalues","pvalues.adjusted","ZGrank","ZGabsrank")
 		}
-		CS$CS.query <- CS$CS.query[,col.order]
+		CS$CS.ref <- CS$CS.ref[,col.order]
 		
 		CSresult@CS <- CS
 				
@@ -510,7 +512,7 @@ CSpermute <- function(refMat,querMat,CSresult,B=500,mfa.factor=NULL,method.adjus
 			CSRank <- pval.dataframe.rank$observed
 			
 			if(method.adjust!="none"){
-				CS.query.temp <- data.frame(
+				CS.ref.temp <- data.frame(
 						CLoadings=loadings[-c(1:length(ref.index))],
 						CLpvalues=pval.dataframe$pvalues,
 						CLpvalues.adjusted=pval.dataframe$pvalues.adjusted,
@@ -525,7 +527,7 @@ CSpermute <- function(refMat,querMat,CSresult,B=500,mfa.factor=NULL,method.adjus
 				)
 				
 			}else{
-				CS.query.temp <- data.frame(
+				CS.ref.temp <- data.frame(
 						CLoadings=loadings[-c(1:length(ref.index))],
 						CLpvalues=pval.dataframe$pvalues,
 						CRankScores=CSRank,
@@ -540,8 +542,8 @@ CSpermute <- function(refMat,querMat,CSresult,B=500,mfa.factor=NULL,method.adjus
 			}
 			
 			CS[[length(CS)+1]] <- list(
-					CS.ref=data.frame(CLoadings=loadings[c(1:length(ref.index))],row.names=rownames(loadings)[c(1:length(ref.index))]),
-					CS.query=CS.query.temp
+					CS.query=data.frame(CLoadings=loadings[c(1:length(ref.index))],row.names=rownames(loadings)[c(1:length(ref.index))]),
+					CS.ref=CS.ref.temp
 				)
 			
 			names(CS)[length(CS)] <- paste0("Factor",mfa.factor)
@@ -555,16 +557,16 @@ CSpermute <- function(refMat,querMat,CSresult,B=500,mfa.factor=NULL,method.adjus
 			
 		}else{
 			factor.index <- which(paste0("Factor",mfa.factor)==names(CS))
-			CS[[factor.index]]$CS.query$CLpvalues <- pval.dataframe$pvalues
-			CS[[factor.index]]$CS.query$CRpvalues <- pval.dataframe.rank$pvalues
+			CS[[factor.index]]$CS.ref$CLpvalues <- pval.dataframe$pvalues
+			CS[[factor.index]]$CS.ref$CRpvalues <- pval.dataframe.rank$pvalues
 			col.order <- c("CLoadings","CLpvalues","CRankScores","CRpvalues","CLrank","CLabsrank","CRrank","CRabsrank")
 			
 			if(method.adjust!="none"){
-				CS[[factor.index]]$CS.query$CLpvalues.adjusted <- pval.dataframe$pvalues.adjusted
-				CS[[factor.index]]$CS.query$CRpvalues.adjusted <- pval.dataframe.rank$pvalues.adjusted
+				CS[[factor.index]]$CS.ref$CLpvalues.adjusted <- pval.dataframe$pvalues.adjusted
+				CS[[factor.index]]$CS.ref$CRpvalues.adjusted <- pval.dataframe.rank$pvalues.adjusted
 				col.order <- c("CLoadings","CLpvalues","CLpvalues.adjusted","CRankScores","CRpvalues","CRpvalues.adjusted","CLrank","CLabsrank","CRrank","CRabsrank")
 			}
-			CS[[factor.index]]$CS.query <- CS[[factor.index]]$CS.query[,col.order]
+			CS[[factor.index]]$CS.ref <- CS[[factor.index]]$CS.ref[,col.order]
 			
 			CSresult@CS <- CS
 		}
@@ -584,12 +586,12 @@ CSpermute <- function(refMat,querMat,CSresult,B=500,mfa.factor=NULL,method.adjus
 		
 		if((2 %in% which) & (is.null(cmpd.hist))){
 			# Volcano plot with selecting compounds
-			pvalue_volc(pval.dataframe=permutation.object$CS.pval.dataframe,type=type,color.columns=color.columns,list.h0.result=CS.Perm,list.h0.result.rank=CS.Perm.rank,make.hist=TRUE,plot.type=plot.type,plot.type.hist=plot.type,basefilename=paste0(basefilename,"_volcanoplot"))
+			pvalue_volc(pval.dataframe=permutation.object$CS.pval.dataframe,type=type,color.columns=color.columns,list.h0.result=CS.Perm,list.h0.result.rank=CS.Perm.rank,make.hist=TRUE,plot.type=plot.type,plot.type.hist=plot.type,basefilename=paste0(basefilename,"_volcanoplot"),labels=labels)
 			
 			hist.drawn <- TRUE
 		}else{
 			# Volcano plots without selecting compounds
-			pvalue_volc(pval.dataframe=permutation.object$CS.pval.dataframe,type=type,color.columns=color.columns,list.h0.result=NULL,list.h0.result.rank=NULL,make.hist=FALSE,plot.type=plot.type,plot.type.hist=plot.type,basefilename=paste0(basefilename,"_volcanoplot"))
+			pvalue_volc(pval.dataframe=permutation.object$CS.pval.dataframe,type=type,color.columns=color.columns,list.h0.result=NULL,list.h0.result.rank=NULL,make.hist=FALSE,plot.type=plot.type,plot.type.hist=plot.type,basefilename=paste0(basefilename,"_volcanoplot"),labels=labels)
 		}
 		
 	}
@@ -599,7 +601,7 @@ CSpermute <- function(refMat,querMat,CSresult,B=500,mfa.factor=NULL,method.adjus
 	if((2 %in% which) & !hist.drawn){
 		if(is.null(cmpd.hist)){
 			#volc with plot device
-			pvalue_volc(pval.dataframe=permutation.object$CS.pval.dataframe,type=type,color.columns=color.columns,list.h0.result=CS.Perm,list.h0.result.rank=CS.Perm.rank,make.hist=TRUE,plot.type="device",plot.type.hist=plot.type,basefilename=paste0(basefilename))
+			pvalue_volc(pval.dataframe=permutation.object$CS.pval.dataframe,type=type,color.columns=color.columns,list.h0.result=CS.Perm,list.h0.result.rank=CS.Perm.rank,make.hist=TRUE,plot.type="device",plot.type.hist=plot.type,basefilename=paste0(basefilename),labels=labels)
 			
 		}else{
 			# just hist
@@ -621,12 +623,12 @@ CSpermute <- function(refMat,querMat,CSresult,B=500,mfa.factor=NULL,method.adjus
 		
 			if((4 %in% which) & (is.null(cmpd.hist))){
 				# Volcano plot with selecting compounds
-				pvalue_volc(pval.dataframe=permutation.object$CSRank.pval.dataframe,CSRank=TRUE,type=type,color.columns=color.columns,list.h0.result=CS.Perm,list.h0.result.rank=CS.Perm.rank,make.hist=TRUE,plot.type=plot.type,plot.type.hist=plot.type,basefilename=paste0(basefilename,"_volcanoplot_CSRankScores"))
+				pvalue_volc(pval.dataframe=permutation.object$CSRank.pval.dataframe,CSRank=TRUE,type=type,color.columns=color.columns,list.h0.result=CS.Perm,list.h0.result.rank=CS.Perm.rank,make.hist=TRUE,plot.type=plot.type,plot.type.hist=plot.type,basefilename=paste0(basefilename,"_volcanoplot_CSRankScores"),labels=labels)
 			
 				hist.drawn.rank <- TRUE
 			}else{
 				# Volcano plots without selecting compounds
-				pvalue_volc(pval.dataframe=permutation.object$CSRank.pval.dataframe,CSRank=TRUE,type=type,color.columns=color.columns,list.h0.result=NULL,list.h0.result.rank=NULL,make.hist=FALSE,plot.type=plot.type,plot.type.hist=plot.type,basefilename=paste0(basefilename,"_volcanoplot_CSRankScores"))
+				pvalue_volc(pval.dataframe=permutation.object$CSRank.pval.dataframe,CSRank=TRUE,type=type,color.columns=color.columns,list.h0.result=NULL,list.h0.result.rank=NULL,make.hist=FALSE,plot.type=plot.type,plot.type.hist=plot.type,basefilename=paste0(basefilename,"_volcanoplot_CSRankScores"),labels=labels)
 			
 			}
 		
@@ -637,7 +639,7 @@ CSpermute <- function(refMat,querMat,CSresult,B=500,mfa.factor=NULL,method.adjus
 		if((4 %in% which) & !hist.drawn.rank){
 			if(is.null(cmpd.hist)){
 				#volc with plot device
-				pvalue_volc(pval.dataframe=permutation.object$CSRank.pval.dataframe,CSRank=TRUE,type=type,color.columns=color.columns,list.h0.result=CS.Perm,list.h0.result.rank=CS.Perm.rank,make.hist=TRUE,plot.type="device",plot.type.hist=plot.type,basefilename=paste0(basefilename,"_CSRankScores"))
+				pvalue_volc(pval.dataframe=permutation.object$CSRank.pval.dataframe,CSRank=TRUE,type=type,color.columns=color.columns,list.h0.result=CS.Perm,list.h0.result.rank=CS.Perm.rank,make.hist=TRUE,plot.type="device",plot.type.hist=plot.type,basefilename=paste0(basefilename,"_CSRankScores"),labels=labels)
 			
 			}else{
 				# just hist
@@ -702,9 +704,9 @@ pvalue_compute <- function(obs.result,list.h0.result,list.h0.result.rank,ref.ind
 	
 	if(type=="CSzhang"){
 		
-		obs.scores <- obs.result@CS$CS.query$ZGscore
+		obs.scores <- obs.result@CS$CS.ref$ZGscore
 		
-		pval.dataframe <- data.frame(Cmpd=rownames(obs.result@CS$CS.query))
+		pval.dataframe <- data.frame(Cmpd=rownames(obs.result@CS$CS.ref))
 		pval.dataframe$Cmpd <- as.character(pval.dataframe$Cmpd)
 		temp.pval <- c(1:length(obs.scores))
 		
@@ -870,7 +872,7 @@ pvalue_hist <- function(pval.dataframe,list.h0.result,list.h0.result.rank,type=c
 
 
 # Use compute pvalue plot
-pvalue_volc <- function(pval.dataframe,type=c("CSmfa","CSzhang"),CSRank=FALSE,color.columns=NULL,list.h0.result=NULL,list.h0.result.rank=NULL,make.hist=FALSE,plot.type="device",plot.type.hist="device",basefilename="pvalue_volc"){
+pvalue_volc <- function(pval.dataframe,type=c("CSmfa","CSzhang"),CSRank=FALSE,color.columns=NULL,list.h0.result=NULL,list.h0.result.rank=NULL,make.hist=FALSE,plot.type="device",plot.type.hist="device",basefilename="pvalue_volc",labels=TRUE){
 	
 	plot.in <- function(plot.type,name){
 		if(plot.type=="pdf"){pdf(paste0(name,".pdf"))}
@@ -902,7 +904,9 @@ pvalue_volc <- function(pval.dataframe,type=c("CSmfa","CSzhang"),CSRank=FALSE,co
 	plot(obs.scores,plot.pvalues,col=color.columns,bg="grey",pch=21,xlab=xlab.temp,ylab=ylab.temp,main=paste0("Volcano Plot for ",type," result - ",main.temp))
 	text(obs.scores,plot.pvalues,temp.names,pos=1,col=color.columns)
 	abline(h=-log(0.05),col="red",lty=3)
-	text(min(obs.scores),-log(0.05)+0.1,paste0(ifelse(use.adjusted,"adjusted p-value","p-value")," = 0.05"),pos=4,col="red")
+	if(labels){
+	  text(min(obs.scores),-log(0.05)+0.1,paste0(ifelse(use.adjusted,"adjusted p-value","p-value")," = 0.05"),pos=4,col="red")
+  }
 	plot.out(plot.type)
 	
 	
@@ -912,7 +916,9 @@ pvalue_volc <- function(pval.dataframe,type=c("CSmfa","CSzhang"),CSRank=FALSE,co
 			if(plot.type!="device"){
 				dev.new()
 				plot(obs.scores,plot.pvalues,col=color.columns,bg="grey",pch=21,xlab="Observed CS for cmpds",ylab="-log(pvalues)",main=paste0("Volcano Plot for ",type," result"))
-				text(obs.scores,plot.pvalues,temp.names,pos=1,col=color.columns)
+				if(labels){
+				  text(obs.scores,plot.pvalues,temp.names,pos=1,col=color.columns)
+				}
 			}
 			
 			cat("Please choose one or more compounds with left-click.\n To end the selection, press right-click.")

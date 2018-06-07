@@ -7,7 +7,7 @@
 \title{Computing connectivity scores with Factor Analysis methodology.}
 \description{
 CSFA is a wrapper of multiple packages containing a factor analysis method.
-These methods are used to derive the the connectivity scores of query gene signatures with one or multiple reference signatures.
+These methods are used to derive the the connectivity scores of reference gene signatures with one or multiple query signatures.
 CSFA will apply them, output the scores and immediately produce a number of meaningful plots interactively. The included methods are PCA and MFA from the \code{FactoMineR} package, FABIA from the \code{fabia} package and Sparse PCA/MFA from the \code{elasticnet} package.
 Further, CSFA also contains an implementation of the Zhang and Gant score.
 }

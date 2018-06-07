@@ -25,14 +25,15 @@
 #' \item CS p-values comparison plot (Raw & Adjusted).
 #' \item CRankScores p-values comparison plot (Raw & Adjusted).
 #' }
-#' @param color.columns Vector of colors for the reference and query columns (compounds). If \code{NULL}, blue will be used for reference and black for query. Use this option to highlight reference columns and query columns of interest.
+#' @param color.columns Vector of colors for the query and reference columns (compounds). If \code{NULL}, blue will be used for query and black for reference. Use this option to highlight query columns and reference columns of interest.
 #' @param gene.thresP Vector of length 2 containing the positive gene thresholds for \code{CSresult1} and \code{CSresult2}. Genes above the threshold will be colored. (e.g. \code{c(1,2)})
 #' @param gene.thresN Vector of length 2 containing the negative gene thresholds for \code{CSresult1} and \code{CSresult2}. Genes below the threshold will be colored. (e.g. \code{c(-1,-2)})
 #' @param thresP.col Vector of length 2 containing the colors for the high gene scores for \code{CSresult1} and \code{CSresult2} (e.g. \code{c("blue","light blue")}).
 #' @param thresN.col Vector of length 2 containing the colors for the low gene scores for \code{CSresult1} and \code{CSresult2} (e.g. \code{c("red","pink")}).
-#' @param legend.names Option to draw a legend (about the highlights in \code{color.columns}) in the CS plot. If \code{NULL}, only references are in the legend.
+#' @param legend.names Option to draw a legend (about the highlights in \code{color.columns}) in the CS plot. If \code{NULL}, only queries are in the legend.
 #' @param legend.cols Colors to be used for the \code{legend.names}.
 #' @param legend.pos The location of the legend: \code{"bottomright"}, \code{"bottom"}, \code{"bottomleft"}, \code{"left"}, \code{"topleft"}, \code{"top"}, \code{"topright"}, \code{"right"} and \code{"center"}.
+#' @param labels Boolean value (default=TRUE) to use row and/or column text labels in the comparison score plots. 
 #' @param plot.type How should the plots be outputted? \code{"pdf"} to save them in pdf files, \code{device} to draw them in a graphics device (default), \code{sweave} to use them in a sweave or knitr file.
 #' @param basefilename Directory including filename of the graphs if saved in pdf files
 #' @param threshold.pvalues If both CSresult1 and CSresult contain pvalues (and adjusted pvalues), this threshold will be used to compare the number of overlapping significant results. 
@@ -46,7 +47,7 @@
 #' ZHANG_analysis <- CSanalysis(Mat1,Mat2,"CSzhang")
 #' 
 #' CScompare(MFA_analysis,ZHANG_analysis,1)
-CScompare <- function(CSresult1,CSresult2,component1.plot,component2.plot,threshold.pvalues=0.05,which=c(1,2,3),color.columns=NULL,gene.thresP=NULL,gene.thresN=NULL,thresP.col=c("blue","light blue"),thresN.col=c("red","pink"),legend.names=NULL,legend.cols=NULL,legend.pos="topright",plot.type="device",basefilename=NULL){
+CScompare <- function(CSresult1,CSresult2,component1.plot,component2.plot,threshold.pvalues=0.05,which=c(1,2,3),color.columns=NULL,gene.thresP=NULL,gene.thresN=NULL,thresP.col=c("blue","light blue"),thresN.col=c("red","pink"),legend.names=NULL,legend.cols=NULL,legend.pos="topright",labels=TRUE,plot.type="device",basefilename=NULL){
 	
   check_filename(plot.type,basefilename)
   
@@ -60,10 +61,10 @@ CScompare <- function(CSresult1,CSresult2,component1.plot,component2.plot,thresh
 	querdim2 <- CSresult2@call$dimensions$col[2]
 	
 	
-	if(refdim1!=refdim2){stop("Using 2 different reference matrices",call.=FALSE)}
-	if(querdim1!=querdim2){stop("Using 2 different query matrices",call.=FALSE)}
+	if(refdim1!=refdim2){stop("Using 2 different query matrices",call.=FALSE)}
+	if(querdim1!=querdim2){stop("Using 2 different reference matrices",call.=FALSE)}
 	if(CSresult1@call$dimensions$row != CSresult2@call$dimensions$row){warning("Different amount of genes between 2 results. No correlation computation or scatter plot will be done for the Gene Scores.",call.=FALSE)}
-	if(!all(rownames(CSresult1@CS[[1]]$CS.query)==rownames(CSresult2@CS[[1]]$CS.query))){stop("Different rownames for 2 results",call.=FALSE)}
+	if(!all(rownames(CSresult1@CS[[1]]$CS.ref)==rownames(CSresult2@CS[[1]]$CS.ref))){stop("Different rownames for 2 results",call.=FALSE)}
 	
 	CSGS1 <- get.CS.GS(CSresult1,component1.plot,refdim1)
 	CSGS2 <- get.CS.GS(CSresult2,component2.plot,refdim2)
@@ -86,7 +87,7 @@ CScompare <- function(CSresult1,CSresult2,component1.plot,component2.plot,thresh
 		if(is.null(legend.names) & is.null(legend.cols) &is.null(color.columns)){
 			
 			color.columns <- c(rep("blue",refdim1),rep("black",querdim1))
-			legend.names <- c("References")
+			legend.names <- c("Queries")
 			legend.cols <- c("blue")
 			
 			legend.names.rank <- c()
@@ -133,7 +134,7 @@ CScompare <- function(CSresult1,CSresult2,component1.plot,component2.plot,thresh
 	
 	
 	if(1%in%which){
-		compare.CS.plot(loadings1=loadings1,loadings2=loadings2,name1=name1,name2=name2,axename1=axename1,axename2=axename2,nref=refdim1,color.columns=color.columns.loadings,legend.names=legend.names,legend.cols=legend.cols,legend.pos=legend.pos,plot.type=plot.type,basefilename=basefilename)
+		compare.CS.plot(loadings1=loadings1,loadings2=loadings2,labels=labels,name1=name1,name2=name2,axename1=axename1,axename2=axename2,nref=refdim1,color.columns=color.columns.loadings,legend.names=legend.names,legend.cols=legend.cols,legend.pos=legend.pos,plot.type=plot.type,basefilename=basefilename)
 	}
 	scores_correlation[1,1] <- cor(loadings1,loadings2,use="complete.obs")
 	scores_correlation[2,1] <- cor(loadings1,loadings2,use="complete.obs",method="spearman")
@@ -141,7 +142,7 @@ CScompare <- function(CSresult1,CSresult2,component1.plot,component2.plot,thresh
 	
 	if(!(is.null(scores1)|is.null(scores2)|!(2 %in% which))){
 		if(CSresult1@call$dimensions$row == CSresult2@call$dimensions$row){
-				compare.GS.plot(scores1=scores1,scores2=scores2,name1=name1,name2=name2,axename1=axename1,axename2=axename2,nref=refdim1,gene.thresP=gene.thresP,gene.thresN=gene.thresN,thresP.col=thresP.col,thresN.col=thresN.col,plot.type=plot.type,basefilename=basefilename)
+				compare.GS.plot(scores1=scores1,scores2=scores2,labels=labels,name1=name1,name2=name2,axename1=axename1,axename2=axename2,nref=refdim1,gene.thresP=gene.thresP,gene.thresN=gene.thresN,thresP.col=thresP.col,thresN.col=thresN.col,plot.type=plot.type,basefilename=basefilename)
 		}
 	}
 	if(!(is.null(scores1)|is.null(scores2))){
@@ -159,7 +160,7 @@ CScompare <- function(CSresult1,CSresult2,component1.plot,component2.plot,thresh
 	if(3%in%which){
 		if(length(color.columns)==(refdim1+querdim1)){color.columns.rank <- color.columns[-c(1:refdim1)]}else{color.columns.rank <-color.columns}
 		
-		compare.CSRank.plot(rankscores1=rankscores1,rankscores2=rankscores2,name1=name1,name2=name2,axename1=axename1,axename2=axename2,color.columns=color.columns.rank,legend.names=legend.names.rank,legend.cols=legend.cols.rank,legend.pos=legend.pos,plot.type=plot.type,basefilename=basefilename)
+		compare.CSRank.plot(rankscores1=rankscores1,rankscores2=rankscores2,labels=labels,name1=name1,name2=name2,axename1=axename1,axename2=axename2,color.columns=color.columns.rank,legend.names=legend.names.rank,legend.cols=legend.cols.rank,legend.pos=legend.pos,plot.type=plot.type,basefilename=basefilename)
 	}
 	scores_correlation[1,2] <- cor(rankscores1,rankscores2,use="complete.obs")
 	scores_correlation[2,2] <- cor(rankscores1,rankscores2,use="complete.obs",method="spearman")
@@ -191,10 +192,10 @@ CScompare <- function(CSresult1,CSresult2,component1.plot,component2.plot,thresh
 			#p-values compare plot (2 plots) ### ADD A WAY TO GIVE c(TRUE TRUE) to plot to give either CS or CSRank....  + check if adjusted inside plot=TRUE
 			if((4 %in% which) | (5 %in% which)){			
 				plot <- c((4 %in% which) , (5 %in% which))
-				cor.pvalues <- compare.pvalues.plot(list.pval.dataframe,list.pval.dataframe.rank,nref=refdim1,name1=name1,name2=name2,axename1=axename1,axename2=axename2,color.columns=color.columns[-c(1:refdim1)],legend.names=legend.names,legend.cols=legend.cols,legend.pos=legend.pos,plot.type=plot.type,basefilename=paste0(basefilename,"_CS"),plot=plot)
+				cor.pvalues <- compare.pvalues.plot(list.pval.dataframe,list.pval.dataframe.rank,nref=refdim1,name1=name1,name2=name2,axename1=axename1,axename2=axename2,color.columns=color.columns[-c(1:refdim1)],legend.names=legend.names,legend.cols=legend.cols,legend.pos=legend.pos,plot.type=plot.type,basefilename=paste0(basefilename,"_CS"),plot=plot,labels=labels)
 			}
 			else{
-				cor.pvalues <- compare.pvalues.plot(list.pval.dataframe,list.pval.dataframe.rank,nref=refdim1,name1=name1,name2=name2,axename1=axename1,axename2=axename2,color.columns=color.columns[-c(1:refdim1)],legend.names=legend.names,legend.cols=legend.cols,legend.pos=legend.pos,plot.type=plot.type,basefilename=paste0(basefilename,"_CS"),plot=c(FALSE,FALSE))
+				cor.pvalues <- compare.pvalues.plot(list.pval.dataframe,list.pval.dataframe.rank,nref=refdim1,name1=name1,name2=name2,axename1=axename1,axename2=axename2,color.columns=color.columns[-c(1:refdim1)],legend.names=legend.names,legend.cols=legend.cols,legend.pos=legend.pos,plot.type=plot.type,basefilename=paste0(basefilename,"_CS"),plot=c(FALSE,FALSE),labels=labels)
 			}
 			
 			out_pval_compare <- pvalue2_compare(list.pval.dataframe,threshold=threshold.pvalues)
@@ -250,8 +251,8 @@ get.CS.GS <- function(CSresult,component.plot,refdim){
 		return(list(CS=loadings,GS=scores,name="sMFA",axename=paste0("sMFA Factor ",component.plot),CSRank=rankscores))
 	}
 	else if(type == "CSzhang"){
-		loadings <- CSresult@CS$CS.query[,1]
-		names(loadings) <- rownames(CSresult@CS$CS.query)
+		loadings <- CSresult@CS$CS.ref[,1]
+		names(loadings) <- rownames(CSresult@CS$CS.ref)
 		
 		
 		return(list(CS=loadings,GS=NULL,name="ZHANG",axename="Zhang CS",CSRank=loadings))
@@ -263,7 +264,7 @@ get.CS.GS <- function(CSresult,component.plot,refdim){
 	
 
 
-compare.CS.plot <- function(loadings1,loadings2,name1,name2,axename1,axename2,nref,color.columns,legend.names,legend.cols,legend.pos,plot.type,basefilename){
+compare.CS.plot <- function(loadings1,loadings2,name1,name2,axename1,axename2,nref,color.columns,legend.names,legend.cols,legend.pos,plot.type,basefilename,labels){
 	
 	## Plot-in and -out functions
 	plot.in <- function(plot.type,name){
@@ -286,7 +287,9 @@ compare.CS.plot <- function(loadings1,loadings2,name1,name2,axename1,axename2,nr
 	plot.in(plot.type,paste0(basefilename,"_CS_",name1,"_VS_",name2,".pdf"))
 	par(mfrow=c(1,1))
 	plot(loadings1,loadings2,xlim=c(minX,maxX),ylim=c(minY,maxY),col=groupCol,bg="grey",main=paste0(name1," VS ",name2," CScores - ",nref," Ref Compound"),xlab=paste0(axename1," Connectivity Scores"),ylab=paste0(axename2," Connectivity Scores"),pch=21)
-	text(loadings1,loadings2, names(loadings1),	pos=1,	cex=0.5,	col=groupCol)
+	if(labels){
+	  text(loadings1,loadings2, names(loadings1),	pos=1,	cex=0.5,	col=groupCol)
+	}
 	if(length(legend.names)>0){legend(legend.pos,legend.names,pch=21,col=legend.cols,bty="n")}
 	plot.out(plot.type)
 
@@ -294,7 +297,7 @@ compare.CS.plot <- function(loadings1,loadings2,name1,name2,axename1,axename2,nr
 
 
 
-compare.GS.plot <- function(scores1,scores2,name1,name2,axename1,axename2,nref,gene.thresP,gene.thresN,thresP.col,thresN.col,plot.type,basefilename){
+compare.GS.plot <- function(scores1,scores2,name1,name2,axename1,axename2,nref,gene.thresP,gene.thresN,thresP.col,thresN.col,plot.type,basefilename,labels){
 	
 	## Plot-in and -out functions
 	plot.in <- function(plot.type,name){
@@ -349,7 +352,9 @@ compare.GS.plot <- function(scores1,scores2,name1,name2,axename1,axename2,nref,g
 	plot.in(plot.type,paste0(basefilename,"_GS_",name1,"_VS_",name2,".pdf"))
 	par(mfrow=c(1,1))
 	plot(scores1,scores2,xlim=c(minX,maxX),ylim=c(minY,maxY),col=list.colors[,2],bg=list.colors[,1],main=paste0(name1," VS ",name2," GScores - ",nref," Ref Compound"),xlab=paste0(axename1," Gene Scores"),ylab=paste0(axename2," Gene Scores"),pch=21)
-	text(scores1,scores2, names(scores1),	pos=1,	cex=0.5,	col=list.colors[,2])
+	if(labels){
+	  text(scores1,scores2, names(scores1),	pos=1,	cex=0.5,	col=list.colors[,2])
+	}
 	if(!is.null(gene.thresP)){
 		abline(v=gene.thresP[1],lty=3)
 		abline(h=gene.thresP[2],lty=3)
@@ -362,7 +367,7 @@ compare.GS.plot <- function(scores1,scores2,name1,name2,axename1,axename2,nref,g
 
 }
 
-compare.CSRank.plot <- function(rankscores1,rankscores2,name1,name2,axename1,axename2,color.columns,legend.names,legend.cols,legend.pos,plot.type,basefilename){
+compare.CSRank.plot <- function(rankscores1,rankscores2,name1,name2,axename1,axename2,color.columns,legend.names,legend.cols,legend.pos,plot.type,basefilename,labels){
 	
 	## Plot-in and -out functions
 	plot.in <- function(plot.type,name){
@@ -389,7 +394,9 @@ compare.CSRank.plot <- function(rankscores1,rankscores2,name1,name2,axename1,axe
 	plot.in(plot.type,paste0(basefilename,"_CSRank_",name1,"_VS_",name2,".pdf"))
 	par(mfrow=c(1,1))
 	plot(rankscores1,rankscores2,xlim=c(minX,maxX),ylim=c(minY,maxY),col=groupCol,bg="grey",main=paste0(name1," VS ",name2," CRankScores"),xlab=axename1.temp,ylab=axename2.temp,pch=21)
-	text(rankscores1,rankscores2, names(rankscores1),	pos=1,	cex=0.5,	col=groupCol)
+	if(labels){
+	  text(rankscores1,rankscores2, names(rankscores1),	pos=1,	cex=0.5,	col=groupCol)
+	}
 	if(length(legend.names)>0){legend(legend.pos,legend.names,pch=21,col=legend.cols,bty="n")}
 	plot.out(plot.type)
 	
@@ -397,7 +404,7 @@ compare.CSRank.plot <- function(rankscores1,rankscores2,name1,name2,axename1,axe
 }
 
 
-compare.pvalues.plot <- function(list.pval.dataframe,list.pval.dataframe.rank,nref,name1,name2,axename1,axename2,color.columns,legend.names,legend.cols,legend.pos,plot.type="device",basefilename="",plot=TRUE){
+compare.pvalues.plot <- function(list.pval.dataframe,list.pval.dataframe.rank,nref,name1,name2,axename1,axename2,color.columns,legend.names,legend.cols,legend.pos,plot.type="device",basefilename="",plot=TRUE,labels){
 	## Plot-in and -out functions
 	plot.in <- function(plot.type,name){
 		if(plot.type=="pdf"){pdf(name)}
@@ -441,7 +448,9 @@ compare.pvalues.plot <- function(list.pval.dataframe,list.pval.dataframe.rank,nr
 				
 				plot.in(plot.type,paste0(basefilename,"_",paste0(rank.name,"CScore",name1,"VS",name2,"_pvalues.pdf")))
 				plot(pvalues1,pvalues2,col=color.columns,bg="grey",main=paste0(name1," VS ",name2," -log(",pvalues.name,") of CS",rank.name),xlab=axename1.temp,ylab=axename2.temp,pch=21)
-				text(pvalues1,pvalues2,as.character(list.pval.dataframe[[1]][,1]),col=color.columns,pos=1,cex=0.5)
+				if(labels){
+				  text(pvalues1,pvalues2,as.character(list.pval.dataframe[[1]][,1]),col=color.columns,pos=1,cex=0.5)
+				}
 				if(length(legend.names)>0){legend(legend.pos,legend.names,pch=21,col=legend.cols,bty="n")}
 				plot.out(plot.type)
 				
@@ -470,7 +479,9 @@ compare.pvalues.plot <- function(list.pval.dataframe,list.pval.dataframe.rank,nr
 				
 					plot.in(plot.type,paste0(basefilename,"_",paste0(rank.name,"CScore",name1,"VS",name2,"_pvalues.pdf")))
 					plot(pvalues1,pvalues2,col=color.columns,bg="grey",main=paste0(name1," VS ",name2," -log(",pvalues.name,") of CS",rank.name),xlab=axename1.temp,ylab=axename2.temp,pch=21)
-					text(pvalues1,pvalues2,as.character(list.pval.dataframe[[1]][,1]),col=color.columns,pos=1,cex=0.5)
+					if(labels){
+					  text(pvalues1,pvalues2,as.character(list.pval.dataframe[[1]][,1]),col=color.columns,pos=1,cex=0.5)
+					}
 					if(length(legend.names)>0){legend(legend.pos,legend.names,pch=21,col=legend.cols,bty="n")}
 					plot.out(plot.type)
 				}

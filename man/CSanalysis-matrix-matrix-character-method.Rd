@@ -5,12 +5,12 @@
 \alias{CSanalysis,matrix,matrix,character-method}
 \title{Connectivity Score Analysis.}
 \usage{
-\S4method{CSanalysis}{matrix,matrix,character}(refMat, querMat, type, ...)
+\S4method{CSanalysis}{matrix,matrix,character}(querMat, refMat, type, ...)
 }
 \arguments{
-\item{refMat}{Reference matrix (Rows = genes and columns = compounds)}
+\item{querMat}{Query matrix (Rows = genes and columns = compounds)}
 
-\item{querMat}{Query matrix}
+\item{refMat}{Reference matrix}
 
 \item{type}{Type of Factor Analysis or Zhang & Gant ( \code{"CSfabia"}, \code{"CSmfa"}, \code{"CSpca"}, \code{"CSsmfa"} or \code{"CSzhang"})}
 

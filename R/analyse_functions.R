@@ -46,7 +46,7 @@ analyse_FA <- function(
 		legend.pos="topright",legend.names=NULL,legend.cols=unique(colour.columns),
 		thresP.col="blue",thresN.col="red",gene.thresP=NULL,gene.thresN=NULL,
 			
-		CSrank.refplot=FALSE,profile.type="gene",grouploadings.labels=NULL,grouploadings.cutoff=NULL,
+		CSrank.queryplot=FALSE,profile.type="gene",grouploadings.labels=NULL,grouploadings.cutoff=NULL,
 		basefilename="analyseMFA",result.available=NULL,result.available.update=FALSE,plot.type="pdf"
 		
 		){
@@ -183,7 +183,7 @@ analyse_FA <- function(
 					colour.columns=colour.columns,
 					legend.pos=legend.pos,legend.names=legend.names,legend.cols=legend.cols,
 					thresP.col=thresP.col,thresN.col=thresN.col,gene.thresP=gene.thresP,gene.thresN=gene.thresN,
-					CSrank.refplot=CSrank.refplot,profile.type=profile.type,grouploadings.labels=grouploadings.labels,
+					CSrank.queryplot=CSrank.queryplot,profile.type=profile.type,grouploadings.labels=grouploadings.labels,
 					grouploadings.cutoff=grouploadings.cutoff,
 					basefilename=basefilename,result.available=result.available,plot.type=plot.type
 			)
@@ -200,8 +200,8 @@ analyse_FA <- function(
 			
 			for(i.component in 1:length(component.select)){
 				CS[[i.component]] <- list(
-						CS.ref=data.frame(CLoadings=loadings[c(1:length(ref.index)),component.select[i.component]],row.names=rownames(loadings)[c(1:length(ref.index))]),
-						CS.query=data.frame(
+						CS.query=data.frame(CLoadings=loadings[c(1:length(ref.index)),component.select[i.component]],row.names=rownames(loadings)[c(1:length(ref.index))]),
+						CS.ref=data.frame(
 								CLoadings=loadings[-c(1:length(ref.index)),component.select[i.component]],
 								CRankScores=CSRank[[i.component]][,1],
 								CLrank=as.integer(rank(-loadings[-c(1:length(ref.index)),component.select[i.component]])),
@@ -221,7 +221,7 @@ analyse_FA <- function(
 			
 			call.object$component.select=component.select
 			
-			call.object$dimensions <- list(row=dim(data)[1],col=c(ref=length(ref.index),query=(dim(data)[2]-length(ref.index))))
+			call.object$dimensions <- list(row=dim(data)[1],col=c(query=length(ref.index),ref=(dim(data)[2]-length(ref.index))))
 			
 			if(!is.null(result.available)){ 
 				if(result.available.update){ # Chance to update object
@@ -265,7 +265,7 @@ analyse_FA <- function(
 analyse_FA2 <- function(data,result,loadings,scores,ref.index,modeltype,
 		component.plot,which,column.interest,row.interest,gene.highlight,
 		colour.columns,legend.pos,legend.names,legend.cols,thresP.col,
-		thresN.col,gene.thresP,gene.thresN,CSrank.refplot,labels,
+		thresN.col,gene.thresP,gene.thresN,CSrank.queryplot,labels,
 		profile.type,grouploadings.labels,grouploadings.cutoff,basefilename,result.available,plot.type){
 	
 	
@@ -283,7 +283,7 @@ analyse_FA2 <- function(data,result,loadings,scores,ref.index,modeltype,
 	if(is.null(legend.names) & is.null(legend.cols) &is.null(colour.columns)){
 		
 		colour.columns <- c(rep("blue",length(ref.index)),rep("black",(dim(data)[2]-length(ref.index))))
-		legend.names.loadings <- c("References")
+		legend.names.loadings <- c("Queries")
 		legend.cols.loadings <- c("blue")
 	}
 	if(is.null(legend.names)){legend.names <- c()}
@@ -353,8 +353,8 @@ analyse_FA2 <- function(data,result,loadings,scores,ref.index,modeltype,
 	
 	## LOADINGS FOR REFERENCE COMPOUNDS ##
 	if(2 %in% which){
-		plot.in(plot.type,paste0(basefilename,"_RefLoadings.pdf"))
-		plot(0,0,type="n",main=paste0(method.name," Loadings for Ref ",paste(ref.index,collapse=",")),xlab=paste0(component.name," Index"),ylab="Loadings",ylim=c(min(loadings[ref.index,]),max(loadings[ref.index,])),xlim=c(1,dim(loadings)[2]))
+		plot.in(plot.type,paste0(basefilename,"_QueryLoadings.pdf"))
+		plot(0,0,type="n",main=paste0(method.name," Loadings for Query ",paste(ref.index,collapse=",")),xlab=paste0(component.name," Index"),ylab="Loadings",ylim=c(min(loadings[ref.index,]),max(loadings[ref.index,])),xlim=c(1,dim(loadings)[2]))
 		for(i.ref in ref.index){
 			points(c(1:dim(loadings)[2]),loadings[i.ref,],col=i.ref)
 		}
@@ -373,7 +373,7 @@ analyse_FA2 <- function(data,result,loadings,scores,ref.index,modeltype,
 		
 		if(plot.type=="pdf" | !(2 %in% which)){
 			dev.new()
-			plot(0,0,type="n",main=paste0(method.name," Loadings for Ref ",paste(ref.index,collapse=",")),xlab=paste0(component.name," Index"),ylab="Loadings",ylim=c(min(loadings[ref.index,]),max(loadings[ref.index,])),xlim=c(1,dim(loadings)[2]))
+			plot(0,0,type="n",main=paste0(method.name," Loadings for Query ",paste(ref.index,collapse=",")),xlab=paste0(component.name," Index"),ylab="Loadings",ylim=c(min(loadings[ref.index,]),max(loadings[ref.index,])),xlim=c(1,dim(loadings)[2]))
 			for(i.ref in ref.index){
 				points(c(1:dim(loadings)[2]),loadings[i.ref,],col=i.ref)
 			}
@@ -382,12 +382,12 @@ analyse_FA2 <- function(data,result,loadings,scores,ref.index,modeltype,
 		}
 		if(modeltype=="CSfabia"){
 			out.overlap <- fabia.overlap(result,ref.index)
-			cat("Bicluster Suggestions (BC's which overlap with Ref & Query with default thresholds):\n")
+			cat("Bicluster Suggestions (BC's which overlap with Query & Ref with default thresholds):\n")
 			cat("------------------------------------------------------------------------------------\n\n")
 			print(out.overlap)
 		}
 
-		cat("\n",paste0("Please select with left mousebutton which ",component.name,"s should be investigated.") ,"\n If multiple reference were used, click in the middle of the group of points.\nRight-click to end selection procedure.\n")
+		cat("\n",paste0("Please select with left mousebutton which ",component.name,"s should be investigated.") ,"\n If multiple queries were used, click in the middle of the group of points.\nRight-click to end selection procedure.\n")
 		y.mean <- apply(loadings[ref.index,,drop=FALSE],MARGIN=2,FUN=mean)
 		component.plot <- identify(x=c(1:dim(loadings)[2]),y=y.mean,plot=TRUE,n=dim(loadings)[2],tolerance=0.5)
 	}
@@ -609,7 +609,7 @@ analyse_FA2 <- function(data,result,loadings,scores,ref.index,modeltype,
 		
 		
 		for(i.component in c(1:length(component.plot))){
-			out_CS_rank[[i.component]] <- CSrank2(loadings,ref.index,color.columns=groupCol,signCol=signCol,ref.plot=CSrank.refplot,legend.pos=legend.pos,loadings_names=colnames(data),component.plot=component.plot[i.component],type.component=component.name,plot=TRUE,plot.type=plot.type,basefilename=basefilename,legend.bg=legend.bg,legend.names=legend.names.csrank,legend.cols=legend.cols.csrank,labels=labels)
+			out_CS_rank[[i.component]] <- CSrank2(loadings,ref.index,color.columns=groupCol,signCol=signCol,ref.plot=CSrank.queryplot,legend.pos=legend.pos,loadings_names=colnames(data),component.plot=component.plot[i.component],type.component=component.name,plot=TRUE,plot.type=plot.type,basefilename=basefilename,legend.bg=legend.bg,legend.names=legend.names.csrank,legend.cols=legend.cols.csrank,labels=labels)
 		}
 		names(out_CS_rank) <- paste0(component.name,component.plot)
 	}
@@ -617,7 +617,7 @@ analyse_FA2 <- function(data,result,loadings,scores,ref.index,modeltype,
 		out_CS_rank <- replicate(length(component.plot),list)
 		
 		for(i.component in c(1:length(component.plot))){
-			out_CS_rank[[i.component]] <- CSrank2(loadings,ref.index,color.columns=groupCol,ref.plot=CSrank.refplot,loadings_names=colnames(data),component.plot=component.plot[i.component],type.component=component.name,plot=FALSE)
+			out_CS_rank[[i.component]] <- CSrank2(loadings,ref.index,color.columns=groupCol,ref.plot=CSrank.queryplot,loadings_names=colnames(data),component.plot=component.plot[i.component],type.component=component.name,plot=FALSE)
 		}
 		names(out_CS_rank) <- paste0(component.name,component.plot)
 	}
@@ -890,7 +890,7 @@ CSrank2 <- function(loadings,ref.index,color.columns=NULL,ref.plot=FALSE,loading
 	combinetest3 <- combinetest2*sign.temp
 	
 	out <- as.data.frame(cbind(combinetest3,term1,RefCS.matrix,term2,combinetest1,combinetest2))
-	colnames(out) <- c("CSRankScores","Term1.Weighted",paste0("Term1.Ref",c(1:length(ref.index))),"Term2","Combine1.wmean","Combine2.zero")
+	colnames(out) <- c("CSRankScores","Term1.Weighted",paste0("Term1.Query",c(1:length(ref.index))),"Term2","Combine1.wmean","Combine2.zero")
 	rownames(out) <- names[-ref.index]
 	
 	
@@ -909,7 +909,7 @@ CSrank2 <- function(loadings,ref.index,color.columns=NULL,ref.plot=FALSE,loading
 			
 			plot.in(plot.type,paste0(basefilename,"_CSRankExtra.pdf"))
 			for(i.plot in 2:dim(out)[2]){
-				plot(out[,i.plot],xlab="Query Compound Index",ylab="Score",col=color.columns[-ref.index],bg="grey",pch=21,main=paste0(type.component," ",component.plot," - ",colnames(out)[i.plot]))
+				plot(out[,i.plot],xlab="Reference Compound Index",ylab="Score",col=color.columns[-ref.index],bg="grey",pch=21,main=paste0(type.component," ",component.plot," - ",colnames(out)[i.plot]))
 				text(out[,i.plot],names[-ref.index],col=color.columns[-ref.index],pos=2)
 			}
 			plot.out(plot.type)
@@ -921,7 +921,7 @@ CSrank2 <- function(loadings,ref.index,color.columns=NULL,ref.plot=FALSE,loading
 		## Plot Final
 		main.temp <- ifelse(ref.plot,"CS Rank Score (Final)","CS Rank Score")
 		plot.in(plot.type,paste0(basefilename,"_CSRank.pdf"))
-		plot(combinetest3,col=color.columns[-ref.index],xlab="Query Compound Index",ylab="CS Rankscore",bg=signCol,pch=21,main=paste0(type.component," ",component.plot," - ",main.temp))
+		plot(combinetest3,col=color.columns[-ref.index],xlab="Reference Compound Index",ylab="CS Rankscore",bg=signCol,pch=21,main=paste0(type.component," ",component.plot," - ",main.temp))
 		
 		if(labels){
 		  text(combinetest3,labels=names[-ref.index],col=color.columns[-ref.index],pos=2)

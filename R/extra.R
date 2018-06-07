@@ -36,7 +36,7 @@ CSprofiles <- function(data,ref_index,gene.select,cmpd.select,profile.type=c("ge
 		axis(side=2)
 		axis(side=1,labels=FALSE)
 		mtext(colnames(data.new),cex=0.7,side=1,las=3,line=1,at=c(1:dim(data.new)[2]),col=c(rep("blue",length(ref_index)),rep("red",length(cmpd.index)),rep("black",dim(data.new)[2]-length(ref_index)-length(cmpd.index))))
-		legend("topright",title="Compound Labels",legend=c("Reference Compounds","Selected Compounds"),col=c("blue","red"),lty=1,bty="n")
+		legend("topright",title="Compound Labels",legend=c("Query Compounds","Selected Compounds"),col=c("blue","red"),lty=1,bty="n")
 		legend("topleft",title="Gene Labels",legend=rownames(data.new),lty=1,col=c(1:length(gene.index)),bty="n")
 		plot.out(plot.type)
 		
@@ -82,7 +82,7 @@ CSprofiles <- function(data,ref_index,gene.select,cmpd.select,profile.type=c("ge
 			lines(c(1:dim(data.new)[1]),data.new[,i.col],col=i.col,lty=lty.temp[i.col])
 		}
 		leg1.names <- colnames(data.new)
-		leg1.names[c(1:length(ref_index))] <- paste0(leg1.names[c(1:length(ref_index))]," (Ref)")
+		leg1.names[c(1:length(ref_index))] <- paste0(leg1.names[c(1:length(ref_index))]," (Query)")
 		legend("topleft",leg1.names,col=c(1:dim(data.new)[2]),title="Compound Labels",lty=lty.temp,bty="n")
 		legend("topright",c(paste0("Gene Score > ",gene.thresP),paste0("Gene Score < ",gene.thresN)),col=c(thresP.col,thresN.col),title="Gene Labels",lty=1,bty="n")
 		
@@ -133,7 +133,7 @@ plot_contributions <- function(CSresult,factor.plot,color.columns,legend.names=N
 	plot.out(plot.type)
 }
 
-#plot_contributions(out_MFA,factor.plot=1,color.columns=color.columns,legend.names=c("Ref","SP"),legend.cols=c("blue","red"),col.names=colnames(cbind(refMat,querMat)))
+#plot_contributions(out_MFA,factor.plot=1,color.columns=color.columns,legend.names=c("Ref","SP"),legend.cols=c("blue","red"),col.names=colnames(cbind(querMat,refMat)))
 
 ## some tests with simulated data (used in vignette)
 #
@@ -238,32 +238,32 @@ compare_CS_CSRankScores <- function(CSresult,color.columns=NULL,plot.type="devic
 	plot.out <- function(plot.type){if(plot.type=="pdf"){dev.off()}}	
 	
 	if(is.null(color.columns)){
-		color.columns <- rep("black",dim(CSresult@CS$CS.query)[1])
+		color.columns <- rep("black",dim(CSresult@CS$CS.ref)[1])
 	}
 	else{
-		color.columns <- color.columns[-c(1:dim(CSresult@CS$CS.ref)[1])]
-		if(length(color.columns)!=dim(CSresult@CS$CS.query)[1]){stop("color.columns wrong lengths")}
+		color.columns <- color.columns[-c(1:dim(CSresult@CS$CS.query)[1])]
+		if(length(color.columns)!=dim(CSresult@CS$CS.ref)[1]){stop("color.columns wrong lengths")}
 	}
 	
 	if(CSresult@type=="CSfabia"){
 		
 		for(i.plot in 1:length(CSresult@CSRankScores)){
-			loadings <- CSresult@CS$CS.query[,i.plot]
+			loadings <- CSresult@CS$CS.ref[,i.plot]
 			scores <- CSresult@CSRankScores[[i.plot]]$CSRankScores
 			
 			plot.in(plot.type,basefilename)
 			plot(loadings,scores,col=color.columns,bg="grey",pch=21,xlab="Loadings",ylab="CSRankScores",main=paste0(names(CSresult@CSRankScores)[i.plot],": Loadings VS CSRankScores"))
-#			text(loadings,scores, rownames(CSresult@CS$CS.query),pos=1,cex=0.5,col=color.columns)
+#			text(loadings,scores, rownames(CSresult@CS$CS.ref),pos=1,cex=0.5,col=color.columns)
 			plot.out(plot.type)
 		}
 		
 	}else{
-		loadings <- CSresult@CS$CS.query[,1]
+		loadings <- CSresult@CS$CS.ref[,1]
 		scores <- CSresult@CSRankScores[[1]]$CSRankScores
 		
 		plot.in(plot.type,basefilename)
 		plot(loadings,scores,col=color.columns,bg="grey",pch=21,xlab="Loadings",ylab="CSRankScores",main=paste0(names(CSresult@CSRankScores)[1],": Loadings VS CSRankScores"))
-#		text(loadings,scores, rownames(CSresult@CS$CS.query),pos=1,cex=0.5,col=color.columns)
+#		text(loadings,scores, rownames(CSresult@CS$CS.ref),pos=1,cex=0.5,col=color.columns)
 		plot.out(plot.type)
 		
 	}
@@ -350,7 +350,7 @@ CSgrouploadings <- function(loadings,grouploadings.labels,grouploadings.cutoff,r
 #			abline(h=0,lty=2)
 			lines(c(0,nrow(loadings)+1),c(0,0),lty=2)
 			
-			legend("topright",c("Ref.",names(colorpalette)),col=c("blue",colorpalette),pt.bg=c("white",colorpalette),inset=c(-inset.temp,0),bty="n",pch=21)
+			legend("topright",c("Query",names(colorpalette)),col=c("blue",colorpalette),pt.bg=c("white",colorpalette),inset=c(-inset.temp,0),bty="n",pch=21)
 		}
 		
 		
@@ -389,23 +389,23 @@ get.loadings <- function(CSresult){
 
 #' Compare Automatic Factor Labels with Manual Provided Labels.
 #' 
-#' With this function you can compare the automatic created labels based of the absolute loadings in \emph{CSanalysis} (\code{which=9}) with your own provided labels to investigate if there is relation between them.\cr
+#' With this function you can compare the automatic created labels based of the absolute loadings in \emph{CSanalysis} (\code{which=8}) with your own provided labels to investigate if there is relation between them.\cr
 #' See the \code{type} parameter which two plots can be created.\cr
 #' Note that the automatic created factor labels in \emph{CSanalysis} denote which factors this loading has a high/low value and these can be regenerated (with different a different cut-off) by simply running \emph{CSanalysis} again. Providing \code{resultavailable} will skip the analysis computation step and only regenerate the labels.
 #'  
 #' @export
 #' @param CSresult Object of CSresult S4 Class.
-#' @param labels Provide a vector with labels. (Length should be the number of references and queries together)
+#' @param labels Provide a vector with labels. (Length should be the number of queries and references together)
 #' @param type 
 #' \itemize{
 #' \item \code{type="factorlabels"}:\cr
 #' A K number of plots will be created (K = number of components in the analysis). Each plot will have the loadings on the y-axis and the original automatic generated factor labels on the x-axis.
-#' The loadings are plotted for these factor labels (with jitter) and are colored according to the manual provided labels (\code{labels}) which is shown in the legend. The coloring also shows which loadings were in the reference set.
+#' The loadings are plotted for these factor labels (with jitter) and are colored according to the manual provided labels (\code{labels}) which is shown in the legend. The coloring also shows which loadings were in the query set.
 #'
 #' \item \code{type="factors"}:\cr
 #' A K number of plots will be created (K = number of components in the analysis). Each plot will have the loadings on the y-axis and factor labels on the x-axis.
 #' These factor labels are not exactly the generated labels, but simply "Factor 1", "Factor 2",..., "None" or "BC 1", "BC 2",..., "None". This means that should a loading be high/low in multiple factors, it will appear multiple times on this plot, namely for each corresponding factor.
-#' The loadings are plotted for these factor labels (with jitter) and are colored according to the manual provided labels (\code{labels}) which is shown in the legend. The coloring also shows which loadings were in the reference set.
+#' The loadings are plotted for these factor labels (with jitter) and are colored according to the manual provided labels (\code{labels}) which is shown in the legend. The coloring also shows which loadings were in the query set.
 #' }
 #' Note that if none of the loadings is high/low in multiple factors, the types of plots should be identical.
 #' @param basefilename Base of the filename when saving the graph as a pdf (\code{plot.type="pdf"})
@@ -576,3 +576,11 @@ check_filename <- function(plot.type,basefilename){
 }
 
 # check_filename(plot.type,basefilename)
+
+
+
+
+
+
+
+

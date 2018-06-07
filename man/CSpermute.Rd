@@ -4,17 +4,17 @@
 \alias{CSpermute}
 \title{Permute CS results}
 \usage{
-CSpermute(refMat, querMat, CSresult, B = 500, mfa.factor = NULL,
+CSpermute(querMat, refMat, CSresult, B = 500, mfa.factor = NULL,
   method.adjust = "none", verbose = TRUE, which = c(1, 3),
-  cmpd.hist = NULL, color.columns = NULL, plot.type = "device",
-  basefilename = NULL, MultiCores = FALSE,
+  cmpd.hist = NULL, color.columns = NULL, labels = TRUE,
+  plot.type = "device", basefilename = NULL, MultiCores = FALSE,
   MultiCores.number = detectCores(logical = FALSE), MultiCores.seed = NULL,
   save.permutation = TRUE)
 }
 \arguments{
-\item{refMat}{Reference matrix (Rows = genes and columns = compounds).}
+\item{querMat}{Query matrix (Rows = genes and columns = compounds).}
 
-\item{querMat}{Query matrix}
+\item{refMat}{Reference matrix}
 
 \item{CSresult}{A CSresult class object.}
 
@@ -34,9 +34,11 @@ CSpermute(refMat, querMat, CSresult, B = 500, mfa.factor = NULL,
 \item Analog to \code{which=2}, but for CSRankScores.
 }}
 
-\item{cmpd.hist}{Query index vector which decides which query compounds are plotted for the histogram distribution under null hypothesis (\code{which=2}). If \code{NULL}, you can select which compounds you want interactively on the volcano plot.}
+\item{cmpd.hist}{Reference index vector which decides which reference compounds are plotted for the histogram distribution under null hypothesis (\code{which=2}). If \code{NULL}, you can select which compounds you want interactively on the volcano plot.}
 
-\item{color.columns}{Option to color the compounds on the volcano plot (\code{which=1}). Should be a vector of colors with the length of number of queries.}
+\item{color.columns}{Option to color the compounds on the volcano plot (\code{which=1}). Should be a vector of colors with the length of number of references.}
+
+\item{labels}{Boolean value (default=TRUE) to use row and/or column text labels in the volcano plots (\code{which=c(1,3)}).}
 
 \item{plot.type}{How should the plots be outputted? \code{"pdf"} to save them in pdf files, \code{device} to draw them in a graphics device (default), \code{sweave} to use them in a sweave or knitr file.}
 
@@ -61,9 +63,9 @@ If asked, the CSpermute function will also draw a volcanoplot and/or histograms 
 If the number of permutations was not changed, this will prevent the entire permutation analysis from being redone.
 }
 \details{
-\bold{IMPORTANT!} For MFA, \code{CSpermute} should \emph{only} be used to compute the p-values of the Component in which the structure (loadings) of the references is the strongest.
-This because in each permutation the factor with the highest average reference loadings will be chosen. 
-The ability to compute p-values of other factors (in which the reference set also increased loadings) will be added in a later release.
+\bold{IMPORTANT!} For MFA, \code{CSpermute} should \emph{only} be used to compute the p-values of the Component in which the structure (loadings) of the queries is the strongest.
+This because in each permutation the factor with the highest average query loadings will be chosen. 
+The ability to compute p-values of other factors (in which the query set also increased loadings) will be added in a later release.
 }
 \examples{
 \dontshow{

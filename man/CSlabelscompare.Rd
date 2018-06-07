@@ -10,17 +10,17 @@ CSlabelscompare(CSresult, labels, type = "factors",
 \arguments{
 \item{CSresult}{Object of CSresult S4 Class.}
 
-\item{labels}{Provide a vector with labels. (Length should be the number of references and queries together)}
+\item{labels}{Provide a vector with labels. (Length should be the number of queries and references together)}
 
 \item{type}{\itemize{
 \item \code{type="factorlabels"}:\cr
 A K number of plots will be created (K = number of components in the analysis). Each plot will have the loadings on the y-axis and the original automatic generated factor labels on the x-axis.
-The loadings are plotted for these factor labels (with jitter) and are colored according to the manual provided labels (\code{labels}) which is shown in the legend. The coloring also shows which loadings were in the reference set.
+The loadings are plotted for these factor labels (with jitter) and are colored according to the manual provided labels (\code{labels}) which is shown in the legend. The coloring also shows which loadings were in the query set.
 
 \item \code{type="factors"}:\cr
 A K number of plots will be created (K = number of components in the analysis). Each plot will have the loadings on the y-axis and factor labels on the x-axis.
 These factor labels are not exactly the generated labels, but simply "Factor 1", "Factor 2",..., "None" or "BC 1", "BC 2",..., "None". This means that should a loading be high/low in multiple factors, it will appear multiple times on this plot, namely for each corresponding factor.
-The loadings are plotted for these factor labels (with jitter) and are colored according to the manual provided labels (\code{labels}) which is shown in the legend. The coloring also shows which loadings were in the reference set.
+The loadings are plotted for these factor labels (with jitter) and are colored according to the manual provided labels (\code{labels}) which is shown in the legend. The coloring also shows which loadings were in the query set.
 }
 Note that if none of the loadings is high/low in multiple factors, the types of plots should be identical.}
 
@@ -29,7 +29,7 @@ Note that if none of the loadings is high/low in multiple factors, the types of 
 \item{plot.type}{How should the plots be outputted? \code{"pdf"} to save them in pdf files, \code{device} to draw them in a graphics device (default), \code{sweave} to use them in a sweave or knitr file.}
 }
 \description{
-With this function you can compare the automatic created labels based of the absolute loadings in \emph{CSanalysis} (\code{which=9}) with your own provided labels to investigate if there is relation between them.\cr
+With this function you can compare the automatic created labels based of the absolute loadings in \emph{CSanalysis} (\code{which=8}) with your own provided labels to investigate if there is relation between them.\cr
 See the \code{type} parameter which two plots can be created.\cr
 Note that the automatic created factor labels in \emph{CSanalysis} denote which factors this loading has a high/low value and these can be regenerated (with different a different cut-off) by simply running \emph{CSanalysis} again. Providing \code{resultavailable} will skip the analysis computation step and only regenerate the labels.
 }
