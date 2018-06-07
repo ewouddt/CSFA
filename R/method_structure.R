@@ -160,7 +160,7 @@ setMethod('CSanalysis', c('matrix','matrix','character'),
 #' @param bL \emph{Fabia Parameter:} cycle at which the nL or lL maximum starts; default = 0 (start at the beginning)
 #' @param which Choose one or more plots to draw: 
 #' \enumerate{
-#' \item Percentage Variance Explained / Information Content for Component (Factor/Bicluster)
+#' \item Information Content for Bicluster (Only available for "CSfabia")
 #' \item Loadings for reference compounds
 #' \item Loadings for Component (Factor/Bicluster) \code{component.plot}
 #' \item Gene Scores for Component (Factor/Bicluster) \code{component.Plot}
@@ -280,7 +280,7 @@ setMethod('CSanalysis',c('matrix','matrix','CSfabia'),
 #' @param mfa.type \emph{MFA Parameter:} The type of column variables (compounds) in both the Query and Reference matrix. "c" or "s" (= default) for quantitative variables (the difference is that for "s" variables are scaled to unit variance), "n" for categorical variables and "f" for frequencies (from a contingency tables)
 #' @param which Choose one or more plots to draw: 
 #' \enumerate{
-#' \item Percentage Variance Explained / Information Content for Component (Factor/Bicluster)
+#' \item Information Content for Bicluster (Only available for "CSfabia")
 #' \item Loadings for reference compounds
 #' \item Loadings for Component (Factor/Bicluster) \code{component.plot}
 #' \item Gene Scores for Component (Factor/Bicluster) \code{component.Plot}
@@ -410,7 +410,7 @@ setMethod("CSanalysis",c("matrix","matrix","CSmfa"),function(
 #' @param col.w \emph{PCA Parameter:} An optional column weights (by default, uniform column weights).
 #' @param which Choose one or more plots to draw: 
 #' \enumerate{
-#' \item Percentage Variance Explained / Information Content for Component (Factor/Bicluster)
+#' \item Information Content for Bicluster (Only available for "CSfabia")
 #' \item Loadings for reference compounds
 #' \item Loadings for Component (Factor/Bicluster) \code{component.plot}
 #' \item Gene Scores for Component (Factor/Bicluster) \code{component.Plot}
@@ -540,7 +540,7 @@ setMethod("CSanalysis",c("matrix","matrix","CSpca"),function(
 #' @param eps.conv \emph{sMFA Parameters:} Convergence criterion.
 #' @param which Choose one or more plots to draw: 
 #' \enumerate{
-#' \item Percentage Variance Explained / Information Content for Component (Factor/Bicluster)
+#' \item Information Content for Bicluster (Only available for "CSfabia")
 #' \item Loadings for reference compounds
 #' \item Loadings for Component (Factor/Bicluster) \code{component.plot}
 #' \item Gene Scores for Component (Factor/Bicluster) \code{component.Plot}

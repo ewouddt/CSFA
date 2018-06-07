@@ -33,7 +33,7 @@
 
 \item{which}{Choose one or more plots to draw: 
 \enumerate{
-\item Percentage Variance Explained / Information Content for Component (Factor/Bicluster)
+\item Information Content for Bicluster (Only available for "CSfabia")
 \item Loadings for reference compounds
 \item Loadings for Component (Factor/Bicluster) \code{component.plot}
 \item Gene Scores for Component (Factor/Bicluster) \code{component.Plot}

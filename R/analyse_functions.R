@@ -335,17 +335,20 @@ analyse_FA2 <- function(data,result,loadings,scores,ref.index,modeltype,
 		if(modeltype=="CSfabia"){
 			plot.in(plot.type,paste0(basefilename,"_IC.pdf"))
 			showSelected(result,which=c(1))
-		}else{
-			if(modeltype=="CSsmfa"){
-				perc.var <- result$pev			
-			}else{
-				perc.var <- result$eig[,2]
-			}
-			
-			plot.in(plot.type,paste0(basefilename,"_percvar.pdf"))
-			plot(perc.var,main="Percentage of Variance Explained",xlab="Number of Components",ylab="Perc. Var. Explained")
+			plot.out(plot.type)
 		}
-		plot.out(plot.type)
+	  
+	#   else{
+	# 		if(modeltype=="CSsmfa"){
+	# 			perc.var <- result$pev			
+	# 		}else{
+	# 			perc.var <- result$eig[,2]
+	# 		}
+	# 		
+	# 		plot.in(plot.type,paste0(basefilename,"_percvar.pdf"))
+	# 		plot(perc.var,main="Percentage of Variance Explained",xlab="Number of Components",ylab="Perc. Var. Explained")
+	# 	}
+		# plot.out(plot.type)
 	}
 	
 	## LOADINGS FOR REFERENCE COMPOUNDS ##
