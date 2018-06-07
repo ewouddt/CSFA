@@ -16,7 +16,7 @@ An S4 class in which the results of the Connectivity Scores by Factor Analysis a
 
 \item{\code{GS}}{Dataframe containing the gene scores.}
 
-\item{\code{extra}}{List which contains \code{CSRank_Full} (contains all intermediate values while calculating the CS Ranking Score), \code{Object} (contains the complete original FA or Zhang result) and \code{samplefactorlabels} (contains thresholded labels based on the factor loadings, see plot \code{which=9}).}
+\item{\code{extra}}{List which contains \code{CSRank_Full} (contains all intermediate values while calculating the CS Ranking Score), \code{Object} (contains the complete original FA or Zhang result) and \code{samplefactorlabels} (contains thresholded labels based on the factor loadings, see plot \code{which=8}).}
 
 \item{\code{permutation.object}}{Contains CS for permuted data (matrix) and a dataframe with the p-values (only for MFA and Zhang).}
 

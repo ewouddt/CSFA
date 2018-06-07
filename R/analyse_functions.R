@@ -696,7 +696,7 @@ analyse_FA2 <- function(data,result,loadings,scores,ref.index,modeltype,
 #	}
 
 	## GROUPED LOADINGS PLOTS ##
-	if(9 %in% which){		
+	if(8 %in% which){		
 		sample.factorlabels <- CSgrouploadings(loadings=loadings,grouploadings.labels=grouploadings.labels,grouploadings.cutoff=grouploadings.cutoff,ref.index=ref.index,method.name=method.name,component.name=component.name,basefilename=basefilename,plot.type=plot.type,plot=TRUE)
 	}else{
 		sample.factorlabels <- CSgrouploadings(loadings=loadings,grouploadings.labels=grouploadings.labels,grouploadings.cutoff=grouploadings.cutoff,ref.index=ref.index,method.name=method.name,component.name=component.name,basefilename=basefilename,plot.type=plot.type,plot=FALSE)
