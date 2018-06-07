@@ -923,7 +923,7 @@ CSrank2 <- function(loadings,ref.index,color.columns=NULL,ref.plot=FALSE,loading
 		plot.in(plot.type,paste0(basefilename,"_CSRank.pdf"))
 		plot(combinetest3,col=color.columns[-ref.index],xlab="Query Compound Index",ylab="CS Rankscore",bg=signCol,pch=21,main=paste0(type.component," ",component.plot," - ",main.temp))
 		
-		if(label){
+		if(labels){
 		  text(combinetest3,labels=names[-ref.index],col=color.columns[-ref.index],pos=2)
 		}
 		if(length(legend.names)>0){legend(legend.pos,legend.names,pch=21,col=legend.cols,pt.bg=legend.bg,bty="n")}
