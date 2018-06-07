@@ -9,7 +9,7 @@ analyse_zhang(dataref, dataquery, nref = NULL, nquery = NULL,
   ntop.scores = 20, basefilename = "analyseZhang", colour.query = NULL,
   legend.names = NULL, legend.cols = unique(colour.query),
   legend.pos = "topright", result.available = NULL, plot.type = "pdf",
-  print.top = TRUE, which = c(1))
+  print.top = TRUE, labels = TRUE, which = c(1))
 }
 \arguments{
 \item{dataref}{NA}

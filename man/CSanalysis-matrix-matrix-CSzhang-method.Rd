@@ -9,7 +9,7 @@
   type = "CSzhang", nref = NULL, nquery = NULL, ord.query = TRUE,
   ntop.scores = 20, which = c(1), color.query = NULL,
   legend.names = NULL, legend.cols = NULL, legend.pos = "topright",
-  result.available = NULL, result.available.update = FALSE,
+  labels = TRUE, result.available = NULL, result.available.update = FALSE,
   plot.type = "device", basefilename = NULL)
 }
 \arguments{
@@ -39,6 +39,8 @@
 \item{legend.cols}{Colors to be used for the \code{legend.names}.}
 
 \item{legend.pos}{Position of the legend in all requested plots, can be \code{"topright"}, \code{"topleft"}, \code{"bottomleft"}, \code{"bottomright"}, \code{"bottom"}, \code{"top"}, \code{"left"}, \code{"right"}, \code{"center"}.}
+
+\item{labels}{Boolean value (default=TRUE) to use column labels inside the ZG plot.}
 
 \item{result.available}{You can a previously returned object by \code{CSanalysis} in order to only draw graphs, not recompute the scores. If this object also contains the permutation object, in the score plot the values with a (adjusted) pvalue smaller than 0.05 will be colored purple.}
 

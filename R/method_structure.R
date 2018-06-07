@@ -200,6 +200,7 @@ setMethod('CSanalysis', c('matrix','matrix','character'),
 #' @param legend.names Option to draw a legend of for example colored columns in Compound Loadings plot (\code{which=3}). If \code{NULL}, only "References" will be in the legend.
 #' @param legend.cols Colors to be used in legends. If \code{NULL}, only blue for "References is used".
 #' @param legend.pos Position of the legend in all requested plots, can be \code{"topright"}, \code{"topleft"}, \code{"bottomleft"}, \code{"bottomright"}, \code{"bottom"}, \code{"top"}, \code{"left"}, \code{"right"}, \code{"center"}.
+#' @param labels Boolean value (default=TRUE) to use row and/or column text labels in the score plots (\code{which=c(3,4,5,6)}). 
 #' @param result.available You can a previously returned object by \code{CSanalysis} in order to only draw graphs, not recompute the scores.
 #' @param result.available.update Logical value. If \code{TRUE}, the CS and GS will be overwritten depending on the new \code{component.plot} choice. This would also delete the p-values if \code{permutation.object} was available.
 #' @param plot.type How should the plots be outputted? \code{"pdf"} to save them in pdf files, \code{device} to draw them in a graphics device (default), \code{sweave} to use them in a sweave or knitr file.
@@ -214,6 +215,7 @@ setMethod('CSanalysis',c('matrix','matrix','CSfabia'),
 				,gene.thresP=1,gene.thresN=-1,thresP.col="blue",thresN.col="red"
 				,grouploadings.labels=NULL,grouploadings.cutoff=NULL
 				,legend.names=NULL,legend.cols=NULL,legend.pos="topright"
+				,labels=TRUE
 				,result.available=NULL,result.available.update=FALSE
 				,plot.type="device",basefilename=NULL
 		) {
@@ -251,7 +253,7 @@ setMethod('CSanalysis',c('matrix','matrix','CSfabia'),
 					column.interest=column.interest,row.interest=row.interest,gene.thresP=gene.thresP,gene.thresN=gene.thresN,
 					colour.columns=colour.columns,legend.pos=legend.pos,legend.names=legend.names,legend.cols=legend.cols,thresP.col=thresP.col,thresN.col=thresN.col,
 					result.available=result.available,plot.type=plot.type,CSrank.refplot=CSrank.refplot,
-					which=which,
+					which=which,labels=labels,
 					gene.highlight=gene.highlight,profile.type=profile.type,
 					grouploadings.labels=grouploadings.labels,grouploadings.cutoff=grouploadings.cutoff,
 					result.available.update=result.available.update)
@@ -320,6 +322,7 @@ setMethod('CSanalysis',c('matrix','matrix','CSfabia'),
 #' @param legend.names Option to draw a legend of for example colored columns in Compound Loadings plot (\code{which=3}). If \code{NULL}, only "References" will be in the legend.
 #' @param legend.cols Colors to be used in legends. If \code{NULL}, only blue for "References is used".
 #' @param legend.pos Position of the legend in all requested plots, can be \code{"topright"}, \code{"topleft"}, \code{"bottomleft"}, \code{"bottomright"}, \code{"bottom"}, \code{"top"}, \code{"left"}, \code{"right"}, \code{"center"}.
+#' @param labels Boolean value (default=TRUE) to use row and/or column text labels in the score plots (\code{which=c(3,4,5,6)}). 
 #' @param result.available You can a previously returned object by \code{CSanalysis} in order to only draw graphs, not recompute the scores.
 #' @param result.available.update Logical value. If \code{TRUE}, the CS and GS will be overwritten depending on the new \code{component.plot} choice. This would also delete the p-values if \code{permutation.object} was available.
 #' @param plot.type How should the plots be outputted? \code{"pdf"} to save them in pdf files, \code{device} to draw them in a graphics device (default), \code{sweave} to use them in a sweave or knitr file.
@@ -334,7 +337,8 @@ setMethod("CSanalysis",c("matrix","matrix","CSmfa"),function(
 				color.columns=NULL,gene.highlight=NULL,				
 				gene.thresP=1,gene.thresN=-1,thresP.col="blue",thresN.col="red",
 				grouploadings.labels=NULL,grouploadings.cutoff=NULL,
-				legend.names=NULL,legend.cols=NULL,legend.pos="topright",				
+				legend.names=NULL,legend.cols=NULL,legend.pos="topright",	
+				labels=TRUE,
 				result.available=NULL,result.available.update=FALSE,
 				plot.type="device",basefilename=NULL
 				){
@@ -382,7 +386,7 @@ setMethod("CSanalysis",c("matrix","matrix","CSmfa"),function(
 					component.plot=component.plot,column.interest=column.interest,row.interest=row.interest,gene.thresP=gene.thresP,gene.thresN=gene.thresN,
 					colour.columns=colour.columns,legend.pos=legend.pos,legend.names=legend.names,legend.cols=legend.cols,thresP.col=thresP.col,thresN.col=thresN.col,
 					result.available=result.available,plot.type=plot.type,CSrank.refplot=CSrank.refplot,
-					which=which,
+					which=which,labels=labels,
 					grouploadings.labels=grouploadings.labels,grouploadings.cutoff=grouploadings.cutoff,
 					gene.highlight=gene.highlight,profile.type=profile.type,result.available.update=result.available.update)
 			
@@ -450,6 +454,7 @@ setMethod("CSanalysis",c("matrix","matrix","CSmfa"),function(
 #' @param legend.names Option to draw a legend of for example colored columns in Compound Loadings plot (\code{which=3}). If \code{NULL}, only "References" will be in the legend.
 #' @param legend.cols Colors to be used in legends. If \code{NULL}, only blue for "References is used".
 #' @param legend.pos Position of the legend in all requested plots, can be \code{"topright"}, \code{"topleft"}, \code{"bottomleft"}, \code{"bottomright"}, \code{"bottom"}, \code{"top"}, \code{"left"}, \code{"right"}, \code{"center"}.
+#' @param labels Boolean value (default=TRUE) to use row and/or column text labels in the score plots (\code{which=c(3,4,5,6)}). 
 #' @param result.available You can a previously returned object by \code{CSanalysis} in order to only draw graphs, not recompute the scores.
 #' @param result.available.update Logical value. If \code{TRUE}, the CS and GS will be overwritten depending on the new \code{component.plot} choice. This would also delete the p-values if \code{permutation.object} was available.
 #' @param plot.type How should the plots be outputted? \code{"pdf"} to save them in pdf files, \code{device} to draw them in a graphics device (default), \code{sweave} to use them in a sweave or knitr file.
@@ -464,6 +469,7 @@ setMethod("CSanalysis",c("matrix","matrix","CSpca"),function(
 				gene.thresP=1,gene.thresN=-1,thresP.col="blue",thresN.col="red",
 				grouploadings.labels=NULL,grouploadings.cutoff=NULL,
 				legend.names=NULL,legend.cols=NULL,legend.pos="topright",
+				labels=TRUE,
 				result.available=NULL,result.available.update=FALSE,
 				plot.type="device",basefilename=NULL
 				){
@@ -504,7 +510,7 @@ setMethod("CSanalysis",c("matrix","matrix","CSpca"),function(
 					data=data, 	scale.unit = scale.unit, ncp = ncp, ind.sup = NULL,
 					quanti.sup = NULL, quali.sup = NULL, row.w = row.w,
 					col.w = col.w, graph = FALSE, axes = c(1,2),
-					basefilename=basefilename,
+					basefilename=basefilename,labels=labels,
 					component.plot=component.plot,column.interest=column.interest,gene.thresP=gene.thresP,gene.thresN=gene.thresN,
 					colour.columns=colour.columns,legend.pos=legend.pos,legend.names=legend.names,legend.cols=legend.cols,thresP.col=thresP.col,thresN.col=thresN.col,
 					result.available=result.available,plot.type=plot.type,which=which,CSrank.refplot=CSrank.refplot,
@@ -580,6 +586,7 @@ setMethod("CSanalysis",c("matrix","matrix","CSpca"),function(
 #' @param legend.names Option to draw a legend of for example colored columns in Compound Loadings plot (\code{which=3}). If \code{NULL}, only "References" will be in the legend.
 #' @param legend.cols Colors to be used in legends. If \code{NULL}, only blue for "References is used".
 #' @param legend.pos Position of the legend in all requested plots, can be \code{"topright"}, \code{"topleft"}, \code{"bottomleft"}, \code{"bottomright"}, \code{"bottom"}, \code{"top"}, \code{"left"}, \code{"right"}, \code{"center"}.
+#' @param labels Boolean value (default=TRUE) to use row and/or column text labels in the score plots (\code{which=c(3,4,5,6)}). 
 #' @param result.available You can a previously returned object by \code{CSanalysis} in order to only draw graphs, not recompute the scores.
 #' @param result.available.update Logical value. If \code{TRUE}, the CS and GS will be overwritten depending on the new \code{component.plot} choice. This would also delete the p-values if \code{permutation.object} was available.
 #' @param plot.type How should the plots be outputted? \code{"pdf"} to save them in pdf files, \code{device} to draw them in a graphics device (default), \code{sweave} to use them in a sweave or knitr file.
@@ -594,6 +601,7 @@ setMethod("CSanalysis",c("matrix","matrix","CSsmfa"),function(
 				gene.thresP=1,gene.thresN=-1,thresP.col="blue",thresN.col="red",
 				grouploadings.labels=NULL,grouploadings.cutoff=NULL,
 				legend.names=NULL,legend.cols=NULL,legend.pos="topright",
+				labels=TRUE,
 				result.available=NULL,result.available.update=FALSE,
 				plot.type="device",basefilename=NULL
 				){
@@ -629,7 +637,7 @@ setMethod("CSanalysis",c("matrix","matrix","CSsmfa"),function(
 			
 			out <- analyse_FA(matchcall=type@call,modeltype=class(type),ref.index=c(1:dim(refMat)[2]),
 					data=data,K=K,para=para,type.smfa="predictor",sparse=sparse,use.corr=FALSE,lambda=lambda,max.iter=max.iter,trace=FALSE,eps.conv=eps.conv,sparse.dim=sparse.dim,
-					basefilename=basefilename,
+					basefilename=basefilename,labels=labels,
 					component.plot=component.plot,column.interest=column.interest,gene.thresP=gene.thresP,gene.thresN=gene.thresN,
 					colour.columns=colour.columns,legend.pos=legend.pos,legend.names=legend.names,legend.cols=legend.cols,thresP.col=thresP.col,thresN.col=thresN.col,
 					result.available=result.available,plot.type=plot.type,CSrank.refplot=CSrank.refplot,
@@ -666,6 +674,7 @@ setMethod("CSanalysis",c("matrix","matrix","CSsmfa"),function(
 #' @param legend.names Option to draw a legend (about the highlights in \code{color.query}) in the CS plot. If \code{NULL}, no legend will be drawn.
 #' @param legend.cols Colors to be used for the \code{legend.names}.
 #' @param legend.pos Position of the legend in all requested plots, can be \code{"topright"}, \code{"topleft"}, \code{"bottomleft"}, \code{"bottomright"}, \code{"bottom"}, \code{"top"}, \code{"left"}, \code{"right"}, \code{"center"}.
+#' @param labels Boolean value (default=TRUE) to use column labels inside the ZG plot.  
 #' @param result.available You can a previously returned object by \code{CSanalysis} in order to only draw graphs, not recompute the scores. If this object also contains the permutation object, in the score plot the values with a (adjusted) pvalue smaller than 0.05 will be colored purple.
 #' @param result.available.update Logical value. If \code{TRUE}, the CS and GS will be overwritten depending on the new \code{component.plot} choice. This would also delete the p-values if \code{permutation.object} was available.
 #' @param plot.type How should the plots be outputted? \code{"pdf"} to save them in pdf files, \code{device} to draw them in a graphics device (default), \code{sweave} to use them in a sweave or knitr file.
@@ -677,6 +686,7 @@ setMethod("CSanalysis",c("matrix","matrix","CSzhang"),function(refMat,querMat,ty
 #				B=100000,ntop.pvalues=20,permute=FALSE,
 				color.query=NULL,
 				legend.names=NULL,legend.cols=NULL,legend.pos="topright",
+        labels=TRUE,
 				result.available=NULL,result.available.update=FALSE,
 				plot.type="device",basefilename=NULL
 				){
@@ -703,7 +713,7 @@ setMethod("CSanalysis",c("matrix","matrix","CSzhang"),function(refMat,querMat,ty
 #					permute=permute,B=B,ntop.pvalues=ntop.values,
 					basefilename=basefilename,
 					colour.query=colour.query,legend.names=legend.names,legend.cols=legend.cols,legend.pos=legend.pos,
-					result.available=result.available,plot.type=plot.type,
+					result.available=result.available,plot.type=plot.type,labels=labels,
 					which=which)
 			
 			

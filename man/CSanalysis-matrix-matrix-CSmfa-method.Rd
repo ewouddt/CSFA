@@ -13,7 +13,7 @@
   gene.thresN = -1, thresP.col = "blue", thresN.col = "red",
   grouploadings.labels = NULL, grouploadings.cutoff = NULL,
   legend.names = NULL, legend.cols = NULL, legend.pos = "topright",
-  result.available = NULL, result.available.update = FALSE,
+  labels = TRUE, result.available = NULL, result.available.update = FALSE,
   plot.type = "device", basefilename = NULL)
 }
 \arguments{
@@ -89,6 +89,8 @@ This can then later be used for the \code{CSlabelscompare} function to compare t
 \item{legend.cols}{Colors to be used in legends. If \code{NULL}, only blue for "References is used".}
 
 \item{legend.pos}{Position of the legend in all requested plots, can be \code{"topright"}, \code{"topleft"}, \code{"bottomleft"}, \code{"bottomright"}, \code{"bottom"}, \code{"top"}, \code{"left"}, \code{"right"}, \code{"center"}.}
+
+\item{labels}{Boolean value (default=TRUE) to use row and/or column text labels in the score plots (\code{which=c(3,4,5,6)}).}
 
 \item{result.available}{You can a previously returned object by \code{CSanalysis} in order to only draw graphs, not recompute the scores.}
 
