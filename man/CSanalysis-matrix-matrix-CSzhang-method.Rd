@@ -6,7 +6,7 @@
 \title{"CSzhang"}
 \usage{
 \S4method{CSanalysis}{matrix,matrix,CSzhang}(querMat, refMat,
-  type = "CSzhang", nquery = NULL, nref = NULL, ord.ref = TRUE,
+  type = "CSzhang", nquery = NULL, nref = NULL, ord.query = TRUE,
   ntop.scores = 20, which = c(1), color.ref = NULL, legend.names = NULL,
   legend.cols = NULL, legend.pos = "topright", labels = TRUE,
   result.available = NULL, result.available.update = FALSE,
@@ -23,7 +23,7 @@
 
 \item{nref}{\emph{Zhang Parameter:} Number of top up- and downregulated genes in reference signature. If \code{NULL}, all rows (genes) are used. (Note that \eqn{nquery >= nref})}
 
-\item{ord.ref}{\emph{Zhang Parameter:} Logical value. Should the reference signature be treated as ordered?}
+\item{ord.query}{\emph{Zhang Parameter:} Logical value. Should the reference signature be treated as ordered?}
 
 \item{ntop.scores}{\emph{Zhang Parameter:} Number of top positive and negative CS to be reported first.}
 
@@ -54,5 +54,5 @@
 An object of the S4 Class \code{\link{CSresult-class}}. The CS slot will also contain the top positive and negative scores as well as the top p-values. The GS slot will be empty for Zhang and Gant.
 }
 \description{
-Compute the Connectivity Scores by Zhang and Gant (2008). One or multiple query compounds are possible in this analysis.
+Compute the Connectivity Scores by Zhang and Gant (2008). One or multiple query compounds are possible in this analysis. In the case of multiple query compounds, the average of each pairwise score is taken.
 }
