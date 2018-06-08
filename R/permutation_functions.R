@@ -357,7 +357,7 @@ CSpermute <- function(querMat,refMat,CSresult,B=500,mfa.factor=NULL,method.adjus
 			                            colnames(refMat.Perm) <- colnames(refMat)
 			                            
 			                            out_zhang <- analyse_zhang(querMat,refMat.Perm,
-			                                                              nref=CSresult@call$analysis.pm$nref,nquery=CSresult@call$analysis.pm$nquery,ord.query=CSresult@call$analysis.pm$ord.query,ntop.scores=CSresult@call$analysis.pm$ntop.scores,
+			                                                              nref=CSresult@call$analysis.pm$nref,nquery=CSresult@call$analysis.pm$nquery,ord.query=CSresult@call$analysis.pm$ord.ref,ntop.scores=CSresult@call$analysis.pm$ntop.scores,
 			                                                              basefilename="analyseZhang",which=c(),plot.type="device",print.top=FALSE)
 			                            
 			                            CS.Perm[[i]] <- out_zhang$All[,1]
@@ -386,7 +386,7 @@ CSpermute <- function(querMat,refMat,CSresult,B=500,mfa.factor=NULL,method.adjus
 			    colnames(refMat.Perm) <- colnames(refMat)
 			    
 			    out_zhang <- analyse_zhang(querMat,refMat.Perm,
-			                               nref=CSresult@call$analysis.pm$nref,nquery=CSresult@call$analysis.pm$nquery,ord.query=CSresult@call$analysis.pm$ord.query,ntop.scores=CSresult@call$analysis.pm$ntop.scores,
+			                               nref=CSresult@call$analysis.pm$nref,nquery=CSresult@call$analysis.pm$nquery,ord.query=CSresult@call$analysis.pm$ord.ref,ntop.scores=CSresult@call$analysis.pm$ntop.scores,
 			                               basefilename="analyseZhang",which=c(),plot.type="device",print.top=FALSE)
 			    
 			    CS.Perm[[i]] <- out_zhang$All[,1]
