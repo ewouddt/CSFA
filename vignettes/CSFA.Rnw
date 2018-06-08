@@ -50,12 +50,13 @@ Papers such as \citet{Lamb2006} and \citet{Zhang2008} both already took up the
 challenge of dealing with this problem. In \citet{Lamb2006}, a reference
 collection of gene expression profiles from human cells treated with bioactive
 small molecules was created in order to design a systematic approach to discover
-these functional connections. While their approach achieved a good degree of
+these functional connections. Query signatures of interest (e.g. from a study) are compared to the reference profiles and connectivity scores are computed. While their approach achieved a good degree of
 succes, it was unable to measure statistical significance. This is where the
 paper from \citet{Zhang2008} continued for example. Their paper offers a more
 principled statistical procedure to test connections between the compounds which allows the valuation of statistical significance.
 \\ \\
-The CSFA package accompanies the submitted paper "Application of Factor Analysis to Connectivity Scores" by Shkedy, Z. and De Troyer. E., which proposes the usage of {\it factor analysis} methods (Principal Component
+The CSFA package accompanies the submitted paper "Connectivity Mapping: A Multivariate Approach Using Multiple Factor
+Analysis" by De Troyer,E. et al. (2018), which proposes the usage of {\it factor analysis} methods (Principal Component
 Analysis (=PCA), (Sparse) Multiple Factor Analysis (MFA) \citep{Abdi2013} 
 (or FABIA (Factor Analysis for Bicluster Acquisition) \citep{Hochreiter2010})) to derive the connectivity between compounds.
 Using these methods, not only do you obtain information about the connectivity between the compounds, you also get
@@ -63,25 +64,19 @@ information about which genes are responsible for guiding this connectivity.\\
 Further instead of computing a pairwise correlation/connection score between the
 compounds, now the entire available data is being used to look for dominant structures on both dimenstions. This is very similar to try to discover biclusters in the data. Consequently, it is not necessary anymore to decide upon a cut-off for up- and downregulated genes since you will be using all the genes to do the factor analysis.
 \\
-It should also be noted that the setting in which the {\it factor analysis} is
-applied, is slightly different from the one in the Connectivity Map
-\citep{Lamb2006}.
-In the Connectivity Map there is a large data set of references profiles to
-which the query signatures are compared. In this setting, the meaning of
-`reference` and `query` will be switched around. You start with a small set of
-references, namely a small set of samples of which they are similar. These are compared with a larger set of queries in order to try to discover samples or compounds similar to the reference set. \\
-Further, since the methods will be applied on a matrix which consists out of
-both the reference and the query profiles, the number of genes for these signatures will have to be the same.
+In our new proposed method, we start from a small set of query samples (or single) which are known to be similar on a gene expression level. These are compared with a larger set of reference samples in order to try to discover samples or compounds similar to the query set. These two sets or matrices (query and reference) share a common dimension, namely the genes.
+
+
 \begin{equation}\label{eq:structure}
 \begin{BMAT}{c}{cc}
 	\begin{BMAT}{ccc}{c}
 		\overbrace{\left[\begin{BMAT}(@,50pt,80pt){c:}{c}
 		\mathbf{X}_1\\
-		\end{BMAT}\right.}^{Reference\ Samples}
+		\end{BMAT}\right.}^{Query\ Samples}
 		&
 		\overbrace{\left.\begin{BMAT}(@,80pt,80pt){c}{c}
 		\mathbf{X}_2\\
-		\end{BMAT}\right]}^{Query\ Samples}
+		\end{BMAT}\right]}^{Reference\ Samples}
 		&
 		\begin{BMAT}{c}{c}
 		g \text{ genes}
@@ -99,7 +94,7 @@ to compare the scores with the FA scores.
 \section{Data}
 In order to showcase the functionality of CSFA, some simulated microarray data
 will be used. The data contains 1000 genes and 341 compounds of which 6 will be used as
-reference signatures. The remaining query signatures consist out of 5 strongly
+query signatures. The remaining query signatures consist out of 5 strongly
 positive connected compounds, 20 weakly positive connected compounds, 10
 strongly negative connected compounds and 300 compounds which are not connected
 at all.
@@ -124,21 +119,21 @@ image(c(1:dim(d)[2]),c(1:dim(d)[1]),t(d),xlab="condition",ylab="genes",col=virid
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.7\textwidth]{figures/data_heatmap-1.png}
-\caption{Heatmap of Reference and Query Matrix}\label{fig:data_heatmap}
+\caption{Heatmap of Query and Reference Matrix}\label{fig:data_heatmap}
 \end{figure}
 
 
 \section{Example CS Analysis}
 Start by first loading both the CSFA library and the example data available
-in the package. The simulated data is split up in the reference and query
+in the package. The simulated data is split up in the query and reference
 matrix.
 
 <<packageload,echo=TRUE,eval=FALSE,warning=FALSE,message=FALSE>>=
 library(CSFA)
 data("dataSIM",package="CSFA")
 	
-refMat <- dataSIM[,c(1:6)]
-querMat <- dataSIM[,-c(1:6)]
+querMat <- dataSIM[,c(1:6)]
+refMat <- dataSIM[,-c(1:6)]
 @
 
 \noindent Next, the Connectivity Scores from Zhang and Gant, MFA and FABIA will
@@ -150,7 +145,7 @@ making of which component to look at can be be found in the submitted paper.
 
 \subsection{Zhang and Gant}
 The Zhang and Gant scores are computed with the default parameters. This means
-all the genes will be used (no cut-off) and the query signature will be
+all the genes will be used (no cut-off) and the reference signature will be
 considered as an ordered signature. Also no permutation will be applied by
 default.
 \\Note that for the vignette, which is a
@@ -158,7 +153,7 @@ sweave document, we use the "sweave" \texttt{plot.type}. Normally you would be
 using either "device" or "pdf".
 
 <<ZG,echo=TRUE,eval=FALSE,cache=FALSE,fig.keep="high",fig.pos='H',out.width="11cm",fig.align='center',fig.cap="CSanalysis Graphs for CSzhang">>= 
-out_ZG <- CSanalysis(refMat,querMat,"CSzhang",plot.type="sweave")
+out_ZG <- CSanalysis(querMat,refMat,"CSzhang",plot.type="sweave")
 @
 
 \begin{figure}[H]
@@ -175,20 +170,20 @@ strong) and negative connected compounds.
 \subsection{MFA}
 The next CS analysis which is applied is the one using Multiple Factor Analysis
 (MFA) by setting the \texttt{type} to \texttt{"CSmfa"}. Three of the
-available plots were chosen, namely the Reference Loadings,
+available plots were chosen, namely the Query Loadings,
 Compound Loadings (Connectivity Scores), Gene Scores and Compound Profiles
 (\texttt{which=c(2,3,4,7)}).\\
 Note that in the R-code we already preselected which component to investigate
 with \texttt{component.plot}.
-Further we also already decided which columns of the query matrix we would like
+Further we also already decided which columns of the reference matrix we would like
 to draw in the compound profiles graph with \texttt{column.interest}. Indices 1, 2 and 3 coincide
 with 3 weakly positive connected compounds.\\ \\
 However, if you are not sure beforehand what you want to investigate, you can
 also decide upon these parameters interactively on the fly.  To do this simply
 set these parameters to \texttt{NULL} or leave them out.\\
 To determine \texttt{component.plot}, you will be able to to click on the
-factors you want to observe in the {\it "Loadings for Ref..."} plot. This graph will be
-your main guideline on which factor is capturing the structure of your reference
+factors you want to observe in the {\it "Loadings for Query..."} plot. This graph will be
+your main guideline on which factor is capturing the structure of your query
 set of signatures. As shown in Figure \ref{fig:MFA} below, this is clearly the
 first factor. \\
 Next, in order to drawn compound profiles, set \texttt{profile.type} to
@@ -197,13 +192,13 @@ be chosen in the {\it "Compound Loadings"} plot (instead of simply providing it
 to \texttt{CSanalysis} beforehand). You can left-click on multiple compounds you wish to draw in the compound profiles graph (and right-click to stop the selection procedure). 
 
 <<MFA_hidden,echo=FALSE,eval=FALSE,cache=FALSE,fig.keep="high",fig.show='hold',fig.pos='H',out.width='9cm',out.height='10cm',fig.align='left',fig.cap="CSanalysis Graphs for CSmfa">>= 
-out_MFA <- CSanalysis(refMat,querMat,"CSmfa",plot.type="sweave",which=c(),
+out_MFA <- CSanalysis(querMat,refMat,"CSmfa",plot.type="sweave",which=c(),
 		profile.type="cmpd",gene.thresP=2.3,gene.thresN=-2.3,component.plot=1,
 		column.interest=c(21,22,23))
 @
 
 <<MFA,echo=TRUE,eval=FALSE,cache=FALSE,fig.keep="high",fig.show='hold',fig.pos='H',out.width='9cm',out.height='10cm',fig.align='left',fig.cap="CSanalysis Graphs for CSmfa">>= 
-out_MFA <- CSanalysis(refMat,querMat,"CSmfa",plot.type="sweave",which=c(2,3,4,7),
+out_MFA <- CSanalysis(querMat,refMat,"CSmfa",plot.type="sweave",which=c(2,3,4,7),
 		profile.type="cmpd",gene.thresP=2.3,gene.thresN=-2.3,component.plot=1,
 		column.interest=c(21,22,23))
 @
@@ -228,7 +223,7 @@ additional plots without re-computing the factor analysis. This is done through 
 Connectivity Score Ranks are shown.
 
 <<MFA2,echo=TRUE,eval=FALSE,cache=FALSE,fig.keep="high",fig.show='hold',fig.pos='H',out.width='9cm',out.height='10cm',fig.align='left',fig.cap="CSanalysis Graphs for CSmfa">>= 
-out_MFA <- CSanalysis(refMat,querMat,"CSmfa",plot.type="sweave",which=c(5),
+out_MFA <- CSanalysis(querMat,refMat,"CSmfa",plot.type="sweave",which=c(5),
 		component.plot=1,column.interest=c(1,2,3),result.available=out_MFA)
 @
 \begin{figure}[H]
@@ -241,10 +236,10 @@ out_MFA <- CSanalysis(refMat,querMat,"CSmfa",plot.type="sweave",which=c(5),
 manual or interactive selected \texttt{column.interest}, you can also manual
 select which genes should be used with \texttt{row.interest}. If not provided
 this is also done interactively in the gene score plot. In this graph, the
-x-axis contains all compounds, starting with the reference and selected ones.
+x-axis contains all compounds, starting with the query and selected ones.
 The others are the ordered in decreasing CScore.
 <<MFA3,echo=TRUE,eval=FALSE,cache=FALSE,fig.keep="high",fig.show='hold',fig.pos='H',out.width='9cm',out.height='10cm',fig.align='left',fig.cap="CSanalysis Graphs for CSfma">>= 
-out_MFA <- CSanalysis(refMat,querMat,"CSmfa",plot.type="sweave",which=c(7),
+out_MFA <- CSanalysis(querMat,refMat,"CSmfa",plot.type="sweave",which=c(7),
 		profile.type="gene",component.plot=1,column.interest=c(1,2,3),
 		row.interest=c(846,871,4,6),result.available=out_MFA)
 @
@@ -258,14 +253,14 @@ out_MFA <- CSanalysis(refMat,querMat,"CSmfa",plot.type="sweave",which=c(7),
 \subsection{FABIA}
 The last analysis is done with FABIA, Factor Analysis for Bicluster Acquisition
 (\texttt{type="CSfabia"}). We will only select 2 plots this time, namely the
-reference loadings and compound loadings (\texttt{which=c(2,5)}). However in
+query loadings and compound loadings (\texttt{which=c(2,5)}). However in
 contrary with the MFA anaylsis, we select 2 components for this analysis.
-Based on the reference loadings we decide to select bicluster 1 and 2
+Based on the query loadings we decide to select bicluster 1 and 2
 (\texttt{component.plot=c(1,2)}). \\
 This time we also do some manual coloring of the columns to highlight some
 strongly connected compounds with \texttt{color.columns}. We start by making a vector of length
 341 (column dimension of example data) and fill it with the color black. Next we fill in the
-color blue for the 6 reference compounds and red for 3 of the strongly positive
+color blue for the 6 query compounds and red for 3 of the strongly positive
 connected compounds. We also change the legend according to this coloring.\\ \\
 Note that we have also set a seed just before the FABIA analysis in order to
 have a reproducible result.
@@ -278,9 +273,9 @@ color.columns[1:6] <- "blue"
 color.columns[c(29,30,31)] <- "red"
 	
 set.seed(8956)
-out_FABIA <- CSanalysis(refMat,querMat,"CSfabia",plot.type="sweave",which=c(),
+out_FABIA <- CSanalysis(querMat,refMat,"CSfabia",plot.type="sweave",which=c(),
 		color.columns=color.columns,
-		legend.names=c("References","SP Connected"),
+		legend.names=c("Queries","SP Connected"),
 		legend.cols=c("blue","red"), component.plot=c(1,2),
 		gene.thresP=2,gene.thresN=-2)
 @
@@ -294,7 +289,7 @@ color.columns[c(29,30,31)] <- "red"
 set.seed(8956)
 out_FABIA <- CSanalysis(refMat,querMat,"CSfabia",plot.type="sweave",which=c(2,5),
 		color.columns=color.columns,
-		legend.names=c("References","SP Connected"),
+		legend.names=c("Queries","SP Connected"),
 		legend.cols=c("blue","red"), component.plot=c(1,2),
 		gene.thresP=2,gene.thresN=-2)
 @
@@ -321,20 +316,20 @@ results. More information is also entered in the \verb|permutation.object| slot.
 \\ \\
 First, let us apply the permutation on the MFA and ZG result without plotting
 any plots just yet by putting \texttt{which} to \texttt{c()}. The number of
-permutation was chosen to only be 250 in this case. Further, the p-values are
+permutations was chosen to only be 250 in this case. Further, the p-values are
 also adjusted for multiplicity by setting a value for \texttt{method.adjust}
 different than \texttt{"none"}.\\
 It is also possible to parallelise (\texttt{snowFT}) the permutation process  by setting \texttt{MultiCores} to \texttt{TRUE}. The parameters \texttt{MultiCores.number} and \texttt{MultiCores.seed} respectively control the number of cores and seed you would like to use. The former defaults to the maximum total of available physical cores.
 \\ \\
 {\bf Note:} or MFA, \texttt{CSpermute} should {\it only} be used to compute the
-p-values of the Component in which the structure (loadings) of the references is the strongest.
+p-values of the Component in which the structure (loadings) of the queries is the strongest.
 
 
 
 <<CSpermute_compute,eval=FALSE,echo=TRUE,cache=FALSE>>=
-out_MFA <- CSpermute(refMat,querMat,CSresult=out_MFA,B=250,method.adjust="BH",
+out_MFA <- CSpermute(querMat,refMat,CSresult=out_MFA,B=250,method.adjust="BH",
 		which=c(),verbose=FALSE,MultiCores=TRUE)
-out_ZG <- CSpermute(refMat,querMat,CSresult=out_ZG,B=250,method.adjust="BH",
+out_ZG <- CSpermute(querMat,refMat,CSresult=out_ZG,B=250,method.adjust="BH",
 		which=c(),verbose=FALSE,MultiCores=TRUE)
 
 @
@@ -386,7 +381,7 @@ head(out_ZG@CS$CS.query)
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
 \begin{alltt}
-\hlkwd{head}\hlstd{(out_MFA}\hlopt{@}\hlkwc{CS}\hlstd{[[}\hlnum{1}\hlstd{]]}\hlopt{$}\hlstd{CS.query)}
+\hlkwd{head}\hlstd{(out_MFA}\hlopt{@}\hlkwc{CS}\hlstd{[[}\hlnum{1}\hlstd{]]}\hlopt{$}\hlstd{CS.ref)}
 \end{alltt}
 \begin{verbatim}
 ##       CLoadings   CLpvalues CLpvalues.adjusted CRankScores   CRpvalues
@@ -405,7 +400,7 @@ head(out_ZG@CS$CS.query)
 ## cWP-6         0.03813318     15        25     15        25
 \end{verbatim}
 \begin{alltt}
-\hlkwd{head}\hlstd{(out_ZG}\hlopt{@}\hlkwc{CS}\hlopt{$}\hlstd{CS.query)}
+\hlkwd{head}\hlstd{(out_ZG}\hlopt{@}\hlkwc{CS}\hlopt{$}\hlstd{CS.ref)}
 \end{alltt}
 \begin{verbatim}
 ##         ZGscore     pvalues pvalues.adjusted ZGrank ZGabsrank
@@ -431,7 +426,7 @@ If this parameter is not given (\texttt{NULL}), you can interactively choose the
 In the code below, we plot both type of graphs for the MFA result with a pre-determined \texttt{cmpd.hist}.
 
 <<CSpermuteplots,echo=TRUE,eval=FALSE,cache=FALSE,message=FALSE,results='hide',fig.keep="high",fig.show='hold',fig.pos='H',out.width='9cm',out.height='10cm',fig.align='left',fig.cap="CSpermute graphs for MFA result">>=
-out_MFA <- CSpermute(refMat,querMat,out_MFA,B=250,method.adjust="BH",
+out_MFA <- CSpermute(querMat,refMat,out_MFA,B=250,method.adjust="BH",
 		which=c(1,2),cmpd.hist=c(23,99),plot.type="sweave")
 @
 
@@ -444,7 +439,7 @@ out_MFA <- CSpermute(refMat,querMat,out_MFA,B=250,method.adjust="BH",
 \end{figure}
 
 <<CSpermuteplots2,echo=TRUE,eval=FALSE,cache=FALSE,message=FALSE,results='hide',fig.keep="high",fig.show='hold',fig.pos='H',out.width='9cm',out.height='10cm',fig.align='left',fig.cap="CSpermute graphs for MFA result">>=
-out_MFA <- CSpermute(refMat,querMat,out_MFA,B=250,method.adjust="BH",
+out_MFA <- CSpermute(querMat,refMat,out_MFA,B=250,method.adjust="BH",
 		which=c(3,4),cmpd.hist=c(23,99),plot.type="sweave")
 @
 
