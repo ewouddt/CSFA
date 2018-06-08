@@ -725,7 +725,7 @@ setMethod("CSanalysis",c("matrix","matrix","CSzhang"),function(querMat,refMat,ty
 							))
 			
 			
-			call.object <- list(match.call=type@call,analysis.pm=list(nref=nquery,nquery=nref,ntop.scores=ntop.scores))
+			call.object <- list(match.call=type@call,analysis.pm=list(nref=nref,nquery=nquery,ntop.scores=ntop.scores))
 			call.object$dimensions <- list(row=dim(querMat)[1],col=c(query=dim(querMat)[2],ref=dim(refMat)[2]))
 			
 			
