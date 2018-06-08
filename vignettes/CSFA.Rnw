@@ -162,9 +162,8 @@ out_ZG <- CSanalysis(querMat,refMat,"CSzhang",plot.type="sweave")
 \caption{CSanalysis Graphs for CSzhang}\label{fig:ZG}
 \end{figure}
 
-\noindent While all the connectivity scores can be found in the \texttt{out\_ZG}
-object, the function already prints by default the top 20 positive and negative
-connectivity scores. Figure \ref{fig:ZG} clearly shows the positive (weak and
+\noindent The connectivity scores can be found in the \texttt{out\_ZG}
+object. Figure \ref{fig:ZG} clearly shows the positive (weak and
 strong) and negative connected compounds.
 
 \subsection{MFA}
