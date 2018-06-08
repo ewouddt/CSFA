@@ -363,7 +363,7 @@ setMethod("CSanalysis",c("matrix","matrix","CSmfa"),function(
 			if(!(legend.pos %in% c("topright", "topleft", "bottomleft", "bottomright", "bottom", "top", "left", "right", "center"))){stop(paste0("legend.pos can not be \"",legend.pos,"\""),call.=FALSE)}
 			
 			
-			analysis.pm.temp <- list(ncp=ncp,weight.col.mfa=weight.col.mfa,row.w=row.w)
+			analysis.pm.temp <- list(ncp=ncp,weight.col.mfa=weight.col.mfa,row.w=row.w,mfa.type=mfa.type)
 			
 			if(!is.null(result.available)){
 				if(class(result.available) != "CSresult"){
