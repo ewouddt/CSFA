@@ -661,7 +661,7 @@ setMethod("CSanalysis",c("matrix","matrix","CSsmfa"),function(
 #' @param type \code{"CSzhang"}
 #' @param nquery \emph{Zhang Parameter:} Number of top up- and downregulated genes in query signature. If \code{NULL}, all rows (genes) are used.
 #' @param nref \emph{Zhang Parameter:} Number of top up- and downregulated genes in reference signature. If \code{NULL}, all rows (genes) are used. (Note that \eqn{nquery >= nref})
-#' @param ord.query \emph{Zhang Parameter:} Logical value. Should the reference signature be treated as ordered?
+# @param ord.query \emph{Zhang Parameter:} Logical value. Should the reference signature be treated as ordered?
 #' @param which Choose plot to draw.
 #' \enumerate{
 #' \item Zhang and Gant Scores Plot
@@ -681,7 +681,7 @@ setMethod("CSanalysis",c("matrix","matrix","CSsmfa"),function(
 #' @param basefilename Directory including filename of the graphs if saved in pdf files
 #' @return An object of the S4 Class \code{\link{CSresult-class}}. The CS slot will also contain the top positive and negative scores as well as the top p-values. The GS slot will be empty for Zhang and Gant.
 setMethod("CSanalysis",c("matrix","matrix","CSzhang"),function(querMat,refMat,type="CSzhang",
-				nquery=NULL,nref=NULL,ord.query=TRUE,ntop.scores=20,
+				nquery=NULL,nref=NULL,ntop.scores=20,
 				which=c(1),
 #				B=100000,ntop.pvalues=20,permute=FALSE,
 				color.ref=NULL,
@@ -709,7 +709,7 @@ setMethod("CSanalysis",c("matrix","matrix","CSzhang"),function(querMat,refMat,ty
 			}
 
 			
-			out <- analyse_zhang(dataref=querMat,dataquery=refMat,nref=nquery,nquery=nref,ord.query=ord.query,ntop.pvalues=20,ntop.scores=ntop.scores,
+			out <- analyse_zhang(dataref=querMat,dataquery=refMat,nref=nquery,nquery=nref,ord.query=TRUE,ntop.pvalues=20,ntop.scores=ntop.scores,
 #					permute=permute,B=B,ntop.pvalues=ntop.values,
 					basefilename=basefilename,
 					colour.query=colour.query,legend.names=legend.names,legend.cols=legend.cols,legend.pos=legend.pos,
@@ -725,7 +725,7 @@ setMethod("CSanalysis",c("matrix","matrix","CSzhang"),function(querMat,refMat,ty
 							))
 			
 			
-			call.object <- list(match.call=type@call,analysis.pm=list(nref=nquery,nquery=nref,ord.query=ord.query,ntop.scores=ntop.scores))
+			call.object <- list(match.call=type@call,analysis.pm=list(nref=nquery,nquery=nref,ntop.scores=ntop.scores))
 			call.object$dimensions <- list(row=dim(querMat)[1],col=c(query=dim(querMat)[2],ref=dim(refMat)[2]))
 			
 			
