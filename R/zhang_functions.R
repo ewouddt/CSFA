@@ -108,7 +108,7 @@ zhangscore.support <- function(dataref,dataquery,nref=NULL,nquery=NULL,ord.query
 			
 	if(is.null(nref)){nref <- nrow(dataref)}
 	if(is.null(nquery)){nquery <- nrow(dataquery)} 
-	if(sum(nref<nquery)>0){stop("Number of chosen genes larger in query than in reference. ",call.=FALSE)}
+	if(sum(nref>nquery)>0){stop("Number of chosen genes larger in query than in reference. ",call.=FALSE)}
 	
 	scores_query <- NULL
 	
@@ -137,15 +137,28 @@ zhangscore.support <- function(dataref,dataquery,nref=NULL,nquery=NULL,ord.query
 			
 			# Multiply + Sum common genes
 			
+			
+			# # Wrong: i.ref is not really ref in this code (due to setting)
+			# # This error has no effect if ALL genes are used, only when you start taking thresholds
+			# if(length(intersect(names(thres.ref.rank),names(thres.query.rank)))>0){
+			# 	if(ord.query==TRUE){
+			# 				maxTheoreticalScore <- sum(abs(thres.ref.rank)[1:length(thres.query.rank)]*abs(thres.query.rank))
+			# 			}else{
+			# 				maxTheoreticalScore <- sum(abs(thres.ref.rank)[1:length(thres.query.rank)])
+			# 			}
+			# 			
+			# 	connscore <- sum(thres.query.rank * thres.ref.rank[names(thres.query.rank)],na.rm=TRUE)/maxTheoreticalScore
+			# 	refset_scores[i.ref] <- connscore 
+			# }
 			if(length(intersect(names(thres.ref.rank),names(thres.query.rank)))>0){
-				if(ord.query==TRUE){
-							maxTheoreticalScore <- sum(abs(thres.ref.rank)[1:length(thres.query.rank)]*abs(thres.query.rank))
-						}else{
-							maxTheoreticalScore <- sum(abs(thres.ref.rank)[1:length(thres.query.rank)])
-						}
-						
-				connscore <- sum(thres.query.rank * thres.ref.rank[names(thres.query.rank)],na.rm=TRUE)/maxTheoreticalScore
-				refset_scores[i.ref] <- connscore 
+			  if(ord.query==TRUE){
+			    maxTheoreticalScore <- sum(abs(thres.query.rank)[1:length(thres.ref.rank)]*abs(thres.ref.rank))
+			  }else{
+			    maxTheoreticalScore <- sum(abs(thres.query.rank)[1:length(thres.ref.rank)])
+			  }
+			  
+			  connscore <- sum(thres.ref.rank * thres.query.rank[names(thres.ref.rank)],na.rm=TRUE)/maxTheoreticalScore
+			  refset_scores[i.ref] <- connscore 
 			}
 			else{refset_scores[i.ref] <- NA} # If Top N genes of ref do not share genes with top m genes of query
 		}
