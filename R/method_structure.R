@@ -350,10 +350,10 @@ setMethod("CSanalysis",c("matrix","matrix","CSmfa"),function(
       check_filename(plot.type,basefilename)
 				
 			if(!(dim(querMat)[2]>1)){
-				stop("Reference matrix should have more than 1 reference")
+				stop("Query matrix should have more than 1 Query")
 			}
 			if(dim(refMat)[2]==1){
-				stop("Query matrix only has 1 query.")
+				stop("Reference matrix only has 1 reference.")
 			}
 			
 			data <- cbind(as.matrix(querMat),as.matrix(refMat))
@@ -477,10 +477,10 @@ setMethod("CSanalysis",c("matrix","matrix","CSpca"),function(
       check_filename(plot.type,basefilename)
   
 			if((dim(querMat)[2]!=1)){
-				stop("Reference matrix should have only 1 reference")
+				stop("Query matrix should have only 1 query.")
 			}
 			if(dim(refMat)[2]==1){
-				stop("Query matrix only has 1 query.")
+				stop("Reference matrix only has 1 reference.")
 			}
 					
 			data <- cbind(as.matrix(querMat),as.matrix(refMat))
@@ -609,7 +609,7 @@ setMethod("CSanalysis",c("matrix","matrix","CSsmfa"),function(
       check_filename(plot.type,basefilename)
 			
       if(!(dim(querMat)[2]>1)){
-				stop("Reference matrix should have more than 1 reference")
+				stop("Query matrix should have more than 1 query.")
 			}
 					
 			data <- cbind(as.matrix(querMat),as.matrix(refMat))
@@ -653,7 +653,7 @@ setMethod("CSanalysis",c("matrix","matrix","CSsmfa"),function(
 # Zhang and Gant
 #' "CSzhang"
 #' 
-#' Compute the Connectivity Scores by Zhang and Gant (2008). One or multiple query compounds are possible in this analysis.
+#' Compute the Connectivity Scores by Zhang and Gant (2008). One or multiple query compounds are possible in this analysis. In the case of multiple query compounds, the average of each pairwise score is taken.
 #' 
 #' @export 
 #' @param querMat Query matrix (Rows = genes and columns = compounds)
@@ -661,7 +661,7 @@ setMethod("CSanalysis",c("matrix","matrix","CSsmfa"),function(
 #' @param type \code{"CSzhang"}
 #' @param nquery \emph{Zhang Parameter:} Number of top up- and downregulated genes in query signature. If \code{NULL}, all rows (genes) are used.
 #' @param nref \emph{Zhang Parameter:} Number of top up- and downregulated genes in reference signature. If \code{NULL}, all rows (genes) are used. (Note that \eqn{nquery >= nref})
-#' @param ord.ref \emph{Zhang Parameter:} Logical value. Should the reference signature be treated as ordered?
+#' @param ord.query \emph{Zhang Parameter:} Logical value. Should the reference signature be treated as ordered?
 #' @param which Choose plot to draw.
 #' \enumerate{
 #' \item Zhang and Gant Scores Plot
@@ -681,7 +681,7 @@ setMethod("CSanalysis",c("matrix","matrix","CSsmfa"),function(
 #' @param basefilename Directory including filename of the graphs if saved in pdf files
 #' @return An object of the S4 Class \code{\link{CSresult-class}}. The CS slot will also contain the top positive and negative scores as well as the top p-values. The GS slot will be empty for Zhang and Gant.
 setMethod("CSanalysis",c("matrix","matrix","CSzhang"),function(querMat,refMat,type="CSzhang",
-				nquery=NULL,nref=NULL,ord.ref=TRUE,ntop.scores=20,
+				nquery=NULL,nref=NULL,ord.query=TRUE,ntop.scores=20,
 				which=c(1),
 #				B=100000,ntop.pvalues=20,permute=FALSE,
 				color.ref=NULL,
@@ -709,7 +709,7 @@ setMethod("CSanalysis",c("matrix","matrix","CSzhang"),function(querMat,refMat,ty
 			}
 
 			
-			out <- analyse_zhang(dataref=querMat,dataquery=refMat,nref=nquery,nquery=nref,ord.query=ord.ref,ntop.pvalues=20,ntop.scores=ntop.scores,
+			out <- analyse_zhang(dataref=querMat,dataquery=refMat,nref=nquery,nquery=nref,ord.query=ord.query,ntop.pvalues=20,ntop.scores=ntop.scores,
 #					permute=permute,B=B,ntop.pvalues=ntop.values,
 					basefilename=basefilename,
 					colour.query=colour.query,legend.names=legend.names,legend.cols=legend.cols,legend.pos=legend.pos,
@@ -725,7 +725,7 @@ setMethod("CSanalysis",c("matrix","matrix","CSzhang"),function(querMat,refMat,ty
 							))
 			
 			
-			call.object <- list(match.call=type@call,analysis.pm=list(nref=nquery,nquery=nref,ord.ref=ord.ref,ntop.scores=ntop.scores))
+			call.object <- list(match.call=type@call,analysis.pm=list(nref=nquery,nquery=nref,ord.query=ord.query,ntop.scores=ntop.scores))
 			call.object$dimensions <- list(row=dim(querMat)[1],col=c(query=dim(querMat)[2],ref=dim(refMat)[2]))
 			
 			

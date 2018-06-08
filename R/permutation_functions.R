@@ -208,7 +208,7 @@ CSpermute <- function(querMat,refMat,CSresult,B=500,mfa.factor=NULL,method.adjus
 			                            rownames(data_comb) <- rownames(querMat)
 			                            colnames(data_comb) <- c(colnames(querMat),colnames(refMat))
 			                            
-			                            out_MFA <- MFA(base=data_comb,group=c(ncol(querMat),ncol(refMat)),type=c("s","s"),ind.sup=NULL,row.w=CSresult@call$analysis.pm$row.w,weight.col.mfa=CSresult@call$analysis.pm$weight.col.mfa,ncp=CSresult@call$analysis.pm$ncp,name.group=c("Reference","Query"),graph=FALSE)
+			                            out_MFA <- MFA(base=data_comb,group=c(ncol(querMat),ncol(refMat)),type=rep(CSresult@call$analysis.pm$mfa.type,2),ind.sup=NULL,row.w=CSresult@call$analysis.pm$row.w,weight.col.mfa=CSresult@call$analysis.pm$weight.col.mfa,ncp=CSresult@call$analysis.pm$ncp,name.group=c("Reference","Query"),graph=FALSE)
 			                            
 			                            ## FACTOR IS CHOSEN BASED ON HIGHEST AVERAGE REFERENCE LOADINGS  (put other options here later)
 			                            ref.loadings <- apply(out_MFA$quanti.var$cor,MARGIN=2,FUN=function(x){mean(x[ref.index])})
@@ -285,7 +285,7 @@ CSpermute <- function(querMat,refMat,CSresult,B=500,mfa.factor=NULL,method.adjus
 			    rownames(data_comb) <- rownames(querMat)
 			    colnames(data_comb) <- c(colnames(querMat),colnames(refMat))
 			    
-			    out_MFA <- MFA(base=data_comb,group=c(ncol(querMat),ncol(refMat)),type=c("s","s"),ind.sup=NULL,row.w=CSresult@call$analysis.pm$row.w,weight.col.mfa=CSresult@call$analysis.pm$weight.col.mfa,ncp=CSresult@call$analysis.pm$ncp,name.group=c("Reference","Query"),graph=FALSE)
+			    out_MFA <- MFA(base=data_comb,group=c(ncol(querMat),ncol(refMat)),type=rep(CSresult@call$analysis.pm$mfa.type,2),ind.sup=NULL,row.w=CSresult@call$analysis.pm$row.w,weight.col.mfa=CSresult@call$analysis.pm$weight.col.mfa,ncp=CSresult@call$analysis.pm$ncp,name.group=c("Reference","Query"),graph=FALSE)
 			    
 			    ## FACTOR IS CHOSEN BASED ON HIGHEST AVERAGE REFERENCE LOADINGS  (put other options here later)
 			    ref.loadings <- apply(out_MFA$quanti.var$cor,MARGIN=2,FUN=function(x){mean(x[ref.index])})
@@ -357,7 +357,7 @@ CSpermute <- function(querMat,refMat,CSresult,B=500,mfa.factor=NULL,method.adjus
 			                            colnames(refMat.Perm) <- colnames(refMat)
 			                            
 			                            out_zhang <- analyse_zhang(querMat,refMat.Perm,
-			                                                              nref=CSresult@call$analysis.pm$nref,nquery=CSresult@call$analysis.pm$nquery,ord.query=CSresult@call$analysis.pm$ord.ref,ntop.scores=CSresult@call$analysis.pm$ntop.scores,
+			                                                              nref=CSresult@call$analysis.pm$nquery,nquery=CSresult@call$analysis.pm$nref,ord.query=CSresult@call$analysis.pm$ord.query,ntop.scores=CSresult@call$analysis.pm$ntop.scores,
 			                                                              basefilename="analyseZhang",which=c(),plot.type="device",print.top=FALSE)
 			                            
 			                            CS.Perm[[i]] <- out_zhang$All[,1]
@@ -386,7 +386,7 @@ CSpermute <- function(querMat,refMat,CSresult,B=500,mfa.factor=NULL,method.adjus
 			    colnames(refMat.Perm) <- colnames(refMat)
 			    
 			    out_zhang <- analyse_zhang(querMat,refMat.Perm,
-			                               nref=CSresult@call$analysis.pm$nref,nquery=CSresult@call$analysis.pm$nquery,ord.query=CSresult@call$analysis.pm$ord.ref,ntop.scores=CSresult@call$analysis.pm$ntop.scores,
+			                               nref=CSresult@call$analysis.pm$nquery,nquery=CSresult@call$analysis.pm$nref,ord.query=CSresult@call$analysis.pm$ord.query,ntop.scores=CSresult@call$analysis.pm$ntop.scores,
 			                               basefilename="analyseZhang",which=c(),plot.type="device",print.top=FALSE)
 			    
 			    CS.Perm[[i]] <- out_zhang$All[,1]

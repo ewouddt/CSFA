@@ -71,7 +71,7 @@ analyse_FA <- function(
 				loadings <- result$quanti.var$cor	# For compounds	
 				scores <- result$ind$coord			# For genes
 				
-				call.object <- list(match.call=matchcall,analysis.pm=list(ncp=ncp,weight.col.mfa=weight.col.mfa,row.w=row.w))
+				call.object <- list(match.call=matchcall,analysis.pm=list(ncp=ncp,weight.col.mfa=weight.col.mfa,row.w=row.w,mfa.type=mfa.type[1]))
 				
 			}
 			
