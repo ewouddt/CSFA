@@ -6,8 +6,8 @@
 \title{"CSzhang"}
 \usage{
 \S4method{CSanalysis}{matrix,matrix,CSzhang}(querMat, refMat,
-  type = "CSzhang", nquery = NULL, nref = NULL, ord.query = TRUE,
-  ntop.scores = 20, which = c(1), color.ref = NULL, legend.names = NULL,
+  type = "CSzhang", nquery = NULL, nref = NULL, ntop.scores = 20,
+  which = c(1), color.ref = NULL, legend.names = NULL,
   legend.cols = NULL, legend.pos = "topright", labels = TRUE,
   result.available = NULL, result.available.update = FALSE,
   plot.type = "device", basefilename = NULL)
@@ -22,8 +22,6 @@
 \item{nquery}{\emph{Zhang Parameter:} Number of top up- and downregulated genes in query signature. If \code{NULL}, all rows (genes) are used.}
 
 \item{nref}{\emph{Zhang Parameter:} Number of top up- and downregulated genes in reference signature. If \code{NULL}, all rows (genes) are used. (Note that \eqn{nquery >= nref})}
-
-\item{ord.query}{\emph{Zhang Parameter:} Logical value. Should the reference signature be treated as ordered?}
 
 \item{ntop.scores}{\emph{Zhang Parameter:} Number of top positive and negative CS to be reported first.}
 
