@@ -500,7 +500,7 @@ CSlabelscompare <- function(CSresult,labels,type="factors",basefilename="CSanaly
 			}
 			axis(1,at=1:length(factor.list),labels=names(factor.list))
 			axis(2,at=seq(-1,1,0.2))
-			legend("topright",c("Ref.",unique.truenames),col=c("blue",colors.truenames),pt.bg=c("white",colors.truenames),inset=c(-inset.temp,0),bty="n",pch=21)
+			legend("topright",c("Query",unique.truenames),col=c("blue",colors.truenames),pt.bg=c("white",colors.truenames),inset=c(-inset.temp,0),bty="n",pch=21)
 		
 		}
 		plot.out(plot.type)
@@ -535,7 +535,7 @@ CSlabelscompare <- function(CSresult,labels,type="factors",basefilename="CSanaly
 			}
 			axis(1,at=1:length(unique.factornames),labels=unique.factornames)
 			axis(2,at=seq(-1,1,0.2))
-			legend("topright",c("Ref.",unique.truenames),col=c("blue",colors.truenames),pt.bg=c("white",colors.truenames),inset=c(-inset.temp,0),bty="n",pch=21)
+			legend("topright",c("Query",unique.truenames),col=c("blue",colors.truenames),pt.bg=c("white",colors.truenames),inset=c(-inset.temp,0),bty="n",pch=21)
 			
 		}
 		plot.out(plot.type)
