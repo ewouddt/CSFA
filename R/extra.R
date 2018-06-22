@@ -407,7 +407,7 @@ get.loadings <- function(CSresult){
 #' These factor labels are not exactly the generated labels, but simply "Factor 1", "Factor 2",..., "None" or "BC 1", "BC 2",..., "None". This means that should a loading be high/low in multiple factors, it will appear multiple times on this plot, namely for each corresponding factor.
 #' The loadings are plotted for these factor labels (with jitter) and are colored according to the manual provided labels (\code{labels}) which is shown in the legend. The coloring also shows which loadings were in the query set.
 #' }
-#' {\strong Note} that if none of the loadings is high/low in multiple factors, the two types of plots should be identical.
+#' \strong{Note} that if none of the loadings is high/low in multiple factors, the two types of plots should be identical.
 #' @param basefilename Base of the filename when saving the graph as a pdf (\code{plot.type="pdf"})
 #' @param plot.type How should the plots be outputted? \code{"pdf"} to save them in pdf files, \code{device} to draw them in a graphics device (default), \code{sweave} to use them in a sweave or knitr file.
 #' @examples
