@@ -184,19 +184,19 @@ setMethod('CSanalysis', c('matrix','matrix','character'),
 #' @param gene.thresN Threshold for genes with a low score (\code{which=4}).
 #' @param thresP.col Color of genes above \code{gene.thresP}.
 #' @param thresN.col Color of genes below \code{gene.thresN}.
-#' @param grouploadings.labels This parameter used for the Group Loadings Plots (\code{which=8}). In general this plot will contain the loadings of all factors, grouped and colored by the labels given in this parameter.
-#' \itemize{
+#' @param grouploadings.labels This parameter used for the Group Loadings Plots (\code{which=8}). In general this plot will contain the loadings of all factors, grouped and colored by the labels given in this parameter. Two types of plot can be created:
+#' \enumerate{
 #' \item If \code{grouploadings.labels!=NULL}:\cr
 #' Provide a vector for all samples (query + ref) containing labels on which the plot will be based on.
 #' 
 #' \item If \code{grouploadings.labels=NULL}: \cr
 #' If no labels are provided when choosing \code{which=8}, automatic labels ("Top Samples of Component 1, 2....") will be created. These labels are given to the top \code{grouploadings.cutoff}  number of samples based on the absolute values of the loadings. 
 #' }
-#' Plot \code{which=8} can be used to check 2 different situations. Either to check if your provided labels coincide with the discovered structure in the analysis. The other aim is to find new interesting structures (of samples) which strongly appear in one or multiple components. A subsequent step could be to take some strong samples/compounds of these compounds and use them as a new query set in a new CS analysis to check its validity or to find newly connected compounds.
+#' Plot \code{which=8} can be used to check 2 different situations. The first plot checks if your provided labels coincide with the discovered structures in the analysis. The second plot aims to find new interesting structures (of samples) which strongly appear in one or multiple components. A subsequent step could be to take some strong samples/compounds of these compounds and use them as a new query set in a new CS analysis to check its validity or to find newly connected compounds.
 #' 
 #' Please note that even when \code{group.loadings.labels!=NULL}, that the labels based on the absolute loadings of all the factors (the top \code{grouploadings.cutoff}) will always be generated and saved in \code{samplefactorlabels} in the \code{extra} slot of the \code{CSresult} object. 
-#' This can then later be used for the \code{CSlabelscompare} function to compare them with your true labels.
-#' @param grouploadings.cutoff Parameter used in plot \code{which=8}. See \code{grouploadings.labels=NULL} for more information. If this parameter is not provided, it will be automatically set to 10\% of the total number of loadings.
+#' This can then later be used for the \code{\link{CSlabelscompare}} function to compare them with your true labels.
+#' @param grouploadings.cutoff Parameter used in plot \code{which=8}. An integer for the number of cut-offs. See \code{grouploadings.labels=NULL} for more information. If this parameter is not provided, it will be automatically set to 10\% of the total number of loadings.
 #' @param legend.names Option to draw a legend of for example colored columns in Compound Loadings plot (\code{which=3}). If \code{NULL}, only "References" will be in the legend.
 #' @param legend.cols Colors to be used in legends. If \code{NULL}, only blue for "Queries is used".
 #' @param legend.pos Position of the legend in all requested plots, can be \code{"topright"}, \code{"topleft"}, \code{"bottomleft"}, \code{"bottomright"}, \code{"bottom"}, \code{"top"}, \code{"left"}, \code{"right"}, \code{"center"}.
@@ -306,19 +306,19 @@ setMethod('CSanalysis',c('matrix','matrix','CSfabia'),
 #' @param gene.thresN Threshold for genes with a low score (\code{which=4}).
 #' @param thresP.col Color of genes above \code{gene.thresP}.
 #' @param thresN.col Color of genes below \code{gene.thresN}.
-#' @param grouploadings.labels This parameter used for the Group Loadings Plots (\code{which=8}). In general this plot will contain the loadings of all factors, grouped and colored by the labels given in this parameter.
-#' \itemize{
+#' @param grouploadings.labels This parameter used for the Group Loadings Plots (\code{which=8}). In general this plot will contain the loadings of all factors, grouped and colored by the labels given in this parameter. Two types of plot can be created:
+#' \enumerate{
 #' \item If \code{grouploadings.labels!=NULL}:\cr
 #' Provide a vector for all samples (query + ref) containing labels on which the plot will be based on.
 #' 
 #' \item If \code{grouploadings.labels=NULL}: \cr
 #' If no labels are provided when choosing \code{which=8}, automatic labels ("Top Samples of Component 1, 2....") will be created. These labels are given to the top \code{grouploadings.cutoff}  number of samples based on the absolute values of the loadings. 
 #' }
-#' Plot \code{which=8} can be used to check 2 different situations. Either to check if your provided labels coincide with the discovered structure in the analysis. The other aim is to find new interesting structures (of samples) which strongly appear in one or multiple components. A subsequent step could be to take some strong samples/compounds of these compounds and use them as a new query set in a new CS analysis to check its validity or to find newly connected compounds.
+#' Plot \code{which=8} can be used to check 2 different situations. The first plot checks if your provided labels coincide with the discovered structures in the analysis. The second plot aims to find new interesting structures (of samples) which strongly appear in one or multiple components. A subsequent step could be to take some strong samples/compounds of these compounds and use them as a new query set in a new CS analysis to check its validity or to find newly connected compounds.
 #' 
 #' Please note that even when \code{group.loadings.labels!=NULL}, that the labels based on the absolute loadings of all the factors (the top \code{grouploadings.cutoff}) will always be generated and saved in \code{samplefactorlabels} in the \code{extra} slot of the \code{CSresult} object. 
-#' This can then later be used for the \code{CSlabelscompare} function to compare them with your true labels.
-#' @param grouploadings.cutoff Parameter used in plot \code{which=8}. See \code{grouploadings.labels=NULL} for more information. If this parameter is not provided, it will be automatically set to 10\% of the total number of loadings.
+#' This can then later be used for the \code{\link{CSlabelscompare}} function to compare them with your true labels.
+#' @param grouploadings.cutoff Parameter used in plot \code{which=8}. An integer for the number of cut-offs. See \code{grouploadings.labels=NULL} for more information. If this parameter is not provided, it will be automatically set to 10\% of the total number of loadings.
 #' @param legend.names Option to draw a legend of for example colored columns in Compound Loadings plot (\code{which=3}). If \code{NULL}, only "References" will be in the legend.
 #' @param legend.cols Colors to be used in legends. If \code{NULL}, only blue for "Queries is used".
 #' @param legend.pos Position of the legend in all requested plots, can be \code{"topright"}, \code{"topleft"}, \code{"bottomleft"}, \code{"bottomright"}, \code{"bottom"}, \code{"top"}, \code{"left"}, \code{"right"}, \code{"center"}.
@@ -438,19 +438,19 @@ setMethod("CSanalysis",c("matrix","matrix","CSmfa"),function(
 #' @param gene.thresN Threshold for genes with a low score (\code{which=4}).
 #' @param thresP.col Color of genes above \code{gene.thresP}.
 #' @param thresN.col Color of genes below \code{gene.thresN}.
-#' @param grouploadings.labels This parameter used for the Group Loadings Plots (\code{which=8}). In general this plot will contain the loadings of all factors, grouped and colored by the labels given in this parameter.
-#' \itemize{
+#' @param grouploadings.labels This parameter used for the Group Loadings Plots (\code{which=8}). In general this plot will contain the loadings of all factors, grouped and colored by the labels given in this parameter. Two types of plot can be created:
+#' \enumerate{
 #' \item If \code{grouploadings.labels!=NULL}:\cr
 #' Provide a vector for all samples (query + ref) containing labels on which the plot will be based on.
 #' 
 #' \item If \code{grouploadings.labels=NULL}: \cr
 #' If no labels are provided when choosing \code{which=8}, automatic labels ("Top Samples of Component 1, 2....") will be created. These labels are given to the top \code{grouploadings.cutoff}  number of samples based on the absolute values of the loadings. 
 #' }
-#' Plot \code{which=8} can be used to check 2 different situations. Either to check if your provided labels coincide with the discovered structure in the analysis. The other aim is to find new interesting structures (of samples) which strongly appear in one or multiple components. A subsequent step could be to take some strong samples/compounds of these compounds and use them as a new query set in a new CS analysis to check its validity or to find newly connected compounds.
+#' Plot \code{which=8} can be used to check 2 different situations. The first plot checks if your provided labels coincide with the discovered structures in the analysis. The second plot aims to find new interesting structures (of samples) which strongly appear in one or multiple components. A subsequent step could be to take some strong samples/compounds of these compounds and use them as a new query set in a new CS analysis to check its validity or to find newly connected compounds.
 #' 
 #' Please note that even when \code{group.loadings.labels!=NULL}, that the labels based on the absolute loadings of all the factors (the top \code{grouploadings.cutoff}) will always be generated and saved in \code{samplefactorlabels} in the \code{extra} slot of the \code{CSresult} object. 
-#' This can then later be used for the \code{CSlabelscompare} function to compare them with your true labels.
-#' @param grouploadings.cutoff Parameter used in plot \code{which=8}. See \code{grouploadings.labels=NULL} for more information. If this parameter is not provided, it will be automatically set to 10\% of the total number of loadings.
+#' This can then later be used for the \code{\link{CSlabelscompare}} function to compare them with your true labels.
+#' @param grouploadings.cutoff Parameter used in plot \code{which=8}. An integer for the number of cut-offs. See \code{grouploadings.labels=NULL} for more information. If this parameter is not provided, it will be automatically set to 10\% of the total number of loadings.
 #' @param legend.names Option to draw a legend of for example colored columns in Compound Loadings plot (\code{which=3}). If \code{NULL}, only "References" will be in the legend.
 #' @param legend.cols Colors to be used in legends. If \code{NULL}, only blue for "Queries is used".
 #' @param legend.pos Position of the legend in all requested plots, can be \code{"topright"}, \code{"topleft"}, \code{"bottomleft"}, \code{"bottomright"}, \code{"bottom"}, \code{"top"}, \code{"left"}, \code{"right"}, \code{"center"}.
@@ -570,19 +570,19 @@ setMethod("CSanalysis",c("matrix","matrix","CSpca"),function(
 #' @param gene.thresN Threshold for genes with a low score (\code{which=4}).
 #' @param thresP.col Color of genes above \code{gene.thresP}.
 #' @param thresN.col Color of genes below \code{gene.thresN}.
-#' @param grouploadings.labels This parameter used for the Group Loadings Plots (\code{which=8}). In general this plot will contain the loadings of all factors, grouped and colored by the labels given in this parameter.
-#' \itemize{
+#' @param grouploadings.labels This parameter used for the Group Loadings Plots (\code{which=8}). In general this plot will contain the loadings of all factors, grouped and colored by the labels given in this parameter. Two types of plot can be created:
+#' \enumerate{
 #' \item If \code{grouploadings.labels!=NULL}:\cr
 #' Provide a vector for all samples (query + ref) containing labels on which the plot will be based on.
 #' 
 #' \item If \code{grouploadings.labels=NULL}: \cr
 #' If no labels are provided when choosing \code{which=8}, automatic labels ("Top Samples of Component 1, 2....") will be created. These labels are given to the top \code{grouploadings.cutoff}  number of samples based on the absolute values of the loadings. 
 #' }
-#' Plot \code{which=8} can be used to check 2 different situations. Either to check if your provided labels coincide with the discovered structure in the analysis. The other aim is to find new interesting structures (of samples) which strongly appear in one or multiple components. A subsequent step could be to take some strong samples/compounds of these compounds and use them as a new query set in a new CS analysis to check its validity or to find newly connected compounds.
+#' Plot \code{which=8} can be used to check 2 different situations. The first plot checks if your provided labels coincide with the discovered structures in the analysis. The second plot aims to find new interesting structures (of samples) which strongly appear in one or multiple components. A subsequent step could be to take some strong samples/compounds of these compounds and use them as a new query set in a new CS analysis to check its validity or to find newly connected compounds.
 #' 
 #' Please note that even when \code{group.loadings.labels!=NULL}, that the labels based on the absolute loadings of all the factors (the top \code{grouploadings.cutoff}) will always be generated and saved in \code{samplefactorlabels} in the \code{extra} slot of the \code{CSresult} object. 
-#' This can then later be used for the \code{CSlabelscompare} function to compare them with your true labels.
-#' @param grouploadings.cutoff Parameter used in plot \code{which=8}. See \code{grouploadings.labels=NULL} for more information. If this parameter is not provided, it will be automatically set to 10\% of the total number of loadings.
+#' This can then later be used for the \code{\link{CSlabelscompare}} function to compare them with your true labels.
+#' @param grouploadings.cutoff Parameter used in plot \code{which=8}. An integer for the number of cut-offs. See \code{grouploadings.labels=NULL} for more information. If this parameter is not provided, it will be automatically set to 10\% of the total number of loadings.
 #' @param legend.names Option to draw a legend of for example colored columns in Compound Loadings plot (\code{which=3}). If \code{NULL}, only "References" will be in the legend.
 #' @param legend.cols Colors to be used in legends. If \code{NULL}, only blue for "Queries is used".
 #' @param legend.pos Position of the legend in all requested plots, can be \code{"topright"}, \code{"topleft"}, \code{"bottomleft"}, \code{"bottomright"}, \code{"bottom"}, \code{"top"}, \code{"left"}, \code{"right"}, \code{"center"}.
