@@ -25,21 +25,23 @@
 
 
 
-ClusterCS <- function(data,clusterlabels,WithinABS=FALSE,verbose=TRUE){
+ClusterCS <- function(data,clusterlabels,WithinABS=TRUE,verbose=TRUE,save=FALSE,
+                      Within=NULL,Between=NULL){
   
   
   # Add some stuff before such as: add row/column names if not in data
+  # Check if Within and Between do not contain integers higher or lower than in clusterlabels + still include these options
+  # Clusterlabels need to be integers
   
   
   nclusters <- length(unique(clusterlabels))
   
   
-  CSmatrix1 <- matrix(0,nrow=nclusters,ncol=nclusters,dimnames=list(paste0("C",unique(clusterlabels)),paste0("C",unique(clusterlabels))))
-  CSlist1 <- rep( list(list()), nclusters) 
+  CSmatrix <- CSRankmatrix <- matrix(NA,nrow=nclusters,ncol=nclusters,dimnames=list(paste0("C",unique(clusterlabels)),paste0("C",unique(clusterlabels))))
+
+  Save.Within <- vector("list",nclusters)
   
-  CSmatrix2 <- matrix(0,nrow=nclusters,ncol=nclusters,dimnames=list(paste0("C",unique(clusterlabels)),paste0("C",unique(clusterlabels))))
-  CSlist2 <- rep( list(list()), nclusters ) 
-  
+
   for(i in 1:length(unique(clusterlabels))){
     
     
@@ -49,79 +51,105 @@ ClusterCS <- function(data,clusterlabels,WithinABS=FALSE,verbose=TRUE){
     
     cluster.index <- which(clusterlabels==i.cluster)
     
-    CSlist1.temp <- CSlist2.temp  <- vector("list",length(cluster.index))
 
     
-    extradata1.temp <- matrix(0,nrow=dim(data)[2],ncol=length(cluster.index),dimnames=list(colnames(data),colnames(data)[cluster.index]))
-    extradata2.temp <- matrix(NA,nrow=dim(data)[2],ncol=length(cluster.index),dimnames=list(colnames(data),colnames(data)[cluster.index]))
     
-    CompoundCS.FactorSelect <- rep(NA,length(cluster.index))
+    ## COMPUTE WITHIN SCORES ##
     
-    ## COMPUTE WITHIN SCORES
-    
-    # TO DO !!!!
-    
-    # # Withing-CS = NA when only 1 compound
-    # if(length(cluster.index)==1){
-    #   
-    # }else{
-    #   
-    # }
-    
-    for(j in 1:length(cluster.index)){
-      
-      querdata <- data[,cluster.index[-j],drop=FALSE]
-      refdata <- cbind(data[,cluster.index[j],drop=FALSE],data[,-cluster.index])
-      
-      method.type <- ifelse(dim(querdata)[2]==1,"CSpca","CSmfa")
-      
-      out_MFA <- CSanalysis(querMat=querdata,refMat=refdata,method.type,which=c(),component.plot=1)
-      
-      # Check if Factor 1 is best
-      factor.select <- best.factor(out_MFA)
-      CompoundCS.FactorSelect[j] <- factor.select
-      
-      if(factor.select!=1){
-        
-        # This redo currently does not work in CSFA. Alternatively just grab the values from $object
-        out_MFA <- CSanalysis(querMat=querdata,refMat=refdata,method.type,which=c(),component.plot=factor.select,result.available=out_MFA,result.available.update=TRUE)
-        
-        if(verbose){
-          warning(paste0("MFA for Compound nr ",j," in Cluster nr ",i,": Factor ",factor.select," was choosen."),call.=FALSE)
-          
-        }
+
+    # Withing-CS = NA when only 1 compound
+    if(length(cluster.index)==1){
+
+      if(verbose){
+        warning(paste0("Cluster ",unique(clusterlabels)[i]," only has a single compound. No Within-CS will be computed"))
       }
       
-      # I AM HERE
       
-      CSlist1.temp <- c(CSlist1.temp,out_MFA@CS$CS.query[1,1])
-      CSlist2.temp <- c(CSlist2.temp,out_MFA@CSRankScores[[1]][1,1])
+    }else{
       
-      extradata1.temp[,j] <- rbind(out_MFA@CS$CS.ref[,1,drop=FALSE],out_MFA@CS$CS.query[,1,drop=FALSE])[rownames(extradata1.temp),] 
       
-      extra.temp <- out_MFA@CSRankScores[[1]][,1,drop=FALSE]
-      extradata2.temp[intersect(rownames(extradata2.temp),rownames(extra.temp)),j] <- extra.temp[intersect(rownames(extradata2.temp),rownames(extra.temp)),]
+      extradata1.temp <- matrix(0,nrow=dim(data)[2],ncol=length(cluster.index),dimnames=list(colnames(data),colnames(data)[cluster.index]))
+      extradata2.temp <- matrix(NA,nrow=dim(data)[2],ncol=length(cluster.index),dimnames=list(colnames(data),colnames(data)[cluster.index]))
       
+      CompoundCS.FactorSelect <-  CSlist1.temp <- CSlist2.temp  <- rep(NA,length(cluster.index))
+      
+      
+      for(j in 1:length(cluster.index)){
+        
+        
+        original.colindex <- 1:ncol(data)
+        original.colindex <- c(original.colindex[cluster.index[-j]],original.colindex[cluster.index[j]],original.colindex[-cluster.index])
+        
+        querdata <- data[,cluster.index[-j],drop=FALSE]
+        refdata <- cbind(data[,cluster.index[j],drop=FALSE],data[,-cluster.index])
+        
+        method.type <- ifelse(dim(querdata)[2]==1,"CSpca","CSmfa")
+        
+        out_MFA <- CSanalysis(querMat=querdata,refMat=refdata,method.type,which=c(),component.plot=1)
+        
+        # Check if Factor 1 is best
+        factor.select <- best.factor(out_MFA)
+        CompoundCS.FactorSelect[j] <- factor.select
+        
+        if(factor.select!=1){
+          
+          # This redo currently does not work in CSFA. Alternatively just grab the values from $object
+          out_MFA <- CSanalysis(querMat=querdata,refMat=refdata,method.type,which=c(),component.plot=factor.select,result.available=out_MFA,result.available.update=TRUE)
+          
+          if(verbose){
+            warning(paste0("MFA for Compound nr ",colnames(data)[cluster.index[j]]," in Cluster nr ",unique(clusterlabels)[i],": Factor ",factor.select," was choosen."),call.=FALSE)
+            
+          }
+        }
+        
+        
+        CSlist1.temp[j] <- out_MFA@CS[[1]]$CS.ref[1,1]
+        CSlist2.temp[j] <- out_MFA@CS[[1]]$CS.ref[1,2]
+        
+        
+        if(save){
+          extradata1.temp[,j] <- out_MFA@extra$object$quanti.var$cor[order(original.colindex),factor.select]
+          extradata2.temp[,j] <- c(rep(NA,ncol(querdata)),out_MFA@CS[[1]]$CS.ref$CRankScores)[order(original.colindex)]
+        }else{
+          extradata1.temp <- NULL
+          extradata2.temp <- NULL
+        }
+        
+      }
+      names(CSlist1.temp) <- names(CSlist2.temp) <- colnames(data)[cluster.index]
+      
+      
+      if(WithinABS){
+        CSmatrix[i,i] <- mean(abs(CSlist1.temp))  # Average CS is based on absolute values!
+        CSRankmatrix[i,i] <- mean(abs(CSlist2.temp))
+      }else{
+        CSmatrix[i,i] <- mean((CSlist1.temp))  # Average CS is NOT based on absolute values!
+        CSRankmatrix[i,i] <- mean((CSlist2.temp))
+      }
+      
+      
+      if(save){
+        Save.Within[[i]] <- list(
+          LeaveOneOutCS=CSlist1.temp,
+          LeaveOneOutCSRank=CSlist2.temp,
+          FactorSelect=CompoundCS.FactorSelect,
+          CSMFA=extradata1.temp,
+          CSRankMFA=extradata2.temp
+        )
+      }else{
+        Save.Within[[i]] <- NULL
+      }
+
     }
-    names(CSlist1.temp) <- names(CSlist2.temp) <- colnames(data)[cluster.index]
     
-    CSlist1[[i]]$CompoundCS <- CSlist1.temp
-    CSlist2[[i]]$CompoundCS <- CSlist2.temp
+
+    # I AM HERE
     
-    CSlist1[[i]]$CompoundCS.FactorSelect <- CompoundCS.FactorSelect
-    CSlist2[[i]]$CompoundCS.FactorSelect <- CompoundCS.FactorSelect
-    
-    # To do:  (also something similar down below)
-    CSlist1[[i]]$CompoundCS.extradata <- extradata1.temp
-    CSlist2[[i]]$CompoundCS.extradata <- extradata2.temp
-    
-    CSmatrix1[i,i] <- mean(abs(CSlist1.temp))  # Average CS is based on absolute values!
-    CSmatrix2[i,i] <- mean(abs(CSlist2.temp))
-    
+    ## COMPUTE BETWEEN SCORES ##
     
     method.type <- ifelse(length(cluster.index)==1,"CSpca","CSmfa")
     
-    # COMPUTE BETWEEN SCORES
+    
     out_MFA <- CSanalysis(querMat=data[,cluster.index,drop=FALSE],refMat=data[,-cluster.index],method.type,which=c(),component.plot=1)
     
     # Check if Factor 1 is best
