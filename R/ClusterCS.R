@@ -1,9 +1,9 @@
 
 ## EXAMPLE
-load("C:/Users/lucp8394/Documents/StatFiles/CenStat/Connectivity Score/Research/ClusterCS/MCF7Data.RData")
-load("C:/Users/lucp8394/Documents/StatFiles/CenStat/Connectivity Score/Research/ClusterCS/cluster_target.RData")
-data <- geneMat
-clusterlabels <- cutree(cluster_target$Clust,k=7)
+# load("C:/Users/lucp8394/Documents/StatFiles/CenStat/Connectivity Score/Research/ClusterCS/MCF7Data.RData")
+# load("C:/Users/lucp8394/Documents/StatFiles/CenStat/Connectivity Score/Research/ClusterCS/cluster_target.RData")
+# data <- geneMat
+# clusterlabels <- cutree(cluster_target$Clust,k=7)
 
 
 
