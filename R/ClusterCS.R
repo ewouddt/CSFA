@@ -25,21 +25,47 @@
 
 
 
-ClusterCS <- function(data,clusterlabels,WithinABS=TRUE,verbose=TRUE,save=FALSE,
+ClusterCS <- function(data,clusterlabels,WithinABS=TRUE,BetweenABS=TRUE,FactorABS=FALSE,verbose=TRUE,WithinSave=FALSE,BetweenSave=TRUE,
                       Within=NULL,Between=NULL){
   
-  
+  # TO DOOOO!!!!!
   # Add some stuff before such as: add row/column names if not in data
   # Check if Within and Between do not contain integers higher or lower than in clusterlabels + still include these options
   # Clusterlabels need to be integers
+  # Make sure unique(clusterlabels) is a sequence
+  # identical(1:nclusters,sort(unique(clusterlabels)))
+  
+  
   
   
   nclusters <- length(unique(clusterlabels))
   
+  if(is.null(Within)){
+    Within <- 1:nclusters
+  }
+  if(is.null(Between)){
+    Between <- 1:nclusters
+  }
   
-  CSmatrix <- CSRankmatrix <- matrix(NA,nrow=nclusters,ncol=nclusters,dimnames=list(paste0("C",unique(clusterlabels)),paste0("C",unique(clusterlabels))))
+  
+  CSmatrix <- CSRankmatrix <- matrix(NA,nrow=nclusters,ncol=nclusters,dimnames=list(paste0("C",sort(unique(clusterlabels))),paste0("C",unique(clusterlabels))))
 
-  Save.Within <- vector("list",nclusters)
+  if(WithinSave){
+    Save.Within <- vector("list",nclusters)
+  }else{
+    Save.Within <- NULL
+  }
+  if(BetweenSave){
+    Save.Between <- NULL
+    DataBetweenCS <- DataBetweenCSRank <- matrix(NA,nrow=nrow(data),ncol=nclusters,dimnames=list(rownames(data),paste0("C",sort(unique(clusterlabels)))))
+    refindex_between <- vector("list",nclusters)
+    names(refindex_between) <- colnames(DataBetweenCS)
+    factorselect_between <- rep(NA,nclusters)
+  }else{
+    Save.Between <- NULL
+  }
+  
+  
   
 
   for(i in 1:length(unique(clusterlabels))){
@@ -76,6 +102,7 @@ ClusterCS <- function(data,clusterlabels,WithinABS=TRUE,verbose=TRUE,save=FALSE,
       
       for(j in 1:length(cluster.index)){
         
+        if(!(j %in% Within)){break}
         
         original.colindex <- 1:ncol(data)
         original.colindex <- c(original.colindex[cluster.index[-j]],original.colindex[cluster.index[j]],original.colindex[-cluster.index])
@@ -88,7 +115,7 @@ ClusterCS <- function(data,clusterlabels,WithinABS=TRUE,verbose=TRUE,save=FALSE,
         out_MFA <- CSanalysis(querMat=querdata,refMat=refdata,method.type,which=c(),component.plot=1)
         
         # Check if Factor 1 is best
-        factor.select <- best.factor(out_MFA)
+        factor.select <- best.factor(out_MFA,FactorABS=FactorABS)
         CompoundCS.FactorSelect[j] <- factor.select
         
         if(factor.select!=1){
@@ -107,7 +134,7 @@ ClusterCS <- function(data,clusterlabels,WithinABS=TRUE,verbose=TRUE,save=FALSE,
         CSlist2.temp[j] <- out_MFA@CS[[1]]$CS.ref[1,2]
         
         
-        if(save){
+        if(WithinSave){
           extradata1.temp[,j] <- out_MFA@extra$object$quanti.var$cor[order(original.colindex),factor.select]
           extradata2.temp[,j] <- c(rep(NA,ncol(querdata)),out_MFA@CS[[1]]$CS.ref$CRankScores)[order(original.colindex)]
         }else{
@@ -128,7 +155,7 @@ ClusterCS <- function(data,clusterlabels,WithinABS=TRUE,verbose=TRUE,save=FALSE,
       }
       
       
-      if(save){
+      if(WithinSave){
         Save.Within[[i]] <- list(
           LeaveOneOutCS=CSlist1.temp,
           LeaveOneOutCSRank=CSlist2.temp,
@@ -136,80 +163,105 @@ ClusterCS <- function(data,clusterlabels,WithinABS=TRUE,verbose=TRUE,save=FALSE,
           CSMFA=extradata1.temp,
           CSRankMFA=extradata2.temp
         )
-      }else{
-        Save.Within[[i]] <- NULL
       }
-
     }
     
 
-    # I AM HERE
-    
+
     ## COMPUTE BETWEEN SCORES ##
     
+    if(!(i %in% Between)){break}
+    
     method.type <- ifelse(length(cluster.index)==1,"CSpca","CSmfa")
+    original.colindex <- 1:ncol(data)
+    original.colindex <- c(original.colindex[cluster.index],original.colindex[-cluster.index])
+    
     
     
     out_MFA <- CSanalysis(querMat=data[,cluster.index,drop=FALSE],refMat=data[,-cluster.index],method.type,which=c(),component.plot=1)
     
     # Check if Factor 1 is best
-    factor.select <- best.factor(out_MFA)
+    factor.select <- best.factor(out_MFA,FactorABS=FactorABS)
     
     if(factor.select!=1){
-      out_MFA <- CSanalysis(querMat=data[,cluster.index,drop=FALSE],refMat=data[,-cluster.index],method.type,which=c(),component.plot=factor.select,result.available=out_MFA)
+      out_MFA <- CSanalysis(querMat=data[,cluster.index,drop=FALSE],refMat=data[,-cluster.index],method.type,which=c(),component.plot=factor.select,result.available=out_MFA,result.available.update=TRUE)
       
-      warning(paste0("MFA for Cluster nr ",i,": Factor ",factor.select," was choosen."),call.=FALSE)
-    }
-    
-    CStop1.temp <- data.frame(Score=out_MFA@CS$CS.query[,1],Cluster=clusterlabels[-cluster.index])
-    CStop2.temp <- data.frame(Score=out_MFA@CSRankScores[[1]][,1],Cluster=clusterlabels[-cluster.index])
-    rownames(CStop1.temp) <- rownames(CStop2.temp) <- colnames(data)[-cluster.index]
-    
-    CStop1.temp <- CStop1.temp[order(abs(CStop1.temp$Score),decreasing=TRUE),]
-    CStop2.temp <- CStop2.temp[order(abs(CStop2.temp$Score),decreasing=TRUE),]
-    
-    CSlist1[[i]]$CStop <- CStop1.temp
-    CSlist2[[i]]$CStop <- CStop2.temp
-    
-    CSlist1[[i]]$RefLoadings <- out_MFA@CS$CS.ref[,1]
-    CSlist2[[i]]$RefLoadings <- out_MFA@CS$CS.ref[,1]
-    
-    CSlist1[[i]]$Factor.Select <- factor.select
-    CSlist2[[i]]$Factor.Select <- factor.select
-    
-    names(CSlist1[[i]]$RefLoadings) <- names(CSlist2[[i]]$RefLoadings) <- colnames(data)[cluster.index]
-    
-    for(ii in 1:length(other.cluster)){
-      ii.cluster <- other.cluster[ii]
-      
-      CSmatrix1[i,which(unique(clusterlabels)==ii.cluster)] <- mean(abs(CStop1.temp[CStop1.temp$Cluster==ii.cluster,1])) # Average CS is based on absolute values!
-      CSmatrix2[i,which(unique(clusterlabels)==ii.cluster)] <- mean(abs(CStop2.temp[CStop2.temp$Cluster==ii.cluster,1]))
-      
-      
+      if(verbose){
+        warning(paste0("MFA for Cluster nr ",unique(clusterlabels)[i],": Factor ",factor.select," was choosen."),call.=FALSE)
+      }
     }
     
     
+    # I AM HERE
     
+    temp_CS <- out_MFA@extra$object$quanti.var$cor[order(original.colindex),factor.select]
+    temp_CSRank <- c(rep(NA,length(cluster.index)),out_MFA@CS[[1]]$CS.ref$CRankScores)[order(original.colindex)] 
+    
+    if(BetweenSave){
+      DataBetweenCS[,i] <- temp_CS
+      DataBetweenCSRank[,i] <- temp_CSRank
+     
+      refindex_between[[i]] <- cluster.index
+      factorselect_between[i] <- factor.select
+    }
+    
+    
+
+
+    if(BetweenABS){
+      for(ii in 1:length(other.cluster)){
+        ii.cluster <- other.cluster[[ii]]
+        CSmatrix[i,ii.cluster] <- mean(abs(temp_CS[which(clusterlabels==ii.cluster)]))
+        CSRankmatrix[i,ii.cluster] <- mean(abs(temp_CSRank[which(clusterlabels==ii.cluster)]))
+      }
+      
+    }else{
+      for(ii in 1:length(other.cluster)){
+        ii.cluster <- other.cluster[[ii]]
+        CSmatrix[i,ii.cluster] <- mean((temp_CS[which(clusterlabels==ii.cluster)]))
+        CSRankmatrix[i,ii.cluster] <- mean((temp_CSRank[which(clusterlabels==ii.cluster)]))
+      }
+    }
   }
   
-  # don't forget to name CSlist1 en 2
-  names(CSlist1) <- paste0("C",unique(clusterlabels))
-  names(CSlist2) <- paste0("C",unique(clusterlabels))
+
+  if(BetweenSave){ 
+    Save.Between <- list(
+      DataBetweenCS=DataBetweenCS,
+      DataBetweenCSRank=DataBetweenCSRank,
+      refindex=refindex_between,
+      factorselect=factorselect_between
+    )
+  }
   
   
-  CSlist1$CSmatrix <- CSmatrix1
-  CSlist2$CSmatrix <- CSmatrix2
+
+  # New out
+  out <- list(
+    CSmatrix=CSmatrix,
+    CSRankmatrix=CSRankmatrix,
+    clusterlabels=clusterlabels,
+    Save=list(
+      Within=Save.Within,
+      Beween=Save.Between
+    )
+  )
   
-  out <- list(CS=CSlist1,CSRank=CSlist2)
   return(out)
-  
 }
 
 
 
 # Function to check if Factor 1 was ok
-best.factor <- function(CSresult){
-  mean.quer.loadings <- abs(colMeans(CSresult@extra$object$quanti.var$cor[c(1:nrow(CSresult@CS[[1]]$CS.query)),]))
+best.factor <- function(CSresult,FactorABS=FALSE){
+  
+  if(FactorABS){
+    mean.quer.loadings <- abs(colMeans(abs(CSresult@extra$object$quanti.var$cor[c(1:nrow(CSresult@CS[[1]]$CS.query)),])))
+    
+  }else{
+    mean.quer.loadings <- abs(colMeans(CSresult@extra$object$quanti.var$cor[c(1:nrow(CSresult@CS[[1]]$CS.query)),]))
+  }
+  
   return(which(mean.quer.loadings==max(mean.quer.loadings)))
 }
 
