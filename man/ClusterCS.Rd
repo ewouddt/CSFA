@@ -16,9 +16,9 @@ ClusterCS(data, clusterlabels, type = "CSmfa", WithinABS = TRUE,
 \item{type}{Type of CS Anaylsis (default=\code{"CSmfa"}): 
 \itemize{
 \item \code{"CSmfa"} (MFA or PCA)
-\item \code{"CSsmfa} (Sparse MFA or Sparse PCA)
+\item \code{"CSsmfa"} (Sparse MFA or Sparse PCA)
 \item \code{"CSfabia"} (Fabia)
-\item \code{"CSzhang} (Zhang and Gant)
+\item \code{"CSzhang"} (Zhang and Gant)
 }
 In the first two options, either MFA or PCA is used depending on the cluster size. If there query set only contains a single compound, the latter is used. 
 Also note that if a cluster only contain a single compound, no \emph{Within-CS} can be computed.}
@@ -44,25 +44,25 @@ Also note that if a cluster only contain a single compound, no \emph{Within-CS} 
 \value{
 A list object with components:
 \itemize{
-\item{\code{CSmatrix}:}{A \emph{K}\eqn{\times}\emph{K} matrix containing the Within scores on the diagonal and the Between scores otherwise with the rows being the query set clusters (e.g. \eqn{m_{13}=} Between CS between cluster 1 (as query set) and 3).}
-\item{\code{CSRankmatrix}:}{The same as \code{CSmatrix}, but with connectivity ranking scores (if applicable).}
-\item{\code{clusterlabels}:}{The provided \code{clusterlabels}}
-\item{\code{Save}:}{A list with components:}
+\item{\code{CSmatrix}: }{A \emph{K}\eqn{\times}\emph{K} matrix containing the Within scores on the diagonal and the Between scores otherwise with the rows being the query set clusters (e.g. \eqn{m_{13}=} Between CS between cluster 1 (as query set) and 3).}
+\item{\code{CSRankmatrix}: }{The same as \code{CSmatrix}, but with connectivity ranking scores (if applicable).}
+\item{\code{clusterlabels}: }{The provided \code{clusterlabels}}
+\item{\code{Save}: }{A list with components:}
 \itemize{
-\item{\code{Within}:}{A list with a component for each cluster \emph{k} that contains:}
+\item{\code{Within}: }{A list with a component for each cluster \emph{k} that contains:}
 \itemize{
-\item{code{LeaveOneOutCS}:}{Each leave-one-out connectivity score for cluster \emph{k}.}
-\item{code{LeaveOneOutCSRank}:}{Each leave-one-out connectivity ranking score for cluster \emph{k} (if applicable).}
-\item{code{factorselect}:}{A vector containing which factors/BCs were selected in each leave-one-out CS analysis (if applicable).}
-\item{code{CS}:}{A (columns (compounds) \eqn{\times} size of cluster \emph{k}) matrix that contains all the connectivity scores in a leave-one-out CS analysis for each left out compound.}
-\item{code{CSRank}:}{The same as \code{CS}, but with connectivity ranking scores (if applicable).}
+\item{\code{LeaveOneOutCS}: }{Each leave-one-out connectivity score for cluster \emph{k}.}
+\item{\code{LeaveOneOutCSRank}: }{Each leave-one-out connectivity ranking score for cluster \emph{k} (if applicable).}
+\item{\code{factorselect}: }{A vector containing which factors/BCs were selected in each leave-one-out CS analysis (if applicable).}
+\item{\code{CS}: }{A (columns (compounds) \eqn{\times} size of cluster \emph{k}) matrix that contains all the connectivity scores in a leave-one-out CS analysis for each left out compound.}
+\item{\code{CSRank}: }{The same as \code{CS}, but with connectivity ranking scores (if applicable).}
 }
-\item{\code{Between}:}{List:}
+\item{\code{Between}: }{List:}
 \itemize{
-\item{\code{DataBetweenCS}:}{A (columns (compounds) \eqn{\times} clusters) matrix containing all compound connectivity scores for each query cluster set.}
-\item{\code{DataBetweenCSRank}:}{The same as \code{DataBetweenCS}, but with connectivity ranking scores (if applicable).}
-\item{\code{queryindex}:}{The column indices for each query set in all CS analyses.}
-\item{\code{factorselect}:}{A vector containing which factors/BCs were selected in each CS analysis (if applicable).}
+\item{\code{DataBetweenCS}: }{A (columns (compounds) \eqn{\times} clusters) matrix containing all compound connectivity scores for each query cluster set.}
+\item{\code{DataBetweenCSRank}: }{The same as \code{DataBetweenCS}, but with connectivity ranking scores (if applicable).}
+\item{\code{queryindex}: }{The column indices for each query set in all CS analyses.}
+\item{\code{factorselect}: }{A vector containing which factors/BCs were selected in each CS analysis (if applicable).}
 }
 }
 }
@@ -88,7 +88,7 @@ Within-Cluster CS for a cluster is computed as following:
 \item The Within-Cluster CS for cluster \emph{k} is now defined as the average of all retrieved CS.
 }
 The concept of this metric is to investigate the connectivity for each compound with
-the cluster. The average of the ‘leave-one-out‘ connectivity scores, the Within-Cluster
+the cluster. The average of the 'leave-one-out' connectivity scores, the Within-Cluster
 CS, gives an indication of the gene expression connectivity of this cluster. A high
 Within-Cluster CS implies that the cluster is both similar on the external data source
 and on the gene expression level. A low score indicates that the cluster does not share a
