@@ -32,11 +32,42 @@
 
 
 #' @title ClusterCS
-#' @description Apply the Connectivity Scores to a clustering result,
-#' @details 
+#' @description Apply the Connectivity Scores to a \emph{K} clustering result. More information can be found in the Details section below.
+#' @details After applying cluster analysis on the additional data matrix, \emph{K} clusters are obtained.
+#' Each cluster will be seen as a potential query set (for \code{\link{CSanalysis}}) for which 2 connectivity score metrics can be computed, the \emph{Within-Cluster CS} and the \emph{Between-Cluster CS}.
+#' 
+#' \emph{Within-Cluster CS}\cr
+#' This metric will answer the question if the \emph{k}th cluster is connected on a gene expression
+#' level (in addition to the samples being similar based on the other data source). The
+#' Within-Cluster CS for a cluster is computed as following:
+#' \enumerate{
+#' \item Repeatedly for the \emph{i}th sample in the \emph{k}th cluster, apply CSMFA with:
+#' \itemize{
+#' \item \emph{Query Set}: All cluster samples \strong{excluding} the \emph{i}th sample.
+#' \item \emph{Reference}: All samples including the \emph{i}th sample of the \emph{k}th cluster.
+#' \item Retrieve the CS of the \emph{i}th sample in the cluster.
+#' }
+#' \item The Within-Cluster CS for cluster \emph{k} is now defined as the average of all retrieved CS.
+#' }
+#' The concept of this metric is to investigate the connectivity for each compound with
+#' the cluster. The average of the ‘leave-one-out‘ connectivity scores, the Within-Cluster
+#' CS, gives an indication of the gene expression connectivity of this cluster. A high
+#' Within-Cluster CS implies that the cluster is both similar on the external data source
+#' and on the gene expression level. A low score indicates that the cluster does not share a
+#' similar latent gene profile structure.
+#'
+#' \emph{Between-Cluster CS}\cr
+#' In this stage of the analysis, we focus on the \emph{l}th cluster and use all compounds in this
+#' cluster as the query set. A CSMFA is performed in which all other clusters are the
+#' reference set. Next, the connectivity scores are calculated for all reference compounds
+#' and averaged over the clusters (=the between connectivity score).
+#' A high Between-Cluster CS between the \emph{l}th and \emph{j}th clusters implies that, while the two
+#' clusters are not similar based on the other data source, they do share a latent structure
+#' when considering the gene expression data.
+#'     
 #' @author Ewoud De Troyer
-#' @param data
-#' @param clusterlabels
+#' @param data A gene expression matrix with the compounds in the columns.
+#' @param clusterlabels A vector of integers that represent the cluster grouping of the columns (compounds) of \code{data}. The labels should be integers starting from 1 till the higher cluster number. (Example: the output of \code{\link[stats]{cutree}})
 #' @param type Type of CS Anaylsis (default=\code{"CSmfa"}): 
 #' \itemize{
 #' \item \code{"CSmfa"} (MFA or PCA)
@@ -44,23 +75,49 @@
 #' \item \code{"CSfabia"} (Fabia)
 #' \item \code{"CSzhang} (Zhang and Gant)
 #' }
-#' In the first two options, either MFA or PCA is used depending on the cluster size.
+#' In the first two options, either MFA or PCA is used depending on the cluster size. If there query set only contains a single compound, the latter is used. 
+#' Also note that if a cluster only contain a single compound, no \emph{Within-CS} can be computed.
 #' 
-#' @param WithinABS
-#' @param BetweenABS
-#' @param FactorABS
-#' @param verbose
-#' @param WithinSave
-#' @param BetweenSave
-#' @param Within
-#' @param Between
-#' @param ... Additional parameters given to \code{\link{CSanalysis}}
+#' @param WithinABS Boolean to take the mean of the absolute values in the final step of the \emph{Within-Cluster CS} (default=\code{TRUE}).
+#' @param BetweenABS Boolean to take the mean of the absolute values in the final step of the \emph{Between-Cluster CS} (default=\code{TRUE}).
+#' @param FactorABS Boolean value to take the absolute value of the query loadings when determining the best factor (= highest query loadings) in a \code{\link{CSanalysis}} application (default=\code{FALSE}). This option might be helpful if the `best factor` contains large positive and negative query loading which would average to zero.
+#' @param verbose Boolean value to output warnings and information about which factor is chosen in a CS analysis (if applicable).
+#' @param Within A vector of which cluster numbers the \emph{Within-Cluster CS} should be computed. By default (\code{NULL}) all within-cluster scores are computed, but this might not be feasible for larger data in which a single \code{\link{CSanalysis}} run might already take a sufficient amount of computation time.
+#' @param Between A vector of which cluster numbers the \emph{Beween-Cluster CS} (with the cluster as a query set) should be computed. By default (\code{NULL}) all betwen-cluster scores are computed, but this might not be feasible for larger data in which a single \code{\link{CSanalysis}} run might already take a sufficient amount of computation time.
+#' @param WithinSave Boolean value to save the \code{Within} object in the \code{Save} slot of the returned list (default=\code{FALSE}).
+#' @param BetweenSave Boolean value to save the \code{Between} object in the \code{Save} slot of the returned list (default=\code{TRUE}).
+#' @param ... Additional parameters given to \code{\link{CSanalysis}} specific to a certain \code{type} of CS analysis.
+#' @return A list object with components:
+#' \itemize{
+#' \item{\code{CSmatrix}:}{A \emph{K}\eqn{\times}\emph{K} matrix containing the Within scores on the diagonal and the Between scores otherwise with the rows being the query set clusters (e.g. \eqn{m_{13}=} Between CS between cluster 1 (as query set) and 3).}
+#' \item{\code{CSRankmatrix}:}{The same as \code{CSmatrix}, but with connectivity ranking scores (if applicable).}
+#' \item{\code{clusterlabels}:}{The provided \code{clusterlabels}}
+#' \item{\code{Save}:}{A list with components:}
+#' \itemize{
+#' \item{\code{Within}:}{A list with a component for each cluster \emph{k} that contains:}
+#' \itemize{
+#' \item{code{LeaveOneOutCS}:}{Each leave-one-out connectivity score for cluster \emph{k}.}
+#' \item{code{LeaveOneOutCSRank}:}{Each leave-one-out connectivity ranking score for cluster \emph{k} (if applicable).}
+#' \item{code{factorselect}:}{A vector containing which factors/BCs were selected in each leave-one-out CS analysis (if applicable).}
+#' \item{code{CS}:}{A (columns (compounds) \eqn{\times} size of cluster \emph{k}) matrix that contains all the connectivity scores in a leave-one-out CS analysis for each left out compound.}
+#' \item{code{CSRank}:}{The same as \code{CS}, but with connectivity ranking scores (if applicable).}
+#' }
+#' \item{\code{Between}:}{List:}
+#' \itemize{
+#' \item{\code{DataBetweenCS}:}{A (columns (compounds) \eqn{\times} clusters) matrix containing all compound connectivity scores for each query cluster set.}
+#' \item{\code{DataBetweenCSRank}:}{The same as \code{DataBetweenCS}, but with connectivity ranking scores (if applicable).}
+#' \item{\code{queryindex}:}{The column indices for each query set in all CS analyses.}
+#' \item{\code{factorselect}:}{A vector containing which factors/BCs were selected in each CS analysis (if applicable).}
+#' }
+#' }
+#' }
 #' @examples 
-#' 
-#' 
+#' \dontrun{
+#' TEMPORARY
+#' } 
 #' @export
-ClusterCS <- function(data,clusterlabels,type="CSmfa",WithinABS=TRUE,BetweenABS=TRUE,FactorABS=FALSE,verbose=TRUE,WithinSave=FALSE,BetweenSave=TRUE,
-                      Within=NULL,Between=NULL,...){
+ClusterCS <- function(data,clusterlabels,type="CSmfa",WithinABS=TRUE,BetweenABS=TRUE,FactorABS=FALSE,verbose=FALSE,
+                      Within=NULL,Between=NULL,WithinSave=FALSE,BetweenSave=TRUE,...){
   
   # TO DOOOO!!!!!
   # add to docu: compounds in columns
@@ -226,7 +283,7 @@ ClusterCS <- function(data,clusterlabels,type="CSmfa",WithinABS=TRUE,BetweenABS=
           Save.Within[[i]] <- list(
             LeaveOneOutCS=CSlist1.temp,
             LeaveOneOutCSRank=CSlist2.temp,
-            FactorSelect=CompoundCS.FactorSelect,
+            factorselect=CompoundCS.FactorSelect,
             CS=extradata1.temp,
             CSRank=extradata2.temp
           )
@@ -321,7 +378,7 @@ ClusterCS <- function(data,clusterlabels,type="CSmfa",WithinABS=TRUE,BetweenABS=
     Save.Between <- list(
       DataBetweenCS=DataBetweenCS,
       DataBetweenCSRank=DataBetweenCSRank,
-      refindex=refindex_between,
+      queryindex=refindex_between,
       factorselect=factorselect_between
     )
   }
