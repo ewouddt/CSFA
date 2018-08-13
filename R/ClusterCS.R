@@ -31,7 +31,7 @@
 
 
 #' @importFrom utils capture.output
-#' @title ClusterCS
+#' @title CScluster
 #' @description Apply the Connectivity Scores to a \emph{K} clustering result. More information can be found in the Details section below.
 #' @details After applying cluster analysis on the additional data matrix, \emph{K} clusters are obtained.
 #' Each cluster will be seen as a potential query set (for \code{\link{CSanalysis}}) for which 2 connectivity score metrics can be computed, the \emph{Within-Cluster CS} and the \emph{Between-Cluster CS}.
@@ -112,11 +112,40 @@
 #' }
 #' }
 #' @examples 
-#' \dontrun{
-#' TEMPORARY
+#' \dontshow{
+#'   # Example Data Set
+#'   data("dataSIM",package="CSFA")
+#'   # Remove some no-connectivity compounds
+#'   nosignal <- sapply(colnames(dataSIM),FUN=function(x){grepl("c-",x)})
+#'   data <- dataSIM[,-which(nosignal)[1:250]]
+#'   
+#'   # Toy example with random cluster assignment:
+#'   clusterlabels <- sample(1:10,size=ncol(data),replace=TRUE)
+#'   
+#'   result2 <- CScluster(data,clusterlabels,type="CSzhang",Within=c(),Between=1)
+#'   
 #' } 
+#' \donttest{
+#'   # Example Data Set
+#'   data("dataSIM",package="CSFA")
+#'   # Remove some no-connectivity compounds
+#'   nosignal <- sapply(colnames(dataSIM),FUN=function(x){grepl("c-",x)})
+#'   data <- dataSIM[,-which(nosignal)[1:250]]
+#'   
+#'   # Toy example with random cluster assignment:
+#'   # Note: clusterlabels can be acquired through cutree(hclust(...))
+#'   clusterlabels <- sample(1:10,size=ncol(data),replace=TRUE)
+#'   
+#'   result1 <- CScluster(data,clusterlabels,type="CSmfa")
+#'   result2 <- CScluster(data,clusterlabels,type="CSzhang")
+#'   
+#'   result1$CSmatrix
+#'   result1$CSRankmatrix
+#'   
+#'   result2$CSmatrix
+#' }
 #' @export
-ClusterCS <- function(data,clusterlabels,type="CSmfa",WithinABS=TRUE,BetweenABS=TRUE,FactorABS=FALSE,verbose=FALSE,
+CScluster <- function(data,clusterlabels,type="CSmfa",WithinABS=TRUE,BetweenABS=TRUE,FactorABS=FALSE,verbose=FALSE,
                       Within=NULL,Between=NULL,WithinSave=FALSE,BetweenSave=TRUE,...){
   
   # TO DOOOO!!!!!
@@ -134,11 +163,11 @@ ClusterCS <- function(data,clusterlabels,type="CSmfa",WithinABS=TRUE,BetweenABS=
   
   if(!identical(1:nclusters,as.integer(sort(unique(clusterlabels))))){stop(paste0("The clusterlabels are not a sequence of integers from 1 to ",nclusters))}
   
-  
-  if(is.null(Within)){
+  pm <- match.call()
+  if(is.null(Within) & deparse(pm$Within)!="c()"){
     Within <- 1:nclusters
   }
-  if(is.null(Between)){
+  if(is.null(Between) & deparse(pm$Between)!="c()"){
     Between <- 1:nclusters
   }
   
@@ -146,17 +175,17 @@ ClusterCS <- function(data,clusterlabels,type="CSmfa",WithinABS=TRUE,BetweenABS=
   if(!all(Between<=nclusters & Between>=1)){stop(paste0("Between contains a cluster number not in the range of [1,",nclusters,"]."))}
   
   
-  CSmatrix <- CSRankmatrix <- matrix(NA,nrow=nclusters,ncol=nclusters,dimnames=list(paste0("C",sort(unique(clusterlabels))),paste0("C",unique(clusterlabels))))
+  CSmatrix <- CSRankmatrix <- matrix(NA,nrow=nclusters,ncol=nclusters,dimnames=list(paste0("C",1:nclusters),paste0("C",1:nclusters)))
 
   if(WithinSave){
     Save.Within <- vector("list",nclusters)
-    names(Save.Within) <- paste0("C",sort(unique(clusterlabels)))
+    names(Save.Within) <- paste0("C",1:nclusters)
   }else{
     Save.Within <- NULL
   }
   if(BetweenSave){
     Save.Between <- NULL
-    DataBetweenCS <- DataBetweenCSRank <- matrix(NA,nrow=ncol(data),ncol=nclusters,dimnames=list(colnames(data),paste0("C",sort(unique(clusterlabels)))))
+    DataBetweenCS <- DataBetweenCSRank <- matrix(NA,nrow=ncol(data),ncol=nclusters,dimnames=list(colnames(data),paste0("C",1:nclusters)))
     refindex_between <- vector("list",nclusters)
     names(refindex_between) <- colnames(DataBetweenCS)
     factorselect_between <- rep(NA,nclusters)
@@ -167,12 +196,12 @@ ClusterCS <- function(data,clusterlabels,type="CSmfa",WithinABS=TRUE,BetweenABS=
   
   
 
-  for(i in 1:length(unique(clusterlabels))){
+  for(i in 1:nclusters){
     
     
     
-    i.cluster <- unique(clusterlabels)[i]
-    other.cluster <- unique(clusterlabels)[-i]
+    i.cluster <- i
+    other.cluster <- (1:nclusters)[-i]
     
     cluster.index <- which(clusterlabels==i.cluster)
     
@@ -187,7 +216,7 @@ ClusterCS <- function(data,clusterlabels,type="CSmfa",WithinABS=TRUE,BetweenABS=
       if(length(cluster.index)==1){
         
         if(verbose){
-          warning(paste0("Cluster ",unique(clusterlabels)[i]," only has a single compound. No Within-CS will be computed"))
+          warning(paste0("Cluster ",i," only has a single compound. No Within-CS will be computed"))
         }
         
         
@@ -238,7 +267,7 @@ ClusterCS <- function(data,clusterlabels,type="CSmfa",WithinABS=TRUE,BetweenABS=
               temp_cap <- capture.output({out_MFA <- CSanalysis(querMat=querdata,refMat=refdata,method.type,which=c(),component.plot=factor.select,result.available=out_MFA,result.available.update=TRUE,...)})
               
               if(verbose){
-                warning(paste0("MFA for Compound nr ",colnames(data)[cluster.index[j]]," in Cluster nr ",unique(clusterlabels)[i],": Factor ",factor.select," was choosen."),call.=FALSE)
+                warning(paste0("MFA for Compound nr ",colnames(data)[cluster.index[j]]," in Cluster ",i,": Factor ",factor.select," was choosen."),call.=FALSE)
                 
               }
             }
@@ -302,9 +331,9 @@ ClusterCS <- function(data,clusterlabels,type="CSmfa",WithinABS=TRUE,BetweenABS=
     if(!(i %in% Between)){next}
     
     if(type=="CSmfa"){
-      method.type <- ifelse(dim(querdata)[2]==1,"CSpca","CSmfa")
+      method.type <- ifelse(length(cluster.index)==1,"CSpca","CSmfa")
     }else if(type=="CSsmfa"){
-      method.type <- ifelse(dim(querdata)[2]==1,"CSspca","CSsmfa")
+      method.type <- ifelse(length(cluster.index)==1,"CSspca","CSsmfa")
     }else{
       method.type <- type
     }
@@ -336,7 +365,7 @@ ClusterCS <- function(data,clusterlabels,type="CSmfa",WithinABS=TRUE,BetweenABS=
         temp_cap <- capture.output({out_MFA <- CSanalysis(querMat=data[,cluster.index,drop=FALSE],refMat=data[,-cluster.index],method.type,which=c(),component.plot=factor.select,result.available=out_MFA,result.available.update=TRUE,...)})
         
         if(verbose){
-          warning(paste0("MFA for Cluster nr ",unique(clusterlabels)[i],": Factor ",factor.select," was choosen."),call.=FALSE)
+          warning(paste0("MFA for Cluster ",i,": Factor ",factor.select," was choosen."),call.=FALSE)
         }
       }
       
