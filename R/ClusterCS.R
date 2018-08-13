@@ -4,30 +4,18 @@
 # load("C:/Users/lucp8394/Documents/StatFiles/CenStat/Connectivity Score/Research/ClusterCS/cluster_target.RData")
 # data <- geneMat
 # clusterlabels <- cutree(cluster_target$Clust,k=7)
-# out <- ClusterCS(data,clusterlabels,WithinSave=FALSE)
-# out <- ClusterCS(data,clusterlabels,WithinSave=TRUE)
-# out <- ClusterCS(data,clusterlabels,WithinSave=TRUE,Within=c(1,2,5))
-# out <- ClusterCS(data,clusterlabels,WithinSave=TRUE,Between=c(1,2,5))
-# out <- ClusterCS(data,clusterlabels,WithinSave=TRUE,Within=c(1,2,5),Between=c(1,2,5))
+# out <- CScluster(data,clusterlabels,WithinSave=FALSE)
+# out <- CScluster(data,clusterlabels,WithinSave=TRUE)
+# out <- CScluster(data,clusterlabels,WithinSave=TRUE,Within=c(1,2,5))
+# out <- CScluster(data,clusterlabels,WithinSave=TRUE,Between=c(1,2,5))
+# out <- CScluster(data,clusterlabels,WithinSave=TRUE,Within=c(1,2,5),Between=c(1,2,5))
 
 
-# out <- ClusterCS(data,clusterlabels,WithinSave=TRUE,type="CSfabia",cyc=10)
-# out <- ClusterCS(data,clusterlabels,WithinSave=TRUE,type="CSzhang")
+# out <- CScluster(data,clusterlabels,WithinSave=TRUE,type="CSfabia",cyc=10)
+# out <- CScluster(data,clusterlabels,WithinSave=TRUE,type="CSzhang")
 
+# To do: if time left: allow for parallelisation (over the i loop, although it heavily depends on cluster size... so might not be efficient)
 
-
-
-
-
-
-## STILL NEED TO INCLUDE PCA FOR WHEN 1 COMPOUND
-## Currently: computes all withing and all between scores -> maybe problematic for larger data
-
-# TO DO: change appending + what if cluster is only 1 compound -> NA withing CS
-
-
-# Disclaimers:
-# - factor selection is done through biggest mean. So it could be issue when query set contains both high and negative together -> add abs option (WITHIN-CS), analysis in chapter is with abs=FALSE
 
 
 #' @importFrom utils capture.output
@@ -148,10 +136,7 @@
 CScluster <- function(data,clusterlabels,type="CSmfa",WithinABS=TRUE,BetweenABS=TRUE,FactorABS=FALSE,verbose=FALSE,
                       Within=NULL,Between=NULL,WithinSave=FALSE,BetweenSave=TRUE,...){
   
-  # TO DOOOO!!!!!
-  # add to docu: compounds in columns
 
-  # To do: if time left: allow for parallelisation (over the i loop, although it heavily depends on cluster size... so might not be efficient)
   
   if(!(type %in% c("CSmfa","CSsmfa","CSfabia","CSzhang"))){stop("type not available. Please choose one of: \"CSmfa\", \"CSsmfa\", \"CSfabia\" or \"CSzhang\".")}
   
