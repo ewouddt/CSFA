@@ -11,29 +11,29 @@ CScluster(data, clusterlabels, type = "CSmfa", WithinABS = TRUE,
 \arguments{
 \item{data}{A gene expression matrix with the compounds in the columns.}
 
-\item{clusterlabels}{A vector of integers that represent the cluster grouping of the columns (compounds) of \code{data}. The labels should be integers starting from 1 till the higher cluster number. (Example: the output of \code{\link[stats]{cutree}})}
+\item{clusterlabels}{A vector of integers that represents the cluster grouping of the columns (compounds) in \code{data}. The labels should be integers starting from 1 to the total number of clusters. (e.g. the output of \code{\link[stats]{cutree}})}
 
-\item{type}{Type of CS Anaylsis (default=\code{"CSmfa"}): 
+\item{type}{Type of CS anaylsis (default=\code{"CSmfa"}): 
 \itemize{
 \item \code{"CSmfa"} (MFA or PCA)
 \item \code{"CSsmfa"} (Sparse MFA or Sparse PCA)
 \item \code{"CSfabia"} (Fabia)
 \item \code{"CSzhang"} (Zhang and Gant)
 }
-In the first two options, either MFA or PCA is used depending on the cluster size. If there query set only contains a single compound, the latter is used. 
-Also note that if a cluster only contain a single compound, no \emph{Within-CS} can be computed.}
+In the first two options, either MFA or PCA is used depending on the cluster size. If the query set only contains a single compound, the latter is used. 
+Also note that if a cluster only contains a single compound, no \emph{Within-CS} can be computed.}
 
-\item{WithinABS}{Boolean to take the mean of the absolute values in the final step of the \emph{Within-Cluster CS} (default=\code{TRUE}).}
+\item{WithinABS}{Boolean value to take the mean of the absolute values in the final step of the \emph{Within-Cluster CS} (default=\code{TRUE}).}
 
-\item{BetweenABS}{Boolean to take the mean of the absolute values in the final step of the \emph{Between-Cluster CS} (default=\code{TRUE}).}
+\item{BetweenABS}{Boolean value to take the mean of the absolute values in the final step of the \emph{Between-Cluster CS} (default=\code{TRUE}).}
 
-\item{FactorABS}{Boolean value to take the absolute value of the query loadings when determining the best factor (= highest query loadings) in a \code{\link{CSanalysis}} application (default=\code{FALSE}). This option might be helpful if the `best factor` contains large positive and negative query loading which would average to zero.}
+\item{FactorABS}{Boolean value to take the absolute value of the query loadings when determining the best factor (= factor with highest query loadings) in a \code{\link{CSanalysis}} application (default=\code{FALSE}). This option might be helpful if the `best factor` contains large positive and negative query loading which would average to zero.}
 
 \item{verbose}{Boolean value to output warnings and information about which factor is chosen in a CS analysis (if applicable).}
 
-\item{Within}{A vector of which cluster numbers the \emph{Within-Cluster CS} should be computed. By default (\code{NULL}) all within-cluster scores are computed, but this might not be feasible for larger data in which a single \code{\link{CSanalysis}} run might already take a sufficient amount of computation time.}
+\item{Within}{A vector for which cluster numbers the \emph{Within-Cluster CS} should be computed. By default (=\code{NULL}) all within-cluster scores are computed, but this might not be feasible for larger data in which a single \code{\link{CSanalysis}} run might already take a sufficient amount of computation time.}
 
-\item{Between}{A vector of which cluster numbers the \emph{Beween-Cluster CS} (with the cluster as a query set) should be computed. By default (\code{NULL}) all betwen-cluster scores are computed, but this might not be feasible for larger data in which a single \code{\link{CSanalysis}} run might already take a sufficient amount of computation time.}
+\item{Between}{A vector fir which cluster numbers the \emph{Beween-Cluster CS} (with the cluster as a query set) should be computed. By default (=\code{NULL}) all between-cluster scores are computed, but this might not be feasible for larger data in which a single \code{\link{CSanalysis}} run might already take a sufficient amount of computation time.}
 
 \item{WithinSave}{Boolean value to save the \code{Within} object in the \code{Save} slot of the returned list (default=\code{FALSE}).}
 
@@ -44,7 +44,7 @@ Also note that if a cluster only contain a single compound, no \emph{Within-CS} 
 \value{
 A list object with components:
 \itemize{
-\item{\code{CSmatrix}: }{A \emph{K}\eqn{\times}\emph{K} matrix containing the Within scores on the diagonal and the Between scores otherwise with the rows being the query set clusters (e.g. \eqn{m_{13}=} Between CS between cluster 1 (as query set) and 3).}
+\item{\code{CSmatrix}: }{A \emph{K}\eqn{\times}\emph{K} matrix containing the Within scores on the diagonal and the Between scores elsewhere with the rows being the query set clusters (e.g. \eqn{m_{13}=} Between CS between cluster 1 (as query set) and cluster 3).}
 \item{\code{CSRankmatrix}: }{The same as \code{CSmatrix}, but with connectivity ranking scores (if applicable).}
 \item{\code{clusterlabels}: }{The provided \code{clusterlabels}}
 \item{\code{Save}: }{A list with components:}
